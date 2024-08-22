@@ -13,7 +13,9 @@ const Home = () => {
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedNodes, setSelectedNodes] = useState([]); // State for multiple selected nodes
-    
+    const [document, setDocument] = useState(null); // State for document
+    const [timeRange, setTimeRange] = useState([0, 100]); // State for time range
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -22,18 +24,26 @@ const Home = () => {
                 setData(data);
                 setFilteredData(data);
                 setLoading(false);
+                // Assuming the document data is part of the response
+                setDocument({ date: { start: "2023-01-01", end: "2023-12-31" } }); // Example document date
             } catch (error) {
                 console.error("Error fetching data: ", error);
             }
         };
-    
+
         fetchData();
     }, []);
-    
-    const handleDataAdjust = (adjustedData) => {
-        setFilteredData(adjustedData);
-    };
-    
+
+    useEffect(() => {
+        if (document && document.data) {
+            const filtered = document.data.filter(item => {
+                const itemDate = new Date(item.date).getTime();
+                return itemDate >= timeRange[0] && itemDate <= timeRange[1];
+            });
+            setFilteredData(filtered);
+        }
+    }, [timeRange, document]);
+
     const handleNodeClick = (node) => {
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
@@ -50,7 +60,7 @@ const Home = () => {
             <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
         </div>
     );
-    
+
     return (
         <>
             <Header className={styles.header} />
@@ -69,10 +79,9 @@ const Home = () => {
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
-                {/* <TimeRangeAdjuster data={data} onDataAdju       st={handleDataAdjust} /> */}
+                        {document && <TimeRangeAdjuster document={document} timeRange={timeRange} setTimeRange={setTimeRange} />}
                     </SplitterPanel>
                 </Splitter>
-
             </div>
         </>
     );

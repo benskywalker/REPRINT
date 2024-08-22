@@ -7,7 +7,7 @@ import { Checkbox } from 'primereact/checkbox'; // Import Checkbox from PrimeRea
 import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accordion components from PrimeReact
 import styles from './Sigmagraph.module.css';
 
-const SigmaGraph = ({ onNodeClick }) => {
+const SigmaGraph = ({ onNodeClick, data }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
@@ -215,6 +215,21 @@ const SigmaGraph = ({ onNodeClick }) => {
 
     setSelectedFilters(updatedFilters);
   };
+
+  useEffect(() => {
+    if (selectedFilters.length === 0) {
+      setGraph(originalGraph);
+    } else {
+      const filteredNodes = originalGraph.nodes.filter((node) =>
+        selectedFilters.includes(node.data.type)
+      );
+      const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
+      const filteredEdges = originalGraph.edges.filter(
+        (edge) => filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
+      );
+      setGraph({ nodes: filteredNodes, edges: filteredEdges });
+    }
+  }, [selectedFilters, originalGraph]);
 
   return (
     <div className={styles.content}>
