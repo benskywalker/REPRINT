@@ -67,14 +67,12 @@ const Home = () => {
                             ))}
                         </Accordion>
                     </SplitterPanel>
-                    <SplitterPanel size={70} minSize={50}>
+                    <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
+                {/* <TimeRangeAdjuster data={data} onDataAdju       st={handleDataAdjust} /> */}
                     </SplitterPanel>
                 </Splitter>
-                {/* <TimeRangeAdjuster data={data} onDataAdjust={handleDataAdjust} /> */}
-                <br />
-                <br />
-                <br />
+
             </div>
         </>
     );
