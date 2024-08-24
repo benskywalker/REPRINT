@@ -31,6 +31,14 @@ const SigmaGraph = ({ onNodeClick, data }) => {
         const edges = [];
         const nodeIds = new Set();
 
+        // Define color mapping for edge types
+        const edgeColors = {
+          document: '#FF5733', // Example color for document edges
+          organization: '#33FF57', // Example color for organization edges
+          religion: '#3357FF', // Example color for religion edges
+          relationship: '#FF33A1', // Example color for relationship edges
+        };
+
         data.nodes.forEach((node) => {
           const newNode = {
             id: node.id,
@@ -51,7 +59,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
             id: `edge-${edge.from}-${edge.to}`,
             source: edge.from,
             target: edge.to,
-            color: '#ccc',
+            color: edgeColors[edge.type] || '#ccc', // Use color mapping
             size: 2,
             data: edge,
           };
@@ -110,15 +118,15 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
 
-    //uncolor all nodes
-    graphInstance.nodes().forEach((node) => {
-      graphInstance.nodes(node.id).color = '#fffff0';
+    // Restore original colors of nodes
+    originalGraph.nodes.forEach((node) => {
+      graphInstance.nodes(node.id).color = node.color;
     });
 
-    //uncolor all edges
-    graphInstance.edges().forEach((edge) => {
-      graphInstance.edges(edge.id).color = '#ccc';
-      graphInstance.edges(edge.id).size = 2;
+    // Restore original colors of edges
+    originalGraph.edges.forEach((edge) => {
+      graphInstance.edges(edge.id).color = edge.color;
+      graphInstance.edges(edge.id).size = edge.size;
     });
 
     sigmaInstance.refresh(); // Refresh the graph to apply changes
