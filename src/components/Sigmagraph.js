@@ -182,7 +182,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     } else {
       if (originalGraph.edges && originalGraph.nodes) {
         const filteredEdges = originalGraph.edges.filter((edge) => {
-          return selectedFilters[edge.data.type];
+          return selectedFilters[edge.type];
         });
   
         const filteredNodes = originalGraph.nodes.filter((node) => {
