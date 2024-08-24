@@ -65,10 +65,18 @@ const SigmaGraph = ({ onNodeClick, data }) => {
           };
 
           edges.push(newEdge);
+          
         });
+
+        //populate the nodes documents array
+        nodes.forEach((node) => {
+          node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
+        }
+        );
 
         setGraph({ nodes, edges });
         setOriginalGraph({ nodes, edges });
+        console.log('Graph data:', { nodes, edges });
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
