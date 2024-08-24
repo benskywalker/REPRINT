@@ -61,6 +61,7 @@ const Home = () => {
     }, [timeRange, document]);
 
     const handleNodeClick = (node) => {
+        console.log(node.data.documents);
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
