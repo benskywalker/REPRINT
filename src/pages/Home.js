@@ -25,9 +25,8 @@ const Home = () => {
         setDialogs((prevDialogs) => [...prevDialogs, { id: index, nodeData }]);
     };
     
-    const handleCloseDialog = () => {
+    const handleCloseDialog = (id) => {
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
-
     };
 
     useEffect(() => {
@@ -99,7 +98,7 @@ const Home = () => {
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
-            <Dialog key={dialog.id} header="Node Details" visible={true} onHide={() => handleCloseDialog(dialog.id)}>
+            <Dialog key={dialog.id} header="Node Details" modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
                 <NodeDetails nodeData={dialog.nodeData} />
             </Dialog>
         ))}
