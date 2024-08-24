@@ -4,6 +4,7 @@ import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import { TabView, TabPanel } from 'primereact/tabview'; // Import TabView and TabPanel components from PrimeReact
 import './NodeDetails.module.css'; // Custom CSS file
+import LettersTable from './SidecarContent/LetterTable';
 
 const NodeDetails = ({ nodeData }) => {
   return (
@@ -16,7 +17,7 @@ const NodeDetails = ({ nodeData }) => {
             </TabPanel>
             <TabPanel key={"Letters"} header={"Letters"}>
               <div>
-                <strong>{"Letters"}:</strong>
+                <LettersTable />
               </div>
             </TabPanel>
             <TabPanel key={"Relationships"} header={"Relationships"}>
