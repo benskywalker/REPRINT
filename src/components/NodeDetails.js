@@ -7,27 +7,30 @@ import './NodeDetails.module.css'; // Custom CSS file
 
 const NodeDetails = ({ nodeData }) => {
   return (
-    <div className="node-details">
-      {nodeData && (
+    <div className="node-details"> 
         <TabView>
-          {Object.entries(nodeData.data).map(([key, value]) => (
-            <TabPanel key={key} header={key}>
+            <TabPanel key={"Biography"} header={"Biography"}>
               <div>
-                <strong>{key}:</strong>
-                {key === 'image' ? (
-                  value ? (
-                    <img src={value} alt={nodeData.data.name} style={{ width: '100px', height: '100px' }} />
-                  ) : (
-                    <i className={`pi pi-image`} style={{ fontSize: '100px' }}></i>
-                  )
-                ) : (
-                  typeof value === 'object' ? JSON.stringify(value) : value
-                )}
+                <strong>{"Biography"}:</strong>
               </div>
             </TabPanel>
-          ))}
+            <TabPanel key={"Letters"} header={"Letters"}>
+              <div>
+                <strong>{"Letters"}:</strong>
+              </div>
+            </TabPanel>
+            <TabPanel key={"Relationships"} header={"Relationships"}>
+              <div>
+                <strong>{"Relationships"}:</strong>
+              </div>
+            </TabPanel>
+            <TabPanel key={"Open Data"} header={"Open Data"}>
+              <div>
+                <strong>{"Open Data"}:</strong>
+              </div>
+            </TabPanel>
         </TabView>
-      )}
+      
     </div>
   );
 };
