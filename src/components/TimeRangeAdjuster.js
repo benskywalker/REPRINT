@@ -1,47 +1,42 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import Slider from '@mui/material/Slider';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 
-const TimeRangeAdjuster = ({ document }) => {
-  const [timeRange, setTimeRange] = useState([0, 100]);
-  const [initialRange, setInitialRange] = useState([0, 100]);
+//this is a TimeRangeAdjuster component 
+//that will allow the user to adjust 
+//the time range of the data displayed in the sigma graph.
 
-  useEffect(() => {
-    console.log('Document data:', document); // Log the document data
-    if (document && Array.isArray(document.date)) {
-      const dates = document.date.map(date => {
-        const time = new Date(date).getTime();
-        console.log('Parsed date:', date, '=>', time); // Log each parsed date
-        return time;
-      });
-      const minDate = Math.min(...dates);
-      const maxDate = Math.max(...dates);
-      setTimeRange([minDate, maxDate]);
-      setInitialRange([minDate, maxDate]);
-      console.log('Updated time range:', [minDate, maxDate]); // Log the updated time range
+//it will take in an edges array 
+const TimeRangeAdjuster = ({ edges, minDate, maxDate }) => {
+    const [timeRange, setTimeRange] = React.useState([minDate, maxDate]);
+    const [initialRange, setInitialRange] = React.useState([minDate, maxDate]);
+
+    useEffect(() => {
+        setInitialRange([minDate, maxDate]);
+        setTimeRange([minDate, maxDate]);
+    }, [minDate, maxDate]);
+
+    const handleChange = (event, newValue) => {
+        setTimeRange(newValue);
     }
-  }, [document]);
 
-  const handleSliderChange = (event, newValue) => {
-    setTimeRange(newValue);
-    console.log('Slider value changed:', newValue); // Log the slider value
-  };
+    const handleReset = () => {
+        setTimeRange(initialRange);
+    }
 
-  return (
-    <Box sx={{ width: 300 }}>
-      <Slider
-        value={timeRange}
-        onChange={handleSliderChange}
-        valueLabelDisplay="auto"
-        min={initialRange[0]}
-        max={initialRange[1]}
-      />
-      <Typography>
-        Time Period: {`${new Date(timeRange[0]).toLocaleDateString()} - ${new Date(timeRange[1]).toLocaleDateString()}`}
-      </Typography>
-    </Box>
-  );
-};
+    return (
+        <div>
+            <Slider
+                value={timeRange}
+                onChange={handleChange}
+                valueLabelDisplay="auto"
+                min={minDate}
+                max={maxDate}
+                step={1}
+            />
+            <button onClick={handleReset}>Reset</button>
+        </div>
+    );
+}
 
 export default TimeRangeAdjuster;
+

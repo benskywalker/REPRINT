@@ -97,7 +97,6 @@ const Home = () => {
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
-                        {document && <TimeRangeAdjuster document={document} timeRange={timeRange} setTimeRange={setTimeRange} />}
                     </SplitterPanel>
                 </Splitter>
             </div>
