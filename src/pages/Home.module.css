@@ -1,6 +1,5 @@
 .content {
     height: 100vh; /* Full viewport height */
-    background-color: #1e24eb; /* Replace with your desired background color */
     color: white;
     display: flex;
     flex-direction: column;
