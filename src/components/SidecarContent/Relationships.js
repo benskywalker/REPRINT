@@ -3,7 +3,7 @@ import React, { useState} from 'react';
 const Relationships = ({nodeData, handleNodeClick}) => {
   
     const handleItemClick = () => {
-        handleNodeClick();
+        handleNodeClick(nodeData);
     };
   
     // Hard coded to get a list
