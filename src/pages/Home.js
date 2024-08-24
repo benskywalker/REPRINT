@@ -29,7 +29,6 @@ const Home = () => {
     };
     
     const handleCloseDialog = (id) => {
-        console.log("Close dialog for node: ", dialogs[id]);
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
     };
 
@@ -63,6 +62,7 @@ const Home = () => {
 
     const handleNodeClick = (node) => {
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
+        console.log(node);
     };
 
     const handleCloseNode = (nodeId) => {
