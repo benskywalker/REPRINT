@@ -26,7 +26,6 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       try {
         const response = await axios.get('http://localhost:4000/relations');
         const data = response.data;
-        console.log(data);
         const nodes = [];
         const edges = [];
         const nodeIds = new Set();
@@ -61,7 +60,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
             target: edge.to,
             color: edgeColors[edge.type] || '#ccc', // Use color mapping
             size: 2,
-            data: edge,
+            ...edge,
           };
 
           edges.push(newEdge);
@@ -76,7 +75,6 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
         setGraph({ nodes, edges });
         setOriginalGraph({ nodes, edges });
-        console.log('Graph data:', { nodes, edges });
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
