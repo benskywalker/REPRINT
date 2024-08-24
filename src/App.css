@@ -9,14 +9,14 @@ html, body {
   border: 3px solid #6C757D; 
   padding: 25px;
   border-radius: 25px;
-
+  color: #000000; /* Change this to your desired text color */
 }
  
 .sidecar.p-tabview-nav {
   background-color: #dbd7c4 !important;
   height: 100%;
-  width: 95vw;
   border-bottom: 3px solid #04151F;
+  color: #000000; /* Change this to your desired text color */
 }
 
 .sidecar .p-tabview-nav-link {
@@ -28,6 +28,7 @@ html, body {
   font-family: 'Gentium Book Plus';
   font-size: large;
   text-decoration: none;
+  
 }
 
 .sidecar .p-tabview-nav-link:hover {
@@ -37,5 +38,7 @@ html, body {
 
 .sidecar .p-tabview .p-tabview-panels {
   background-color: #fff;
+  color: #000000; /* Change this to your desired text color */
 }
+
 

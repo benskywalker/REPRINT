@@ -11,7 +11,7 @@ import Biography from './SidecarContent/Biography';
 const NodeDetails = ({ nodeData, handleNodeClick }) => {
   return (
     <div className={"sidecar"}>
-      <TabView>
+      <TabView scrollable>
         <TabPanel key={"Biography"} header={"Biography"}>
             <Biography nodeData={nodeData} />
         </TabPanel>

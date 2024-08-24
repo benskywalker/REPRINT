@@ -12,7 +12,7 @@ import { Toolbar } from 'primereact/toolbar';
 
 
 export default function LetterTable(nodeData) {
-    const [data, setData] = useState([]);
+    const [data, setData] = useState([]); 
     const dt = useRef(null);
 
     const [filters, setFilters] = useState({
@@ -23,6 +23,10 @@ export default function LetterTable(nodeData) {
         date: { operator: FilterOperator.AND, constraints: [{ value: null, matchMode: FilterMatchMode.DATE_IS }] },
     });
 
+    useEffect(() => {
+        setData(nodeData.nodeData.data.documents);
+        console.log(nodeData.nodeData.data.documents);
+    }, []);
     
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [senders] = useState([
@@ -72,13 +76,6 @@ export default function LetterTable(nodeData) {
         }
         setGlobalFilterValue('');
     };
-    const formatDate = (value) => {
-        return value.toLocaleDateString('en-US', {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric'
-        });
-    };
 
     const onGlobalFilterChange = (e) => {
         const value = e.target.value;
@@ -91,7 +88,7 @@ export default function LetterTable(nodeData) {
     };
 
     const senderBodyTemplate = (rowData) => {
-        const sender = rowData.sender;
+        const sender = rowData.senderFullName;
 
         return (
             <div className="flex align-items-center gap-2">
@@ -118,7 +115,7 @@ export default function LetterTable(nodeData) {
     };
 
     const receiverBodyTemplate = (rowData) => {
-        const receiver = rowData.receiver;
+        const receiver = rowData.receiverFullName;
 
         return (
             <div className="flex align-items-center gap-2">
@@ -144,16 +141,25 @@ export default function LetterTable(nodeData) {
         );
     };
 
+    function formatDate(dateInput) {
+        // Check if dateInput is valid
+        const isValidDate = dateInput && !isNaN(new Date(dateInput).getTime());
+        // Use the input date if valid, else use a default date
+        const dateObject = isValidDate ? new Date(dateInput) : new Date('null');
+        // Convert the date to a string in the desired format
+        return dateObject.toLocaleDateString('en-US', {
+          day: '2-digit',
+          month: '2-digit',
+          year: 'numeric'
+        });
+      }
+
     const dateBodyTemplate = (rowData) => {
         return formatDate(rowData.date);
     };
 
     const dateFilterTemplate = (options) => {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
-    };
-
-    const actionBodyTemplate = () => {
-        return <Button type="button" icon="pi pi-cog" rounded></Button>;
     };
 
 
@@ -250,16 +256,13 @@ export default function LetterTable(nodeData) {
                     ref={dt} 
                     filters={filters} 
                     // globalFilterFields={['document', 'sender', 'receiver','date']} header={header}
-                    globalFilterFields={['document', 'sender', 'receiver','date']} header={header}
+                    globalFilterFields={['documentID', 'senderFullName', 'receiverFullName','date']} header={header}
                     emptyMessage="No letters found."
                     sortMode="single">
-                <Column field="document" header="Document" sortable filter filterPlaceholder="Search by document" style={{ minWidth: '14rem' }} />
-                <Column header="Sender" sortable sortField="sender" filterField="sender" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }}
-                    style={{ minWidth: '14rem' }} body={senderBodyTemplate} filter filterElement={senderFilterTemplate} />
-                <Column header="Receiver" sortable sortField="receiver" filterField="receiver" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }}
-                    style={{ minWidth: '14rem' }} body={receiverBodyTemplate} filter filterElement={receiverFilterTemplate} />
+                <Column field="documentID" sortable header="Document"  filter filterPlaceholder="Search by Document ID" />
+                <Column header="Sender" sortable field="senderFullName" filterField="senderFullName" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} body={senderBodyTemplate} filter filterElement={senderFilterTemplate}/>
+                <Column header="Receiver" sortable filterField="receiverFullName" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} body={receiverBodyTemplate} filter filterElement={receiverFilterTemplate}/>
                 <Column field="date" header="Date" sortable filterField="date" dataType="date" style={{ minWidth: '12rem' }} body={dateBodyTemplate} filter filterElement={dateFilterTemplate} />
-                <Column headerStyle={{ width: '5rem', textAlign: 'center' }} bodyStyle={{ textAlign: 'center', overflow: 'visible' }} body={actionBodyTemplate} />
             </DataTable>
         </div>
     );

@@ -61,7 +61,7 @@ const Home = () => {
     }, [timeRange, document]);
 
     const handleNodeClick = (node) => {
-        console.log(node.data.documents);
+        // console.log(node.data.documents);
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
@@ -83,8 +83,8 @@ const Home = () => {
         <>
             <Header className={styles.header} />
             <div className={styles.content}>
-                <Splitter style={{ height: '100vh' }}>
-                    <SplitterPanel size={30} minSize={20}>
+                <Splitter style={{ height: '100vh', overflowY:'auto' }}>
+                    <SplitterPanel size={30} minSize={10} >
                     <Accordion activeIndex={0} multiple>
                         {selectedNodes.map((node, index) => (
                             <AccordionTab key={index} header={renderHeader(node, index)}>
