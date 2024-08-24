@@ -11,7 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Toolbar } from 'primereact/toolbar';
 
 
-export default function LetterTable(nodeData) {
+export default function LetterTable({ nodeData, onRowClick }) {
     const [data, setData] = useState([]); 
     const dt = useRef(null);
 
@@ -24,9 +24,21 @@ export default function LetterTable(nodeData) {
     });
 
     useEffect(() => {
-        setData(nodeData.nodeData.data.documents);
-        console.log(nodeData.nodeData.data.documents);
-    }, []);
+        // console.log(nodeData);
+        //  if(nodeData.data){
+        //     console.log(nodeData.data);
+        // }
+        //  if(nodeData.data.documents){
+        //     console.log(nodeData.data.documents);
+        // }
+        
+        if (nodeData && nodeData.data && nodeData.data.documents) {
+            setData( nodeData.data.documents);
+            console.log( nodeData.data.documents);
+        } else {
+            console.warn("nodeData or its properties are undefined");
+        }
+    }, [nodeData]);
     
     const [globalFilterValue, setGlobalFilterValue] = useState('');
     const [senders] = useState([
@@ -162,13 +174,6 @@ export default function LetterTable(nodeData) {
         return <Calendar value={options.value} onChange={(e) => options.filterCallback(e.value, options.index)} dateFormat="mm/dd/yy" placeholder="mm/dd/yyyy" mask="99/99/9999" />;
     };
 
-
-    function handleItemClick (id){
-        // const newContent = `LetterImage${Math.random()}${id}`; // Generate new content string
-        // onLetterClick(newContent); // Call the parent component's function with the new content
-        console.log(data);
-      };
-
       const exportPdf = () => {
         import('jspdf').then((jsPDF) => {
             import('jspdf-autotable').then(() => {
@@ -245,20 +250,28 @@ export default function LetterTable(nodeData) {
 
     const header = renderHeader();
 
+    
+    const handleRowClick = (e) => {
+        if (typeof onRowClick === 'function') {
+            onRowClick(e.data);
+        } else {
+            console.error('onRowClick is not a function');
+        }
+    };
     return (
         <div className="card">
             <DataTable value={data}                     
                     paginator 
                     showGridlines 
                     rows={10} 
-                    selectionMode="single" onSelectionChange={(e) => handleItemClick(e.value.id)}
                     dataKey="id"
                     ref={dt} 
                     filters={filters} 
                     // globalFilterFields={['document', 'sender', 'receiver','date']} header={header}
                     globalFilterFields={['documentID', 'senderFullName', 'receiverFullName','date']} header={header}
                     emptyMessage="No letters found."
-                    sortMode="single">
+                    sortMode="single"
+                    onRowClick={handleRowClick}>
                 <Column field="documentID" sortable header="Document"  filter filterPlaceholder="Search by Document ID" />
                 <Column header="Sender" sortable field="senderFullName" filterField="senderFullName" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} body={senderBodyTemplate} filter filterElement={senderFilterTemplate}/>
                 <Column header="Receiver" sortable filterField="receiverFullName" showFilterMatchModes={false} filterMenuStyle={{ width: '14rem' }} body={receiverBodyTemplate} filter filterElement={receiverFilterTemplate}/>
