@@ -5,29 +5,32 @@ import 'primeicons/primeicons.css';
 import { TabView, TabPanel } from 'primereact/tabview'; // Import TabView and TabPanel components from PrimeReact
 import './NodeDetails.module.css'; // Custom CSS file
 import LettersTable from './SidecarContent/LetterTable';
+import Relationships from './SidecarContent/Relationships';
+import OpenData from './SidecarContent/OpenData';
+import Biography from './SidecarContent/Biography';
 
-const NodeDetails = ({ nodeData }) => {
+const NodeDetails = ({ nodeData , handleNodeClick}) => {
   return (
     <div className="node-details"> 
         <TabView>
             <TabPanel key={"Biography"} header={"Biography"}>
               <div>
-                <strong>{"Biography"}:</strong>
+                <Biography nodeData={nodeData}/>
               </div>
             </TabPanel>
             <TabPanel key={"Letters"} header={"Letters"}>
               <div>
-                <LettersTable />
+                <LettersTable nodeData={nodeData} />
               </div>
             </TabPanel>
             <TabPanel key={"Relationships"} header={"Relationships"}>
               <div>
-                <strong>{"Relationships"}:</strong>
+                <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick}/>
               </div>
             </TabPanel>
             <TabPanel key={"Open Data"} header={"Open Data"}>
               <div>
-                <strong>{"Open Data"}:</strong>
+                <OpenData nodeData={nodeData} />
               </div>
             </TabPanel>
         </TabView>

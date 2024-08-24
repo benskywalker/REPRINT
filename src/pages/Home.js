@@ -89,7 +89,7 @@ const Home = () => {
                         {selectedNodes.map((node, index) => (
                             <AccordionTab key={index} header={renderHeader(node, index)}>
                                 <div style={{ overflow: 'auto', maxHeight: '100%' }}>
-                                    <NodeDetails nodeData={node} />
+                                    <NodeDetails nodeData={node} handleNodeClick={handleNodeClick}/>
                                 </div>
                             </AccordionTab>
                         ))}
@@ -103,7 +103,7 @@ const Home = () => {
             </div>
             {dialogs.map((dialog) => (
             <Dialog key={dialog.id} header={dialog.nodeData.data.fullName} maximizable modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
-                <NodeDetails nodeData={dialog.nodeData} />
+                <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
             </Dialog>
         ))}
         </>
