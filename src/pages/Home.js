@@ -62,7 +62,6 @@ const Home = () => {
 
     const handleNodeClick = (node) => {
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
-        console.log(node);
     };
 
     const handleCloseNode = (nodeId) => {
@@ -72,8 +71,10 @@ const Home = () => {
     };
 
     const renderHeader = (node, index) => (
+        // console.log("AAAAAAAAAAAAAAAA: "+ node.fullName, {...node}),
+
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span>{node.label}</span>
+            <span>{node.data.fullName}</span>
             <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(index)} />
             <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
         </div>
