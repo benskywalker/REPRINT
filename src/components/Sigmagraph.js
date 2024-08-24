@@ -18,7 +18,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [hoveredNode, setHoveredNode] = useState(null);
   const [forceAtlasActive, setForceAtlasActive] = useState(true);
-  const [selectedFilters, setSelectedFilters] = useState([]); // State for selected filters
+  const [selectedFilters, setSelectedFilters] = useState({}); // State for selected filters
   const sigmaRef = useRef(null);
 
   useEffect(() => {
@@ -98,8 +98,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     // Store the original color of the hovered node
     setHoveredNode({ id: nodeId, color: node.color });
   
-    // Change the color of the hovered node
-    // node.color = '#ff0';
+    
   
     // Access and modify connected edges
     graphInstance.edges().forEach((edge) => {
@@ -125,7 +124,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     if (hoveredNode) {
       console.log('Node out:', hoveredNode.id);
       const node = graphInstance.nodes(hoveredNode.id);
-      // node.color = '#fffff0'; // Set the color back to '#fffff0'
+      node.color = '#fffff0'; // Set the color back to '#fffff0'
       setHoveredNode(null);
     }
   
@@ -139,46 +138,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     sigmaInstance.refresh(); // Refresh the graph to apply changes
   };
 
-  const handleRelatedDocumentsClick = () => {
-    if (selectedNode) {
-      setDialogLoading(true);
 
-      const relatedEdges = graph.edges.filter(
-        (edge) => edge.source === selectedNode.id || edge.target === selectedNode.id
-      );
-
-      const uniqueDocuments = Array.from(
-        new Set(relatedEdges.map((edge) => edge.data.document))
-      ).map((doc) => ({
-        id: doc.id,
-        title: doc.title,
-        abstract: doc.abstract,
-        collection: doc.collection,
-        customCitation: doc.customCitation,
-        date: doc.date,
-        dateAdded: doc.dateAdded,
-        docTypeID: doc.docTypeID,
-        documentLanguageID: doc.documentLanguageID,
-        folder: doc.folder,
-        importID: doc.importID,
-        isJulian: doc.isJulian,
-        letterDate: doc.letterDate,
-        page: doc.page,
-        pdfURL: doc.pdfURL,
-        repositoryID: doc.repositoryID,
-        researchNotes: doc.researchNotes,
-        status: doc.status,
-        transcription: doc.transcription,
-        translation: doc.translation,
-        virtual_doc: doc.virtual_doc,
-        volume: doc.volume,
-        whoCheckedOut: doc.whoCheckedOut,
-      }));
-
-      setRelatedDocuments(uniqueDocuments);
-      setDialogLoading(false);
-    }
-  };
 
   const filterOptions = [
     { label: 'Document', value: 'document', type: 'Relations' },
@@ -197,31 +157,36 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
   const handleFilterChange = (e) => {
     const selectedValue = e.value;
-    console.log('Checkbox clicked:', selectedValue); // Log the selected value
-
-    let updatedFilters = [...selectedFilters];
-
-    if (updatedFilters.includes(selectedValue)) {
-      updatedFilters = updatedFilters.filter((filter) => filter !== selectedValue);
+  
+    let updatedFilters = { ...selectedFilters };
+  
+    if (updatedFilters[selectedValue]) {
+      delete updatedFilters[selectedValue];
     } else {
-      updatedFilters.push(selectedValue);
+      updatedFilters[selectedValue] = true;
     }
-
+  
+  
     setSelectedFilters(updatedFilters);
   };
-
+  
   useEffect(() => {
-    if (selectedFilters.length === 0) {
+    if (Object.keys(selectedFilters).length === 0) {
       setGraph(originalGraph);
     } else {
-      const filteredNodes = originalGraph.nodes.filter((node) =>
-        selectedFilters.includes(node.data.nodeType)
-      );
-      const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
-      const filteredEdges = originalGraph.edges.filter(
-        (edge) => filteredNodeIds.has(edge.source) && filteredNodeIds.has(edge.target)
-      );
-      setGraph({ nodes: filteredNodes, edges: filteredEdges });
+      if (originalGraph.edges && originalGraph.nodes) {
+        const filteredEdges = originalGraph.edges.filter((edge) => {
+          return selectedFilters[edge.data.type];
+        });
+  
+        const filteredNodes = originalGraph.nodes.filter((node) => {
+          return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id);
+        });
+  
+        setGraph({ nodes: filteredNodes, edges: filteredEdges });
+      } else {
+        console.error('Original graph nodes or edges are undefined');
+      }
     }
   }, [selectedFilters, originalGraph]);
 
@@ -232,28 +197,28 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       ) : (
         <>
           <Sigma
-  key={JSON.stringify(graph)}
-  graph={graph}
-  style={{ width: '100%', height: '100vh' }}
-  onClickNode={handleNodeClick}
-  onOverNode={handleNodeHover}
-  onOutNode={handleNodeOut}
-  ref={sigmaRef}
->
-  <RandomizeNodePositions />
-  <RelativeSize initialSize={15} />
-  {forceAtlasActive ? (
-    <ForceAtlas2
-      iterationsPerRender={1}
-      timeout={3000}
-      barnesHutOptimize={false}
-      gravity={1}
-      scalingRatio={2}
-    />
-  ) : (
-    <></>
-  )}
-</Sigma>
+            key={JSON.stringify(graph)}
+            graph={graph}
+            style={{ width: '100%', height: '100vh' }}
+            onClickNode={handleNodeClick}
+            onOverNode={handleNodeHover}
+            onOutNode={handleNodeOut}
+            ref={sigmaRef}
+          >
+            <RandomizeNodePositions />
+            <RelativeSize initialSize={15} />
+            {forceAtlasActive ? (
+              <ForceAtlas2
+                iterationsPerRender={1}
+                timeout={3000}
+                barnesHutOptimize={false}
+                gravity={1}
+                scalingRatio={2}
+              />
+            ) : (
+              <></>
+            )}
+          </Sigma>
           <br />
           <br />
           <br />
@@ -270,7 +235,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
                   <Checkbox
                     inputId={option.value}
                     value={option.value}
-                    checked={selectedFilters.includes(option.value)}
+                    checked={!!selectedFilters[option.value]}
                     onChange={(e) => {
                       console.log('Checkbox clicked:', e.value);
                       handleFilterChange(e);
