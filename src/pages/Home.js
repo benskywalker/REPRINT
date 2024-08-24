@@ -101,9 +101,17 @@ const Home = () => {
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
-            <Dialog key={dialog.id} header={dialog.nodeData.data.fullName} maximizable modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
-                <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
-            </Dialog>
+            <Dialog 
+            key={dialog.id} 
+            header={dialog.nodeData.data.fullName} 
+            maximizable 
+            modal={false} 
+            visible={true} 
+            onHide={() => handleCloseDialog(dialog.id)}
+            style={{ height: '45vh', width: '55vh' }}
+        >
+            <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
+        </Dialog>
         ))}
         </>
     );

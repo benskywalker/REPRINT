@@ -6,6 +6,7 @@ import Home from './pages/Home';
 import "primereact/resources/themes/soho-dark/theme.css"; 
 import "./index.css";
 import Gallery from "./pages/Gallery";
+import QueryTool from "./components/QueryTool";
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
 import 'primeflex/primeflex.css';
@@ -23,6 +24,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/query-tool" element={<QueryTool />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </Router>
   );
