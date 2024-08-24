@@ -24,58 +24,39 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/sender_receiver');
+        const response = await axios.get('http://localhost:4000/relations');
         const data = response.data;
         console.log(data);
         const nodes = [];
         const edges = [];
         const nodeIds = new Set();
-        const edgeIds = new Set();
 
-        data.forEach((relation) => {
-          const senderNode = {
-            id: `person-${relation.sender.id}`,
-            label: relation.sender.name,
+        data.nodes.forEach((node) => {
+          const newNode = {
+            id: node.id,
+            label: node.personStdName || node.organizationName || node.religionDesc,
             size: 3,
             color: '#fffff0',
-            data: relation.sender,
+            data: node,
           };
 
-          const receiverNode = {
-            id: `person-${relation.receiver.id}`,
-            label: relation.receiver.name,
-            size: 3,
-            // light blue
-            color: '#00f',
-            data: relation.receiver,
-          };
+          if (!nodeIds.has(newNode.id)) {
+            nodes.push(newNode);
+            nodeIds.add(newNode.id);
+          }
+        });
 
-          const edgeId = `edge-${relation.sender.id}-${relation.receiver.id}`;
-          const edge = {
-            id: edgeId,
-            source: `person-${relation.sender.id}`,
-            target: `person-${relation.receiver.id}`,
+        data.edges.forEach((edge) => {
+          const newEdge = {
+            id: `edge-${edge.from}-${edge.to}`,
+            source: edge.from,
+            target: edge.to,
             color: '#ccc',
             size: 2,
-            data: relation,
+            data: edge,
           };
 
-          if (relation.sender.id && relation.receiver.id) {
-            if (!nodeIds.has(senderNode.id)) {
-              nodes.push(senderNode);
-              nodeIds.add(senderNode.id);
-            }
-
-            if (!nodeIds.has(receiverNode.id)) {
-              nodes.push(receiverNode);
-              nodeIds.add(receiverNode.id);
-            }
-
-            if (!edgeIds.has(edgeId)) {
-              edges.push(edge);
-              edgeIds.add(edgeId);
-            }
-          }
+          edges.push(newEdge);
         });
 
         setGraph({ nodes, edges });
@@ -185,12 +166,10 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   };
 
   const filterOptions = [
-    { label: 'Document', value: 'filter1', type: 'Relations' },
-    { label: 'Religion', value: 'filter2', type: 'Relations' },
-    { label: 'Organization', value: 'filter3', type: 'Relations' },
-    { label: 'Person', value: 'filter4', type: 'Relations' },
-    { label: 'Place', value: 'filter5', type: 'Relations' },
-    { label: 'Phineas', value: 'pp', type: 'Keywords' },
+    { label: 'Document', value: 'document', type: 'Relations' },
+    { label: 'Religion', value: 'religion', type: 'Relations' },
+    { label: 'Organization', value: 'organization', type: 'Relations' },
+    { label: 'Person', value: 'person', type: 'Relations' },
   ];
 
   const groupedOptions = filterOptions.reduce((acc, option) => {
@@ -221,7 +200,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       setGraph(originalGraph);
     } else {
       const filteredNodes = originalGraph.nodes.filter((node) =>
-        selectedFilters.includes(node.data.type)
+        selectedFilters.includes(node.data.nodeType)
       );
       const filteredNodeIds = new Set(filteredNodes.map((node) => node.id));
       const filteredEdges = originalGraph.edges.filter(
