@@ -5,12 +5,12 @@ import Home from './pages/Home';
 // import "primereact/resources/themes/saga-blue/theme.css"; 
 import "primereact/resources/themes/soho-dark/theme.css"; 
 import "./index.css";
+import Gallery from "./pages/Gallery";
+
 
 
 const Main = () => {
-  return (
-   <Home />
-  );
+  return <Home />;
 };
 
 const App = () => {
@@ -18,6 +18,7 @@ const App = () => {
     <Router>
       <Routes>
         <Route path="/" element={<Main />} />
+        <Route path="/gallery" element={<Gallery />} />
       </Routes>
     </Router>
   );
