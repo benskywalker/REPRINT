@@ -6,6 +6,10 @@ import Home from './pages/Home';
 import "primereact/resources/themes/soho-dark/theme.css"; 
 import "./index.css";
 import Gallery from "./pages/Gallery";
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
+import './App.css';
 
 
 

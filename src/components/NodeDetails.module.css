@@ -4,11 +4,7 @@
 :root {
   --sidecarBackground: red;
 }
-.sidecar{
-  background-color: #dbd7c4;
-  border: 3px solid #6C757D; 
 
-}
 .custom-paginator .p-paginator {
     display: flex;
     justify-content: center;
@@ -28,31 +24,3 @@
     display: inline-flex;
     align-items: center;
   }
-
- 
-  .sidecar.p-tabview-nav {
-  background-color: #dbd7c4 !important;
-  height: 100%;
-  width: 95vw;
-  border-bottom: 3px solid #04151F;
-}
-
-.sidecar .p-tabview-nav-link {
-  color: #ffffff;
-  background-color: red !important;
-  padding: 0.5rem 1rem;
-  margin-right: 5px;
-  margin-top: 8px;
-  font-family: 'Gentium Book Plus';
-  font-size: large;
-  text-decoration: none;
-}
-
-.sidecar .p-tabview-nav-link:hover {
-  background-color: #c4d7f2 !important;
-  color: #fff;
-}
-
-.sidecar .p-tabview .p-tabview-panels {
-  background-color: red;
-}
