@@ -5,14 +5,11 @@ import { Column } from 'primereact/column';
 import { InputText } from 'primereact/inputtext';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
-import { Dropdown } from 'primereact/dropdown';
-import { InputNumber } from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
-import { ProgressBar } from 'primereact/progressbar';
 import { Calendar } from 'primereact/calendar';
 import { MultiSelect } from 'primereact/multiselect';
-import { Slider } from 'primereact/slider';
-import { Tag } from 'primereact/tag';
+import { Toolbar } from 'primereact/toolbar';
+
 
 export default function LetterTable(nodeData) {
     const [data, setData] = useState([]);
@@ -219,18 +216,27 @@ export default function LetterTable(nodeData) {
     };
 
     const renderHeader = () => {
-        return (
-            <div className="header-container flex justify-content-between align-items-center">
+        const leftContents = (
+            <React.Fragment>
                 <Button type="button" icon="pi pi-filter-slash" label="Clear" outlined onClick={clearFilter} />
-                <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" />
-
+            </React.Fragment>
+        );
+    
+        const rightContents = (
+            <React.Fragment>
+                <Button type="button" icon="pi pi-file-pdf" severity="warning" rounded onClick={exportPdf} data-pr-tooltip="PDF" style={{ marginRight: '10px' }}/>
                 <IconField iconPosition="left" className="icon-field">
                     <InputIcon className="pi pi-search" />
                     <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
                 </IconField>
-            </div>
+            </React.Fragment>
+        );
+    
+        return (
+            <Toolbar left={leftContents} right={rightContents} />
         );
     };
+
     const header = renderHeader();
 
     return (

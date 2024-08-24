@@ -5,9 +5,7 @@ const OpenData = (nodeData) => {
     return (
       <div className='sidecarBody'>
         <div className="sidecarTitle">
-          <p>Francis Bacon</p>
         </div>        
-        <p>Here are all the other resources related to Francis Bacon:</p>
         {items.map((item, index) => (
           <a key={index} href="https://www.wikipedia.org/">
             <div className='d-flex justify-content-start'>

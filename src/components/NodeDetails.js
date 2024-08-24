@@ -2,7 +2,7 @@ import React from 'react';
 import 'primereact/resources/themes/saga-blue/theme.css';
 import 'primereact/resources/primereact.min.css';
 import 'primeicons/primeicons.css';
-import { TabView, TabPanel } from 'primereact/tabview'; // Import TabView and TabPanel components from PrimeReact
+import { TabView, TabPanel } from 'primereact/tabview';
 import './NodeDetails.module.css'; // Custom CSS file
 import LettersTable from './SidecarContent/LetterTable';
 import Relationships from './SidecarContent/Relationships';
@@ -10,9 +10,10 @@ import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
 
 const NodeDetails = ({ nodeData , handleNodeClick}) => {
+  // style={{backgroundColor: 'red'}}
   return (
-    <div className="node-details"> 
-        <TabView>
+    <div> 
+        <TabView >
             <TabPanel key={"Biography"} header={"Biography"}>
               <div>
                 <Biography nodeData={nodeData}/>
@@ -34,7 +35,6 @@ const NodeDetails = ({ nodeData , handleNodeClick}) => {
               </div>
             </TabPanel>
         </TabView>
-      
     </div>
   );
 };

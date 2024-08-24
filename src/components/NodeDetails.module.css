@@ -1,3 +1,14 @@
+@layer bootstrap-reboot, primereact;
+
+:root {
+  --sidecarBackground: red;
+}
+
+.node-details {
+  height: 100vh;
+  background-color: var(--sidecarBackground);
+}
+
 .custom-paginator .p-paginator {
     display: flex;
     justify-content: center;
@@ -17,3 +28,60 @@
     display: inline-flex;
     align-items: center;
   }
+
+  .p-tabview-nav {
+    background-color: #dbd7c4;
+    height: 100%;
+    /* BUG WITH SCROLLABLE WIDTH HERE */
+    width: 95vw;
+    border-bottom: 3px solid #04151F;
+
+}
+  .p-tabview-nav-link {
+    color: #ffffff; 
+    background-color: #1755A5;
+    padding: 0.5rem 1rem;
+    margin-right: 5px; 
+    margin-top: 8px;
+    font-family: 'Gentium Book Plus';
+    font-size: large;
+    text-decoration: none;
+}
+
+.p-tabview-nav-link:hover {
+    background-color: #c4d7f2;
+    color: #fff;
+}
+
+.p-tabview .p-tabview-panels {
+    height: 100%; /* Ensure the parent takes full height */
+    background-color: #fff;
+    overflow-y: auto; 
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+}
+
+.p-tabview .p-tabview-panels .p-tabview-panel {
+    flex-grow: 1; /* Allow the child to expand */
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    overflow: auto; /* Ensure the child does not handle overflow */
+}
+
+.p-tabview {
+    height: 100%!important;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    overflow-y: auto; 
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    min-height: 0; 
+}
+
+/* New style for each tab content panel */
+.p-tabview-panel {
+    overflow-y: auto; 
+    max-height: 100%; 
+}
