@@ -8,6 +8,8 @@ import { Button } from 'primereact/button'; // Import Button component from Prim
 import styles from "./Home.module.css";
 import NodeDetails from "../components/NodeDetails";
 import { Dialog } from 'primereact/dialog'; // Import Dialog component from PrimeReact
+import { v4 as uuidv4 } from 'uuid'; // Import uuid function
+
 
 const Home = () => {
     const [data, setData] = useState([]);
@@ -22,10 +24,12 @@ const Home = () => {
 
     const handleOpenClick = (index) => {
         const nodeData = selectedNodes[index];
-        setDialogs((prevDialogs) => [...prevDialogs, { id: index, nodeData }]);
+        const id = uuidv4(); // Generate a unique ID
+        setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData }]);
     };
     
     const handleCloseDialog = (id) => {
+        console.log("Close dialog for node: ", dialogs[id]);
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
     };
 
@@ -70,7 +74,7 @@ const Home = () => {
     const renderHeader = (node, index) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{node.label}</span>
-            <Button icon="pi pi-arrow-up-right-and-arrow-down-left-from-center" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(index)} />
+            <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(index)} />
             <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
         </div>
     );
@@ -98,7 +102,7 @@ const Home = () => {
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
-            <Dialog key={dialog.id} header="Node Details" modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
+            <Dialog key={dialog.id} header="Node Details" maximizable modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
                 <NodeDetails nodeData={dialog.nodeData} />
             </Dialog>
         ))}
