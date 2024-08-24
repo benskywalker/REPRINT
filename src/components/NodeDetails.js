@@ -8,31 +8,67 @@ import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
 
 const NodeDetails = ({ nodeData, handleNodeClick }) => {
+  
   const handleRowClick = (rowData) => {
-    const newTab = { key: `Letter-${rowData.id}`, header: `Letter ${rowData.id}`, content: <div>{JSON.stringify(rowData)}</div> };
-    setTabs([...tabs, newTab]);
-    setActiveIndex(tabs.length); // Set the new tab as active
-  };
+    const newTabKey = `Letter-${rowData.id}`;
+    setTabs((prevTabs) => {
+      const existingTab = prevTabs.find(tab => tab.key === newTabKey);
 
-    const [activeIndex, setActiveIndex] = useState(0);
-    const [tabs, setTabs] = useState([
-      { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} /> },
-      { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} /> },
-      { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} /> },
-      { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
+      if (!existingTab) {
+        const newTab = {
+          key: newTabKey,
+          header: `Letter ${rowData.id}`,
+          content: <div>{JSON.stringify(rowData)}</div>
+        };
+        const newTabs = [...prevTabs, newTab];
+        setActiveIndex(newTabs.length - 1); // Set the new tab as active
+        return newTabs;
+      } else {
+        setActiveIndex(prevTabs.indexOf(existingTab)); // Focus on the existing tab
+        return prevTabs;
+      }
+    });
+  };
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [tabs, setTabs] = useState([
+    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} /> },
+    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} /> },
+    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} /> },
+    { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
   ]);
 
-    return (
-        <div className={"sidecar"}>
-            <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable>
-                {tabs.map(tab => (
-                    <TabPanel key={tab.key} header={tab.header}>
-                        {tab.content}
-                    </TabPanel>
-                ))}
-            </TabView>
-        </div>
-    );
+
+  const handleTabClose = (key) => {
+    setTabs((prevTabs) => {
+      const newTabs = prevTabs.filter(tab => tab.key !== key);
+      if (activeIndex >= newTabs.length) {
+        setActiveIndex(newTabs.length - 1);
+      }
+      return newTabs;
+    });
+  };
+
+  return (
+    <div className={"sidecar"}>
+      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable>
+        {tabs.map((tab, index) => (
+          <TabPanel
+            key={tab.key}
+            header={
+              <div>
+                {tab.header}
+                {index >= 4 && ( // Only show close button for dynamically added tabs
+                  <button onClick={() => handleTabClose(tab.key)} style={{ marginLeft: '10px' }}>x</button>
+                )}
+              </div>
+            }
+          >
+            {tab.content}
+          </TabPanel>
+        ))}
+      </TabView>
+    </div>
+  );
 };
 
 export default NodeDetails;
