@@ -6,6 +6,7 @@ import NodeDialog from './NodeDialog'; // Assuming you have a NodeDialog compone
 import { Checkbox } from 'primereact/checkbox'; // Import Checkbox from PrimeReact
 import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accordion components from PrimeReact
 import styles from './Sigmagraph.module.css';
+import { Slider } from '@mui/material';
 
 const SigmaGraph = ({ onNodeClick, data }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
@@ -19,7 +20,11 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [forceAtlasActive, setForceAtlasActive] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({}); // State for selected filters
+ 
+
   const sigmaRef = useRef(null);
+
+  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -62,11 +67,11 @@ const SigmaGraph = ({ onNodeClick, data }) => {
             size: 2,
             ...edge,
           };
+          
 
           edges.push(newEdge);
           
         });
-
         //populate the nodes documents array
         nodes.forEach((node) => {
           node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
@@ -130,15 +135,19 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     if (hoveredNode) {
       console.log('Node out:', hoveredNode.id);
       const node = graphInstance.nodes(hoveredNode.id);
-      node.color = '#fffff0'; // Set the color back to '#fffff0'
+      if (node) {
+        node.color = '#fffff0'; // Set the color back to '#fffff0'
+      }
       setHoveredNode(null);
     }
   
     // Restore original colors of edges
     originalGraph.edges.forEach((edge) => {
       const graphEdge = graphInstance.edges(edge.id);
-      graphEdge.color = edge.color;
-      graphEdge.size = edge.size;
+      if (graphEdge) {
+        graphEdge.color = edge.color;
+        graphEdge.size = edge.size;
+      }
     });
   
     sigmaInstance.refresh(); // Refresh the graph to apply changes
