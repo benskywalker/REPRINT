@@ -91,13 +91,16 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const handleNodeHover = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
-
+  
     const nodeId = event.data.node.id;
-
-    // Directly access and modify the hovered node's attributes
-    // graphInstance.nodes(nodeId).color = '#ffffff';
-    // graphInstance.nodes(nodeId).size = 150;
-
+    const node = graphInstance.nodes(nodeId);
+  
+    // Store the original color of the hovered node
+    setHoveredNode({ id: nodeId, color: node.color });
+  
+    // Change the color of the hovered node
+    // node.color = '#ff0';
+  
     // Access and modify connected edges
     graphInstance.edges().forEach((edge) => {
       if (edge.source === nodeId || edge.target === nodeId) {
@@ -110,25 +113,29 @@ const SigmaGraph = ({ onNodeClick, data }) => {
         graphInstance.edges(edge.id).size = 2;
       }
     });
-
+  
     sigmaInstance.refresh(); // Refresh the graph to apply changes
   };
-
-  const handleNodeOut = () => {
+  
+  const handleNodeOut = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
-
-    // Restore original colors of nodes
-    originalGraph.nodes.forEach((node) => {
-      graphInstance.nodes(node.id).color = node.color;
-    });
-
+  
+    // Restore the color of the previously hovered node to '#fffff0'
+    if (hoveredNode) {
+      console.log('Node out:', hoveredNode.id);
+      const node = graphInstance.nodes(hoveredNode.id);
+      // node.color = '#fffff0'; // Set the color back to '#fffff0'
+      setHoveredNode(null);
+    }
+  
     // Restore original colors of edges
     originalGraph.edges.forEach((edge) => {
-      graphInstance.edges(edge.id).color = edge.color;
-      graphInstance.edges(edge.id).size = edge.size;
+      const graphEdge = graphInstance.edges(edge.id);
+      graphEdge.color = edge.color;
+      graphEdge.size = edge.size;
     });
-
+  
     sigmaInstance.refresh(); // Refresh the graph to apply changes
   };
 
@@ -225,28 +232,28 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       ) : (
         <>
           <Sigma
-            key={JSON.stringify(graph)}
-            graph={graph}
-            style={{ width: '100%', height: '100vh' }}
-            onClickNode={handleNodeClick}
-            onOverNode={handleNodeHover}
-            onOutNode={handleNodeOut}
-            ref={sigmaRef}
-          >
-            <RandomizeNodePositions />
-            <RelativeSize initialSize={15} />
-            {forceAtlasActive ? (
-              <ForceAtlas2
-                iterationsPerRender={1}
-                timeout={3000}
-                barnesHutOptimize={false}
-                gravity={1}
-                scalingRatio={2}
-              />
-            ) : (
-              <></>
-            )}
-          </Sigma>
+  key={JSON.stringify(graph)}
+  graph={graph}
+  style={{ width: '100%', height: '100vh' }}
+  onClickNode={handleNodeClick}
+  onOverNode={handleNodeHover}
+  onOutNode={handleNodeOut}
+  ref={sigmaRef}
+>
+  <RandomizeNodePositions />
+  <RelativeSize initialSize={15} />
+  {forceAtlasActive ? (
+    <ForceAtlas2
+      iterationsPerRender={1}
+      timeout={3000}
+      barnesHutOptimize={false}
+      gravity={1}
+      scalingRatio={2}
+    />
+  ) : (
+    <></>
+  )}
+</Sigma>
           <br />
           <br />
           <br />
