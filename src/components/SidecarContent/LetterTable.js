@@ -14,7 +14,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Slider } from 'primereact/slider';
 import { Tag } from 'primereact/tag';
 
-export default function LetterTable() {
+export default function LetterTable(nodeData) {
     const [data, setData] = useState([]);
     const dt = useRef(null);
 
