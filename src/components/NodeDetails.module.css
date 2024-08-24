@@ -4,12 +4,11 @@
 :root {
   --sidecarBackground: red;
 }
+.sidecar{
+  background-color: #dbd7c4;
+  border: 3px solid #6C757D; 
 
-.node-details {
-  height: 100vh;
-  background-color: var(--sidecarBackground);
 }
-
 .custom-paginator .p-paginator {
     display: flex;
     justify-content: center;
@@ -31,25 +30,16 @@
   }
 
  
-.p-tabview-nav {
-  background-color: #dbd7c4;
+  .sidecar.p-tabview-nav {
+  background-color: #dbd7c4 !important;
   height: 100%;
   width: 95vw;
   border-bottom: 3px solid #04151F;
 }
 
-.sidecarContainerFull .p-tabview-nav {
-  border-top-left-radius: 25px;
-  border-top-right-radius: 25px;
-}
-
-.sidecarContainerFull .p-tabview {
-  border-radius: 25px;
-}
-
-.p-tabview-nav-link {
+.sidecar .p-tabview-nav-link {
   color: #ffffff;
-  background-color: #1755A5;
+  background-color: red !important;
   padding: 0.5rem 1rem;
   margin-right: 5px;
   margin-top: 8px;
@@ -58,11 +48,11 @@
   text-decoration: none;
 }
 
-.p-tabview-nav-link:hover {
-  background-color: #c4d7f2;
+.sidecar .p-tabview-nav-link:hover {
+  background-color: #c4d7f2 !important;
   color: #fff;
 }
 
-.p-tabview .p-tabview-panels {
-  /* Add any additional styles for tab panels here */
+.sidecar .p-tabview .p-tabview-panels {
+  background-color: red;
 }
