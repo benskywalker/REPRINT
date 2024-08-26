@@ -3,7 +3,7 @@ import React, { useState} from 'react';
 const Relationships = ({nodeData, handleNodeClick}) => {
   
     const handleItemClick = () => {
-        handleNodeClick();
+        handleNodeClick(nodeData);
     };
   
     // Hard coded to get a list
@@ -13,10 +13,8 @@ const Relationships = ({nodeData, handleNodeClick}) => {
     return (
       <div className='sidecarBody'>
         <div className="sidecarTitle">
-          <p>Francis Bacon</p>
         </div>    
           <div>
-            <p>Here are all the letters related to Francis Bacon:</p>
             {items.map((item, index) => (
               <div key={index} className='d-flex justify-content-start'>
                 <p key={index} onClick={handleItemClick}>

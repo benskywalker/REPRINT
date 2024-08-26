@@ -1,3 +1,10 @@
+@layer bootstrap-reboot, primereact;
+@import 'primeflex/primeflex.css';
+
+:root {
+  --sidecarBackground: red;
+}
+
 .custom-paginator .p-paginator {
     display: flex;
     justify-content: center;

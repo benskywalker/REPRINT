@@ -6,7 +6,6 @@ import {
   Routes,
   useNavigate,
 } from "react-router-dom";
-import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
 
 const Main = () => {
@@ -19,6 +18,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/query-tool" element={<QueryTool />} />
+        <Route path="*" element={<Home />} />
       </Routes>
     </Router>
   );

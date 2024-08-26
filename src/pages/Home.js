@@ -61,7 +61,7 @@ const Home = () => {
     }, [timeRange, document]);
 
     const handleNodeClick = (node) => {
-        console.log(node.data.documents);
+        // console.log(node.data.documents);
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
@@ -83,8 +83,8 @@ const Home = () => {
         <>
             <Header className={styles.header} />
             <div className={styles.content}>
-                <Splitter style={{ height: '100vh' }}>
-                    <SplitterPanel size={30} minSize={20}>
+                <Splitter style={{ height: '100vh', overflowY:'auto' }}>
+                    <SplitterPanel size={30} minSize={10} >
                     <Accordion activeIndex={0} multiple>
                         {selectedNodes.map((node, index) => (
                             <AccordionTab key={index} header={renderHeader(node, index)}>
@@ -97,14 +97,21 @@ const Home = () => {
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
-                        {document && <TimeRangeAdjuster document={document} timeRange={timeRange} setTimeRange={setTimeRange} />}
                     </SplitterPanel>
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
-            <Dialog key={dialog.id} header={dialog.nodeData.data.fullName} maximizable modal={false} visible={true} onHide={() => handleCloseDialog(dialog.id)}>
-                <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
-            </Dialog>
+            <Dialog 
+            key={dialog.id} 
+            header={dialog.nodeData.data.fullName} 
+            maximizable 
+            modal={false} 
+            visible={true} 
+            onHide={() => handleCloseDialog(dialog.id)}
+            style={{ height: '45vh', width: '55vh' }}
+        >
+            <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
+        </Dialog>
         ))}
         </>
     );

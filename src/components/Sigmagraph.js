@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2 } from 'react-sigma';
+import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2, NOverlap } from 'react-sigma';
 import ClipLoader from 'react-spinners/ClipLoader';
 import NodeDialog from './NodeDialog'; // Assuming you have a NodeDialog component
 import { Checkbox } from 'primereact/checkbox'; // Import Checkbox from PrimeReact
 import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accordion components from PrimeReact
 import styles from './Sigmagraph.module.css';
+import { Slider } from '@mui/material';
 
 const SigmaGraph = ({ onNodeClick, data }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
@@ -19,6 +20,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [forceAtlasActive, setForceAtlasActive] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({}); // State for selected filters
+
   const sigmaRef = useRef(null);
 
   useEffect(() => {
@@ -26,19 +28,21 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       try {
         const response = await axios.get('http://localhost:4000/relations');
         const data = response.data;
-        console.log(data);
         const nodes = [];
         const edges = [];
         const nodeIds = new Set();
+        const edgeIds = new Set(); // To track unique edges
 
         // Define color mapping for edge types
         const edgeColors = {
-          document: '#FF5733', // Example color for document edges
+          //light purple
+          document: '#091b3e', // Example color for document edges   
           organization: '#33FF57', // Example color for organization edges
           religion: '#3357FF', // Example color for religion edges
           relationship: '#FF33A1', // Example color for relationship edges
         };
 
+        // Process nodes
         data.nodes.forEach((node) => {
           const newNode = {
             id: node.id,
@@ -54,29 +58,34 @@ const SigmaGraph = ({ onNodeClick, data }) => {
           }
         });
 
+        // Process edges
         data.edges.forEach((edge) => {
-          const newEdge = {
-            id: `edge-${edge.from}-${edge.to}`,
-            source: edge.from,
-            target: edge.to,
-            color: edgeColors[edge.type] || '#ccc', // Use color mapping
-            size: 2,
-            data: edge,
-          };
+          if (edge.from !== edge.to) { // Ensure nodes aren't connected to themselves
+            const edgeId = `edge-${edge.from}-${edge.to}`;
 
-          edges.push(newEdge);
-          
+            if (!edgeIds.has(edgeId)) { // Ensure no duplicate edges
+              const newEdge = {
+                id: edgeId,
+                source: edge.from,
+                target: edge.to,
+                color: edgeColors[edge.type] || '#ccc', // Use color mapping
+                size: 2,
+                ...edge,
+              };
+
+              edges.push(newEdge);
+              edgeIds.add(edgeId);
+            }
+          }
         });
 
-        //populate the nodes documents array
+        // Populate the nodes' documents array
         nodes.forEach((node) => {
           node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
-        }
-        );
+        });
 
         setGraph({ nodes, edges });
         setOriginalGraph({ nodes, edges });
-        console.log('Graph data:', { nodes, edges });
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -99,54 +108,70 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const handleNodeHover = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
-  
+
     const nodeId = event.data.node.id;
     const node = graphInstance.nodes(nodeId);
-  
+
     // Store the original color of the hovered node
     setHoveredNode({ id: nodeId, color: node.color });
-  
+
+    // Change the color of the hovered node to pruple
+    node.color = '#800080';
     
-  
+    //show the nodes label
+    node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
+
     // Access and modify connected edges
     graphInstance.edges().forEach((edge) => {
       if (edge.source === nodeId || edge.target === nodeId) {
-        // if the edge is connected to the hovered node
+        // If the edge is connected to the hovered node
         // color the edge blue and increase its size
         graphInstance.edges(edge.id).color = '#00f';
         graphInstance.edges(edge.id).size = 3;
       } else {
-        graphInstance.edges(edge.id).color = '#ccc';
-        graphInstance.edges(edge.id).size = 2;
+        //make edge and node invisible
+        graphInstance.edges(edge.id).hidden = true; 
+        
       }
     });
-  
+
     sigmaInstance.refresh(); // Refresh the graph to apply changes
   };
-  
+
   const handleNodeOut = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
-  
+
+    //get the hovered node
+    const hoveredNode = graphInstance.nodes(event.data.node.id);
+    // Restore the color of the previously hovered node to '#fffff0'
+
     // Restore the color of the previously hovered node to '#fffff0'
     if (hoveredNode) {
       console.log('Node out:', hoveredNode.id);
       const node = graphInstance.nodes(hoveredNode.id);
-      node.color = '#fffff0'; // Set the color back to '#fffff0'
+      if (node) {
+        //make the edge and node visible
+        graphInstance.edges().forEach((edge) => {
+          graphInstance.edges(edge.id).hidden = false;
+          
+        });
+        node.color = '#fffff0';
+      }
       setHoveredNode(null);
     }
-  
+
     // Restore original colors of edges
     originalGraph.edges.forEach((edge) => {
       const graphEdge = graphInstance.edges(edge.id);
-      graphEdge.color = edge.color;
-      graphEdge.size = edge.size;
+      if (graphEdge) {
+        graphEdge.color = edge.color;
+        graphEdge.size = edge.size;
+      }
     });
-  
+
     sigmaInstance.refresh(); // Refresh the graph to apply changes
   };
-
-
 
   const filterOptions = [
     { label: 'Document', value: 'document', type: 'Relations' },
@@ -165,32 +190,31 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
   const handleFilterChange = (e) => {
     const selectedValue = e.value;
-  
+
     let updatedFilters = { ...selectedFilters };
-  
+
     if (updatedFilters[selectedValue]) {
       delete updatedFilters[selectedValue];
     } else {
       updatedFilters[selectedValue] = true;
     }
-  
-  
+
     setSelectedFilters(updatedFilters);
   };
-  
+
   useEffect(() => {
     if (Object.keys(selectedFilters).length === 0) {
       setGraph(originalGraph);
     } else {
       if (originalGraph.edges && originalGraph.nodes) {
         const filteredEdges = originalGraph.edges.filter((edge) => {
-          return selectedFilters[edge.data.type];
+          return selectedFilters[edge.type];
         });
-  
+
         const filteredNodes = originalGraph.nodes.filter((node) => {
           return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id);
         });
-  
+
         setGraph({ nodes: filteredNodes, edges: filteredEdges });
       } else {
         console.error('Original graph nodes or edges are undefined');
@@ -201,7 +225,9 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   return (
     <div className={styles.content}>
       {loading ? (
-        <ClipLoader size={50} color={'#123abc'} loading={loading} />
+        <div className={styles.loaderContainer}>
+          <ClipLoader size={50} color={'#123abc'} loading={loading} />
+        </div>
       ) : (
         <>
           <Sigma
@@ -213,6 +239,8 @@ const SigmaGraph = ({ onNodeClick, data }) => {
             onOutNode={handleNodeOut}
             ref={sigmaRef}
           >
+            <RandomizeNodePositions />
+            <NOverlap gridSize={10} maxIterations={100} maxNodeOverlap={0.5} />
             <RandomizeNodePositions />
             <RelativeSize initialSize={15} />
             {forceAtlasActive ? (
@@ -233,7 +261,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
           <br />
         </>
       )}
-      
+
       <div className={styles.filterBox}>
         <Accordion activeIndex={0}>
           {Object.keys(groupedOptions).map((type) => (
