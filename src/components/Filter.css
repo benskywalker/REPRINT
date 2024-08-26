@@ -1,0 +1,42 @@
+.filter {
+  background: linear-gradient(135deg, #d3d3d3, #ffffff);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 20px 20px 20px 0; /* Adjusted margin */
+  position: fixed;
+  bottom: 20px; /* Adjusted position */
+  right: 20px; /* Adjusted position */
+  width: 20%;
+  height: 20%;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.filter:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.filter-option {
+  display: flex;
+  width: 100%;
+  height: auto;
+  align-items: center;
+  margin-bottom: 10px;
+  transition: color 0.3s ease, background-color 0.3s ease, transform 0.3s ease;
+}
+
+.filter-option:hover {
+  color: #007bff;
+  background-color: #f0f0f0;
+  transform: scale(1.05);
+  border-radius: 5px; /* Added border-radius for smoother corners */
+}
+
+.checkbox {
+  display: flex;
+  margin-right: 10px;
+}
