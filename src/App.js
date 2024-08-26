@@ -1,4 +1,7 @@
 // src/App.js
+import Gallery from "./pages/Gallery";
+import QueryTool from "./pages/QueryTool";
+
 import React from "react";
 import {
   BrowserRouter as Router,
