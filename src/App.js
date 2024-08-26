@@ -10,7 +10,10 @@ import {
   useNavigate,
 } from "react-router-dom";
 import Home from "./pages/Home";
-
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import 'primeflex/primeflex.css';
+import './App.css';
 const Main = () => {
   return <Home />;
 };
