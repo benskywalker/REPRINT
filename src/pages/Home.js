@@ -108,7 +108,6 @@ const Home = () => {
             modal={false} 
             visible={true} 
             onHide={() => handleCloseDialog(dialog.id)}
-            style={{ height: '45vh', width: '55vh' }}
         >
             <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
         </Dialog>
