@@ -1,6 +1,6 @@
 // src/App.js
 import Gallery from "./pages/Gallery";
-import QueryTool from "./pages/QueryTool";
+import QueryTool from "./components/QueryTool";
 
 import React from "react";
 import {
