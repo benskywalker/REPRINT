@@ -28,7 +28,7 @@ html, body {
   font-family: 'Gentium Book Plus';
   font-size: large;
   text-decoration: none;
-  
+  max-height: 35px;
 }
 
 .sidecar .p-tabview-nav-link:hover {
