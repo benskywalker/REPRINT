@@ -12,7 +12,7 @@ import { v4 as uuidv4 } from 'uuid'; // Import uuid function
 import { DataTable } from 'primereact/datatable'; // Import DataTable and Column components from PrimeReact
 import { Column } from 'primereact/column'; // Import Column component from PrimeReact
 
-const Home = () => {
+const Home = ({ searchQuery }) => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,6 +29,7 @@ const Home = () => {
     const handleCloseDialog = (id) => {
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
     };
+    
 
     useEffect(() => {
         const fetchData = async () => {
@@ -92,7 +93,6 @@ const Home = () => {
 
     return (
         <>
-            <Header className={styles.header} />
             <div className={styles.content}>
                 <Splitter style={{ height: '100vh', overflowY: 'auto' }}>
                     <SplitterPanel size={30} minSize={10}>
@@ -109,7 +109,9 @@ const Home = () => {
                         </DataTable>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
-                        <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
+                        <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick}
+                        searchQuery={searchQuery}
+                        />
                     </SplitterPanel>
                 </Splitter>
             </div>

@@ -8,7 +8,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accord
 import styles from './Sigmagraph.module.css';
 import { Slider } from '@mui/material';
 
-const SigmaGraph = ({ onNodeClick, data }) => {
+const SigmaGraph = ({ onNodeClick, searchQuery }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
@@ -217,7 +217,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   };
 
   useEffect(() => {
-    if (Object.keys(selectedFilters).length === 0) {
+    if (Object.keys(selectedFilters).length === 0 && !searchQuery) {
       setGraph(originalGraph);
     } else {
       if (originalGraph.edges && originalGraph.nodes) {
@@ -226,15 +226,17 @@ const SigmaGraph = ({ onNodeClick, data }) => {
         });
 
         const filteredNodes = originalGraph.nodes.filter((node) => {
-          return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id);
+          const matchesSearchQuery = searchQuery ? node.data.fullName.toLowerCase().includes(searchQuery.toLowerCase()) : true;
+          return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id) || matchesSearchQuery;
         });
+        
 
         setGraph({ nodes: filteredNodes, edges: filteredEdges });
       } else {
         console.error('Original graph nodes or edges are undefined');
       }
     }
-  }, [selectedFilters, originalGraph]);
+  }, [selectedFilters, originalGraph, searchQuery]);
 
   const handleTimeRangeChange = (event, newValue) => {
     setTimeRange(newValue);
@@ -319,6 +321,8 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   
     setGraph({ nodes: updatedNodes, edges: filteredEdges });
   };
+
+  
   
   return (
     <div className={styles.content}>

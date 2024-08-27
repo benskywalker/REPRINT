@@ -10,8 +10,9 @@ import "primeflex/primeflex.css";
 import "./App.css";
 import "primereact/resources/themes/soho-dark/theme.css";
 
-const Main = () => {
-  return <Home />;
+const Main = ({searchQuery}) => {
+
+  return <Home searchQuery={searchQuery} />;
 };
 
 const App = () => {
@@ -25,13 +26,13 @@ const App = () => {
     <Router>
       <Header onSearchChange={handleSearchChange} />
       <Routes>
-        <Route path="/" element={<Main />} />
+        <Route path="/" element={<Main searchQuery={searchQuery} />} />
         <Route
           path="/gallery"
           element={<Gallery searchQuery={searchQuery} />}
         />
         <Route path="/query-tool" element={<QueryTool />} />
-        <Route path="*" element={<Home />} />
+        <Route path="*" element={<Home  />} />
       </Routes>
     </Router>
   );
