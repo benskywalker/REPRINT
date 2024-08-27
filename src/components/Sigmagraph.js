@@ -239,22 +239,22 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
   const handleTimeRangeChange = (event, newValue) => {
     setTimeRange(newValue);
-
+  
     const parseDate = (dateStr) => {
       if (typeof dateStr === 'number') {
         // If the date is a number, treat it as a year
         return new Date(dateStr, 0); // January 1st of the given year
       }
-    
+  
       if (typeof dateStr !== 'string') {
         return null;
       }
-    
+  
       const parsedDate = Date.parse(dateStr);
       if (!isNaN(parsedDate)) {
         return new Date(parsedDate);
       }
-    
+  
       const parts = dateStr.split('-');
       if (parts.length === 3) {
         return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -263,46 +263,64 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       } else if (parts.length === 1) {
         return new Date(parts[0]);
       }
-    
+  
       return null;
     };
+  
     const startDate = parseDate(newValue[0]);
     const endDate = parseDate(newValue[1]);
-
+  
     if (startDate === null && endDate === null) {
       // Reset to the original graph data
       setGraph(originalGraph);
       return;
     }
-
+  
     const filteredEdges = originalGraph.edges.filter((edge) => {
       const edgeDate = parseDate(edge.date);
       return edgeDate >= startDate && edgeDate <= endDate;
     });
-
-    //filter the nodes by node.data.birthDate and node.data.deathDate
+  
+    // Filter the nodes by node.data.birthDate and node.data.deathDate
     const filteredNodes = originalGraph.nodes.filter((node) => {
       const birthDate = parseDate(node.data.birthDate);
       const deathDate = parseDate(node.data.deathDate);
       // If birthDate or deathDate is null, don't filter them out
-      if (birthDate === null 
-        || deathDate === null 
-        || birthDate === '' 
-        || deathDate === ''
-        || isNaN(birthDate)
-        || isNaN(deathDate)
-        || birthDate === undefined
-        || deathDate === undefined
-        ) {
+      if (
+        birthDate === null ||
+        deathDate === null ||
+        birthDate === '' ||
+        deathDate === '' ||
+        isNaN(birthDate) ||
+        isNaN(deathDate) ||
+        birthDate === undefined ||
+        deathDate === undefined
+      ) {
         return true;
       }
-    
+  
       return birthDate >= startDate && deathDate <= endDate;
     });
-
-    setGraph({ nodes: filteredNodes, edges: filteredEdges });
+  
+    // Calculate the degree of each node
+    const nodeDegrees = {};
+    filteredEdges.forEach((edge) => {
+      nodeDegrees[edge.source] = (nodeDegrees[edge.source] || 0) + 1;
+      nodeDegrees[edge.target] = (nodeDegrees[edge.target] || 0) + 1;
+    });
+  
+    // Update node sizes based on their degrees
+    const updatedNodes = filteredNodes.map((node) => {
+      const degree = nodeDegrees[node.id] || 0;
+      return {
+        ...node,
+        size: degree + 1, // Adjust the size formula as needed
+      };
+    });
+  
+    setGraph({ nodes: updatedNodes, edges: filteredEdges });
   };
-
+  
   return (
     <div className={styles.content}>
       {loading ? (
