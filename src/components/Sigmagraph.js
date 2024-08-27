@@ -39,7 +39,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
         // Define color mapping for edge types
         const edgeColors = {
-          document: '#091b3e', // Example color for document edges   
+          document: '#5d94eb', // Example color for document edges   
           organization: '#33FF57', // Example color for organization edges
           religion: '#3357FF', // Example color for religion edges
           relationship: '#FF33A1', // Example color for relationship edges
@@ -131,7 +131,7 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     setHoveredNode({ id: nodeId, color: node.color });
 
     // Change the color of the hovered node to pruple
-    node.color = '#800080';
+    node.color = '#3aa2f4';
     
     //show the nodes label
     node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
@@ -140,8 +140,8 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     graphInstance.edges().forEach((edge) => {
       if (edge.source === nodeId || edge.target === nodeId) {
         // If the edge is connected to the hovered node
-        // color the edge blue and increase its size
-        graphInstance.edges(edge.id).color = '#00f';
+        // color the edge light blue and increase its size
+        graphInstance.edges(edge.id).color = '#add8e6';
         graphInstance.edges(edge.id).size = 3;
       } else {
         //make edge and node invisible
@@ -163,7 +163,6 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
     // Restore the color of the previously hovered node to '#fffff0'
     if (hoveredNode) {
-      console.log('Node out:', hoveredNode.id);
       const node = graphInstance.nodes(hoveredNode.id);
       if (node) {
         //make the edge and node visible
