@@ -4,7 +4,7 @@
   gap: 20px;
   justify-content: center;
   padding: 20px;
-  background-color: beige;
+  /* background-color: beige; */
 }
 
 .gallery-item {
@@ -19,7 +19,7 @@
   width: 200px; /* Increased width */
   height: 200px; /* Increased height */
   cursor: pointer;
-  background-color: white;
+  /* background-color: white; */
 }
 
 .gallery-item:hover {
