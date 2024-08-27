@@ -362,6 +362,11 @@ const SigmaGraph = ({ onNodeClick, data }) => {
             step={1}
             className={styles.slider}
           />
+          {/* display the time period */}
+          <div className={styles.timePeriod}>
+            <span>{timeRange[0]}</span> -
+            <span>{timeRange[1]}</span>
+          </div>
           <br />
           <br />
           <br />
