@@ -64,37 +64,39 @@ const Gallery = () => {
     flist = [];
   }
 
+  const addedKeys = new Set();
+
   flist.map((filter) => {
     switch (filter.code) {
       case "J":
-        filterPeople.push(
-          ...filteredPeople
-            .filter((person) => person.firstName === "john")
-            .map((person, index) => ({
-              ...person,
-              key: `john-${index}`,
-            }))
-        );
+        filteredPeople
+          .filter((person) => person.firstName === "john")
+          .forEach((person, index) => {
+            if (!filterPeople.some((p) => p.personID === person.personID)) {
+              const key = `john-${index}`;
+              filterPeople.push({ ...person, key });
+            }
+          });
         break;
       case "D":
-        filterPeople.push(
-          ...filteredPeople
-            .filter((person) => person.firstName === "daniel")
-            .map((person, index) => ({
-              ...person,
-              key: `daniel-${index}`,
-            }))
-        );
+        filteredPeople
+          .filter((person) => person.firstName === "daniel")
+          .forEach((person, index) => {
+            if (!filterPeople.some((p) => p.personID === person.personID)) {
+              const key = `daniel-${index}`;
+              filterPeople.push({ ...person, key });
+            }
+          });
         break;
       case "P":
-        filterPeople.push(
-          ...filteredPeople
-            .filter((person) => person.lastName === "pemberton")
-            .map((person, index) => ({
-              ...person,
-              key: `phineas-${index}`,
-            }))
-        );
+        filteredPeople
+          .filter((person) => person.lastName === "pemberton")
+          .forEach((person, index) => {
+            if (!filterPeople.some((p) => p.personID === person.personID)) {
+              const key = `phineas-${index}`;
+              filterPeople.push({ ...person, key });
+            }
+          });
         break;
       default:
         break;
