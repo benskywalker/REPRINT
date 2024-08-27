@@ -5,7 +5,7 @@ import { Button } from "primereact/button";
 import styles from "./Header.module.css";
 import { InputText } from "primereact/inputtext";
 import { Sidebar } from "primereact/sidebar";
-import "primereact/resources/themes/saga-blue/theme.css";
+import "primereact/resources/themes/soho-dark/theme.css";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { useState } from "react";

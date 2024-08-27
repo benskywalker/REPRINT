@@ -11,6 +11,7 @@ import { Dialog } from 'primereact/dialog'; // Import Dialog component from Prim
 import { v4 as uuidv4 } from 'uuid'; // Import uuid function
 import { DataTable } from 'primereact/datatable'; // Import DataTable and Column components from PrimeReact
 import { Column } from 'primereact/column'; // Import Column component from PrimeReact
+import 'primereact/resources/themes/soho-dark/theme.css'; // PrimeReact Dark Theme
 
 const Home = () => {
     const [data, setData] = useState([]);
