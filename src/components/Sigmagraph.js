@@ -20,6 +20,10 @@ const SigmaGraph = ({ onNodeClick, data }) => {
   const [hoveredNode, setHoveredNode] = useState(null);
   const [forceAtlasActive, setForceAtlasActive] = useState(true);
   const [selectedFilters, setSelectedFilters] = useState({}); // State for selected filters
+  // State for time range slider from the 15th century to today's date
+  const [timeRange, setTimeRange] = useState([1600, 1700]);
+  const [minDate, setMinDate] = useState(1600);
+  const [maxDate, setMaxDate] = useState(1500);
 
   const sigmaRef = useRef(null);
 
@@ -35,7 +39,6 @@ const SigmaGraph = ({ onNodeClick, data }) => {
 
         // Define color mapping for edge types
         const edgeColors = {
-          //light purple
           document: '#091b3e', // Example color for document edges   
           organization: '#33FF57', // Example color for organization edges
           religion: '#3357FF', // Example color for religion edges
@@ -72,6 +75,18 @@ const SigmaGraph = ({ onNodeClick, data }) => {
                 size: 2,
                 ...edge,
               };
+
+              //set the min and max date
+              if (newEdge.date) {
+                const date = new Date(newEdge.date);
+                if (date.getFullYear() < minDate) {
+                  setMinDate(date.getFullYear());
+                }
+                if (date.getFullYear() > maxDate) {
+                  setMaxDate(date.getFullYear());
+                }
+              }
+
 
               edges.push(newEdge);
               edgeIds.add(edgeId);
@@ -222,6 +237,72 @@ const SigmaGraph = ({ onNodeClick, data }) => {
     }
   }, [selectedFilters, originalGraph]);
 
+  const handleTimeRangeChange = (event, newValue) => {
+    setTimeRange(newValue);
+
+    const parseDate = (dateStr) => {
+      if (typeof dateStr === 'number') {
+        // If the date is a number, treat it as a year
+        return new Date(dateStr, 0); // January 1st of the given year
+      }
+    
+      if (typeof dateStr !== 'string') {
+        return null;
+      }
+    
+      const parsedDate = Date.parse(dateStr);
+      if (!isNaN(parsedDate)) {
+        return new Date(parsedDate);
+      }
+    
+      const parts = dateStr.split('-');
+      if (parts.length === 3) {
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      } else if (parts.length === 2) {
+        return new Date(parts[0], parts[1] - 1);
+      } else if (parts.length === 1) {
+        return new Date(parts[0]);
+      }
+    
+      return null;
+    };
+    const startDate = parseDate(newValue[0]);
+    const endDate = parseDate(newValue[1]);
+
+    if (startDate === null && endDate === null) {
+      // Reset to the original graph data
+      setGraph(originalGraph);
+      return;
+    }
+
+    const filteredEdges = originalGraph.edges.filter((edge) => {
+      const edgeDate = parseDate(edge.date);
+      return edgeDate >= startDate && edgeDate <= endDate;
+    });
+
+    //filter the nodes by node.data.birthDate and node.data.deathDate
+    const filteredNodes = originalGraph.nodes.filter((node) => {
+      const birthDate = parseDate(node.data.birthDate);
+      const deathDate = parseDate(node.data.deathDate);
+      // If birthDate or deathDate is null, don't filter them out
+      if (birthDate === null 
+        || deathDate === null 
+        || birthDate === '' 
+        || deathDate === ''
+        || isNaN(birthDate)
+        || isNaN(deathDate)
+        || birthDate === undefined
+        || deathDate === undefined
+        ) {
+        return true;
+      }
+    
+      return birthDate >= startDate && deathDate <= endDate;
+    });
+
+    setGraph({ nodes: filteredNodes, edges: filteredEdges });
+  };
+
   return (
     <div className={styles.content}>
       {loading ? (
@@ -255,6 +336,15 @@ const SigmaGraph = ({ onNodeClick, data }) => {
               <></>
             )}
           </Sigma>
+          <Slider
+            value={timeRange}
+            onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
+            onChangeCommitted={handleTimeRangeChange} // Apply the filtering logic only when the user releases the handle            valueLabelDisplay="auto"
+            min={minDate}
+            max={maxDate}
+            step={1}
+            className={styles.slider}
+          />
           <br />
           <br />
           <br />

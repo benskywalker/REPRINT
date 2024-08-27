@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import 'primeicons/primeicons.css';
+import 'primeicons/primeicons.css'; // Ensure PrimeIcons are imported
 import { TabView, TabPanel } from 'primereact/tabview';
 import './NodeDetails.module.css';
 import LetterTable from './SidecarContent/LetterTable';
@@ -8,7 +8,7 @@ import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
 
 const NodeDetails = ({ nodeData, handleNodeClick }) => {
-  
+
   const handleRowClick = (rowData) => {
     const newTabKey = `Letter-${rowData.id}`;
     setTabs((prevTabs) => {
@@ -29,6 +29,7 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
       }
     });
   };
+
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabs, setTabs] = useState([
     { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} /> },
@@ -36,7 +37,6 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
     { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} /> },
     { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
   ]);
-
 
   const handleTabClose = (key) => {
     setTabs((prevTabs) => {
@@ -55,10 +55,23 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
           <TabPanel
             key={tab.key}
             header={
-              <div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
                 {tab.header}
-                {index >= 4 && ( // Only show close button for dynamically added tabs
-                  <button onClick={() => handleTabClose(tab.key)} style={{ marginLeft: '10px' }}>x</button>
+                {index >= 4 && ( // Only show close icon for dynamically added tabs
+                  <span
+                    className="pi pi-times" // PrimeIcons close icon class
+                    onClick={() => handleTabClose(tab.key)}
+                    style={{
+                      marginLeft: '10px',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      color: 'red', // Color of the close icon
+                      padding: '0.25rem',
+                      borderRadius: '50%',
+                      display: 'flex',
+                      alignItems: 'center'
+                    }}
+                  />
                 )}
               </div>
             }
