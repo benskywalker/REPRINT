@@ -9,23 +9,21 @@ import styles from "./Home.module.css";
 import NodeDetails from "../components/NodeDetails";
 import { Dialog } from 'primereact/dialog'; // Import Dialog component from PrimeReact
 import { v4 as uuidv4 } from 'uuid'; // Import uuid function
-
+import { DataTable } from 'primereact/datatable'; // Import DataTable and Column components from PrimeReact
+import { Column } from 'primereact/column'; // Import Column component from PrimeReact
 
 const Home = () => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [selectedNodes, setSelectedNodes] = useState([]); // State for multiple selected nodes
-    const [document, setDocument] = useState(null); // State for document
-    const [timeRange, setTimeRange] = useState([0, 100]); // State for time range
+    const [selectedNodes, setSelectedNodes] = useState([]);
+    const [document, setDocument] = useState(null);
+    const [timeRange, setTimeRange] = useState([0, 100]);
     const [dialogs, setDialogs] = useState([]);
 
-    
-
-    const handleOpenClick = (index) => {
-        const nodeData = selectedNodes[index];
-        const id = uuidv4(); // Generate a unique ID
-        setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData }]);
+    const handleOpenClick = (rowData) => {
+        const id = uuidv4();
+        setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData: rowData }]);
     };
     
     const handleCloseDialog = (id) => {
@@ -40,10 +38,10 @@ const Home = () => {
                 setData(data);
                 setFilteredData(data);
                 setLoading(false);
-                // Assuming the document data is part of the response
-                setDocument({ date: { start: "2023-01-01", end: "2023-12-31" } }); // Example document date
+                setDocument({ date: { start: "2023-01-01", end: "2023-12-31" } });
             } catch (error) {
                 console.error("Error fetching data: ", error);
+                setLoading(false);
             }
         };
 
@@ -61,39 +59,54 @@ const Home = () => {
     }, [timeRange, document]);
 
     const handleNodeClick = (node) => {
-        // console.log(node.data.documents);
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
-    const handleCloseNode = (nodeId) => {
+    const handleCloseNode = (rowIndex) => {
         setSelectedNodes((prevSelectedNodes) => 
-            prevSelectedNodes.filter((node, index) => index !== nodeId)
+            prevSelectedNodes.filter((_, index) => index !== rowIndex)
         );
+    };
+
+    const onRowReorder = (event) => {
+        setSelectedNodes(event.value); // Update the state with new row order
     };
 
     const renderHeader = (node, index) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{node.data.fullName}</span>
-            <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(index)} />
+            <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(node)} />
             <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
         </div>
+    );
+
+    const renderAccordion = (rowData) => (
+        <Accordion>
+            <AccordionTab header={renderHeader(rowData, selectedNodes.indexOf(rowData))}>
+                <div style={{ overflow: 'auto', maxHeight: '100%' }}>
+                    <NodeDetails nodeData={rowData} handleNodeClick={handleNodeClick} />
+                </div>
+            </AccordionTab>
+        </Accordion>
     );
 
     return (
         <>
             <Header className={styles.header} />
             <div className={styles.content}>
-                <Splitter style={{ height: '100vh', overflowY:'auto' }}>
-                    <SplitterPanel size={30} minSize={10} >
-                    <Accordion activeIndex={0} multiple>
-                        {selectedNodes.map((node, index) => (
-                            <AccordionTab key={index} header={renderHeader(node, index)}>
-                                <div style={{ overflow: 'auto', maxHeight: '100%' }}>
-                                    <NodeDetails nodeData={node} handleNodeClick={handleNodeClick}/>
-                                </div>
-                            </AccordionTab>
-                        ))}
-                    </Accordion>
+                <Splitter style={{ height: '100vh', overflowY: 'auto' }}>
+                    <SplitterPanel size={30} minSize={10}>
+                        <DataTable 
+                            value={selectedNodes}
+                            reorderableRows
+                            onRowReorder={onRowReorder}
+                            style={{ width: '100%', height: '100%' }}
+                        >
+                         <Column
+                                body={rowData => renderAccordion(rowData)}
+                                header="Details"
+                            />
+                        </DataTable>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick} />
@@ -101,17 +114,17 @@ const Home = () => {
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
-            <Dialog 
-            key={dialog.id} 
-            header={dialog.nodeData.data.fullName} 
-            maximizable 
-            modal={false} 
-            visible={true} 
-            onHide={() => handleCloseDialog(dialog.id)}
-        >
-            <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
-        </Dialog>
-        ))}
+                <Dialog 
+                key={dialog.id} 
+                header={dialog.nodeData.data.fullName} 
+                maximizable 
+                modal={false} 
+                visible={true} 
+                onHide={() => handleCloseDialog(dialog.id)}
+                >
+                <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
+                </Dialog>
+            ))}
         </>
     );
 }
