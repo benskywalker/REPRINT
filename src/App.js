@@ -1,29 +1,34 @@
-// src/App.js
+import React, { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Gallery from "./pages/Gallery";
 import QueryTool from "./components/QueryTool";
-
-import React from "react";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes, 
-  useNavigate,
-} from "react-router-dom";
+import Header from "./components/Header";
 import Home from "./pages/Home";
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import 'primeflex/primeflex.css';
-import './App.css';
+import "primereact/resources/primereact.min.css";
+import "primeicons/primeicons.css";
+import "primeflex/primeflex.css";
+import "./App.css";
+
 const Main = () => {
   return <Home />;
 };
 
 const App = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearchChange = (query) => {
+    setSearchQuery(query);
+  };
+
   return (
     <Router>
+      <Header onSearchChange={handleSearchChange} />
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/gallery" element={<Gallery />} />
+        <Route
+          path="/gallery"
+          element={<Gallery searchQuery={searchQuery} />}
+        />
         <Route path="/query-tool" element={<QueryTool />} />
         <Route path="*" element={<Home />} />
       </Routes>

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Header from "../components/Header";
 import NodeDetails from "../components/NodeDetails";
 import { Dialog } from "primereact/dialog";
 import Filter from "../components/Filter";
 import "../components/Filter.css";
 import "./Gallery.css";
 
-const Gallery = () => {
+const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
   const [dialogs, setDialogs] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
   const [filters, setFilters] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
 
@@ -55,10 +53,6 @@ const Gallery = () => {
     setDialogs(dialogs.filter((dialog) => dialog.id !== id));
   };
 
-  const handleSearchChange = (query) => {
-    setSearchQuery(query);
-  };
-
   const handleFilterChange = (filters) => {
     setFilters(filters);
   };
@@ -95,7 +89,6 @@ const Gallery = () => {
 
   return (
     <div>
-      <Header onSearchChange={handleSearchChange} gallery={true} />
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
       <div className="gallery">
         {filterPeople.map((person) => (

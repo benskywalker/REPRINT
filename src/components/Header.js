@@ -11,7 +11,7 @@ import "primeicons/primeicons.css";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 
-const Header = ({ onUploadClick, onSearchChange, gallery = false }) => {
+const Header = ({ onUploadClick, onSearchChange }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
 
   const handleInputChange = (event) => {
@@ -29,15 +29,11 @@ const Header = ({ onUploadClick, onSearchChange, gallery = false }) => {
       >
         Network Analysis
       </NavLink>
-      {gallery ? (
-        <InputText
-          placeholder="Search"
-          className={styles.search}
-          onChange={handleInputChange}
-        />
-      ) : (
-        <InputText placeholder="Search" className={styles.search} />
-      )}
+      <InputText
+        placeholder="Search"
+        className={styles.search}
+        onChange={handleInputChange}
+      />
       {/* pi bar menu for sidebar pop up */}
       <Button
         icon="pi pi-bars"
