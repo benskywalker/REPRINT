@@ -89,7 +89,7 @@ const Gallery = () => {
       });
   });
 
-  if (filterPeople.length === 0) {
+  if (flist.length === 0) {
     filterPeople = filteredPeople;
   }
 
