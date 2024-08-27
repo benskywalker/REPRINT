@@ -65,7 +65,7 @@ const Gallery = () => {
   }
 
   flist.map((filter) => {
-    switch (filter) {
+    switch (filter.code) {
       case "J":
         filterPeople.push(
           ...filteredPeople
@@ -89,7 +89,7 @@ const Gallery = () => {
       case "P":
         filterPeople.push(
           ...filteredPeople
-            .filter((person) => person.firstName === "phineas")
+            .filter((person) => person.lastName === "pemberton")
             .map((person, index) => ({
               ...person,
               key: `phineas-${index}`,
