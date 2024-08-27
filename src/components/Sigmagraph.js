@@ -280,8 +280,24 @@ const SigmaGraph = ({ onNodeClick, data }) => {
       return edgeDate >= startDate && edgeDate <= endDate;
     });
 
+    //filter the nodes by node.data.birthDate and node.data.deathDate
     const filteredNodes = originalGraph.nodes.filter((node) => {
-      return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id);
+      const birthDate = parseDate(node.data.birthDate);
+      const deathDate = parseDate(node.data.deathDate);
+      // If birthDate or deathDate is null, don't filter them out
+      if (birthDate === null 
+        || deathDate === null 
+        || birthDate === '' 
+        || deathDate === ''
+        || isNaN(birthDate)
+        || isNaN(deathDate)
+        || birthDate === undefined
+        || deathDate === undefined
+        ) {
+        return true;
+      }
+    
+      return birthDate >= startDate && deathDate <= endDate;
     });
 
     setGraph({ nodes: filteredNodes, edges: filteredEdges });
@@ -322,8 +338,8 @@ const SigmaGraph = ({ onNodeClick, data }) => {
           </Sigma>
           <Slider
             value={timeRange}
-            onChange={handleTimeRangeChange}
-            valueLabelDisplay="auto"
+            onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
+            onChangeCommitted={handleTimeRangeChange} // Apply the filtering logic only when the user releases the handle            valueLabelDisplay="auto"
             min={minDate}
             max={maxDate}
             step={1}
