@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
-import "./Filter.css"; // Import the CSS file
+import "./Filter.css";
 
-const Filter = ({ onFilterChange }) => {
+const Filter = ({ onFilterChange, options }) => {
   const [selectedFilters, setSelectedFilters] = useState(null);
 
   const handleFilterChange = (filter) => {
@@ -10,19 +10,12 @@ const Filter = ({ onFilterChange }) => {
     onFilterChange(filter);
   };
 
-  const filters = [
-    { name: "John", code: "J" },
-    { name: "Daniel", code: "D" },
-    { name: "Phineas", code: "P" },
-    // Add more options as needed
-  ];
-
   return (
     <div className="filter-container">
       <MultiSelect
         value={selectedFilters}
         onChange={(e) => handleFilterChange(e.value)}
-        options={filters}
+        options={options}
         optionLabel="name"
         filter
         placeholder="Select Filters"

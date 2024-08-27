@@ -10,7 +10,8 @@ const Gallery = () => {
   const [people, setPeople] = useState([]);
   const [dialogs, setDialogs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filters, setFilters] = useState(null);
+  const [filters, setFilters] = useState([]);
+  const [filterOptions, setFilterOptions] = useState([]);
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -18,6 +19,18 @@ const Gallery = () => {
         const response = await fetch("http://localhost:4000/persons");
         const data = await response.json();
         setPeople(data);
+
+        // Create unique filter options based on the full names
+        const uniqueNames = Array.from(
+          new Set(
+            data.map((person) => `${person.firstName} ${person.lastName}`)
+          )
+        );
+        const filterOptions = uniqueNames.map((name, index) => ({
+          name: name,
+          code: name, // Use full name as code for filtering
+        }));
+        setFilterOptions(filterOptions);
       } catch (error) {
         console.error("Error fetching people:", error);
       }
@@ -27,7 +40,6 @@ const Gallery = () => {
   }, []);
 
   const handleButtonClick = (person) => {
-    console.log("Button clicked for:", person);
     const newDialog = {
       id: person.personID,
       nodeData: {
@@ -64,43 +76,17 @@ const Gallery = () => {
     flist = [];
   }
 
-  const addedKeys = new Set();
-
   flist.map((filter) => {
-    switch (filter.code) {
-      case "J":
-        filteredPeople
-          .filter((person) => person.firstName === "john")
-          .forEach((person, index) => {
-            if (!filterPeople.some((p) => p.personID === person.personID)) {
-              const key = `john-${index}`;
-              filterPeople.push({ ...person, key });
-            }
-          });
-        break;
-      case "D":
-        filteredPeople
-          .filter((person) => person.firstName === "daniel")
-          .forEach((person, index) => {
-            if (!filterPeople.some((p) => p.personID === person.personID)) {
-              const key = `daniel-${index}`;
-              filterPeople.push({ ...person, key });
-            }
-          });
-        break;
-      case "P":
-        filteredPeople
-          .filter((person) => person.lastName === "pemberton")
-          .forEach((person, index) => {
-            if (!filterPeople.some((p) => p.personID === person.personID)) {
-              const key = `phineas-${index}`;
-              filterPeople.push({ ...person, key });
-            }
-          });
-        break;
-      default:
-        break;
-    }
+    filteredPeople
+      .filter(
+        (person) => `${person.firstName} ${person.lastName}` === filter.code
+      )
+      .forEach((person, index) => {
+        if (!filterPeople.some((p) => p.personID === person.personID)) {
+          const key = `${filter.code}-${index}`;
+          filterPeople.push({ ...person, key });
+        }
+      });
   });
 
   if (filterPeople.length === 0) {
@@ -110,7 +96,7 @@ const Gallery = () => {
   return (
     <div>
       <Header onSearchChange={handleSearchChange} gallery={true} />
-      <Filter onFilterChange={handleFilterChange} />
+      <Filter onFilterChange={handleFilterChange} options={filterOptions} />
       <div className="gallery">
         {filterPeople.map((person) => (
           <div

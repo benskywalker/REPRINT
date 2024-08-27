@@ -25,7 +25,12 @@
 
 /* Styling for the MultiSelect dropdown */
 .p-multiselect-panel {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
   border-radius: 8px;
+  max-width: 300px;
+  max-height: 280px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   border: 1px solid #e0e0e0;
 }
