@@ -21,7 +21,7 @@ const Gallery = ({ searchQuery }) => {
         // Create unique filter options based on the full names
         const uniqueNames = Array.from(
           new Set(
-            data.map((person) => `${person.firstName} ${person.lastName}`)
+            data.map((person) => `${capitializeFirstLetter(person.firstName)} ${capitializeFirstLetter(person.lastName)}`)
           )
         );
         const filterOptions = uniqueNames.map((name, index) => ({
