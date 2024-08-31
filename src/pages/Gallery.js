@@ -21,7 +21,7 @@ const Gallery = ({ searchQuery }) => {
         // Create unique filter options based on the full names
         const uniqueNames = Array.from(
           new Set(
-            data.map((person) => `${person.firstName} ${person.lastName}`)
+            data.map((person) => `${capitializeFirstLetter(person.firstName)} ${capitializeFirstLetter(person.lastName)}`)
           )
         );
         const filterOptions = uniqueNames.map((name, index) => ({
@@ -87,6 +87,10 @@ const Gallery = ({ searchQuery }) => {
     filterPeople = filteredPeople;
   }
 
+  const capitializeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+
   return (
     <div>
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
@@ -101,7 +105,7 @@ const Gallery = ({ searchQuery }) => {
               src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"
               alt={person.firstName + " " + person.lastName}
             />
-            <div>{person.firstName + " " + person.lastName}</div>
+            <div>{capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}</div>
           </div>
         ))}
       </div>
