@@ -357,6 +357,8 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
               <></>
             )}
           </Sigma>
+          <div className={styles.time}>
+
           <Slider
             value={timeRange}
             onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
@@ -365,7 +367,8 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
             max={maxDate}
             step={1}
             className={styles.slider}
-          />
+            />
+          </div>
           {/* display the time period */}
           <div className={styles.timePeriod}>
             <span>{timeRange[0]}</span> -
@@ -378,8 +381,8 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
         </>
       )}
 
-      <div className={styles.filterBox}>
-        <Accordion activeIndex={0}>
+      {/* <div className={styles.filterBox}> */}
+        {/* <Accordion activeIndex={0}>
           {Object.keys(groupedOptions).map((type) => (
             <AccordionTab key={type} header={type}>
               {groupedOptions[type].map((option) => (
@@ -398,9 +401,10 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
               ))}
             </AccordionTab>
           ))}
-        </Accordion>
-      </div>
+        </Accordion> */}
+      {/* </div> */}
     </div>
+    
   );
 };
 

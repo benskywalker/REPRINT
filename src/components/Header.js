@@ -36,6 +36,7 @@ const Header = ({ onUploadClick, onSearchChange }) => {
       {/* pi bar menu for sidebar pop up */}
       <Button
         icon="pi pi-bars"
+        text 
         className={styles.menu}
         onClick={toggleSidebar}
       />

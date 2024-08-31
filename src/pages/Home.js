@@ -94,8 +94,8 @@ const Home = ({ searchQuery }) => {
     return (
         <>
             <div className={styles.content}>
-                <Splitter style={{ height: '100vh', overflowY: 'auto' }}>
-                    <SplitterPanel size={30} minSize={10}>
+                <Splitter style={{  overflowY: 'auto' }}>
+                    <SplitterPanel size={30} minSize={0}>
                         <DataTable 
                             value={selectedNodes}
                             reorderableRows
@@ -108,7 +108,7 @@ const Home = ({ searchQuery }) => {
                             />
                         </DataTable>
                     </SplitterPanel>
-                    <SplitterPanel className={styles.sigmaPanel} size={70} minSize={50}>
+                    <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
                         <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick}
                         searchQuery={searchQuery}
                         />

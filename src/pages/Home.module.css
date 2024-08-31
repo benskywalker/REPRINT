@@ -1,5 +1,4 @@
 .content {
-    height: 100vh; /* Full viewport height */
     color: white;
     display: flex;
     flex-direction: column;
@@ -10,5 +9,14 @@
 
 .sigmaPanel {
     /* Add any styles for sigmaPanel if needed */
-    background-color: #41414c;
+    /* background-color: #41414c; */
+}
+
+.temporalPanel {
+    /* Add any styles for temporalPanel if needed */
+    /* background-color: #41414c; */
+}
+
+.sigma{
+    max-height: 50vh;
 }

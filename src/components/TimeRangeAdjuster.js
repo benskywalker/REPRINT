@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import Slider from '@mui/material/Slider';
+import { Slider } from 'primereact/slider'; // Import Slider from primereact
 
-//this is a TimeRangeAdjuster component 
-//that will allow the user to adjust 
-//the time range of the data displayed in the sigma graph.
+// This is a TimeRangeAdjuster component 
+// that will allow the user to adjust 
+// the time range of the data displayed in the sigma graph.
 
-//it will take in an edges array 
+// It will take in an edges array 
 const TimeRangeAdjuster = ({ edges, minDate, maxDate }) => {
     const [timeRange, setTimeRange] = React.useState([minDate, maxDate]);
     const [initialRange, setInitialRange] = React.useState([minDate, maxDate]);
@@ -15,8 +15,8 @@ const TimeRangeAdjuster = ({ edges, minDate, maxDate }) => {
         setTimeRange([minDate, maxDate]);
     }, [minDate, maxDate]);
 
-    const handleChange = (event, newValue) => {
-        setTimeRange(newValue);
+    const handleChange = (e) => {
+        setTimeRange(e.value);
     }
 
     const handleReset = () => {
@@ -28,15 +28,18 @@ const TimeRangeAdjuster = ({ edges, minDate, maxDate }) => {
             <Slider
                 value={timeRange}
                 onChange={handleChange}
-                valueLabelDisplay="auto"
+                range
                 min={minDate}
                 max={maxDate}
                 step={1}
+                style={{ width: '100%' }}
             />
+            <div>
+                <span>{timeRange[0]}</span> - <span>{timeRange[1]}</span>
+            </div>
             <button onClick={handleReset}>Reset</button>
         </div>
     );
 }
 
 export default TimeRangeAdjuster;
-
