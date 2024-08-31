@@ -20,6 +20,7 @@ const Home = ({ searchQuery }) => {
     const [document, setDocument] = useState(null);
     const [timeRange, setTimeRange] = useState([0, 100]);
     const [dialogs, setDialogs] = useState([]);
+    const [hoveredNodeData, setHoveredNodeData] = useState(null);
 
     const handleOpenClick = (rowData) => {
         const id = uuidv4();
@@ -59,6 +60,10 @@ const Home = ({ searchQuery }) => {
         }
     }, [timeRange, document]);
 
+    const handleNodeHover = (nodeData) => {
+        setHoveredNodeData(nodeData);
+    };
+
     const handleNodeClick = (node) => {
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
@@ -94,37 +99,51 @@ const Home = ({ searchQuery }) => {
     return (
         <>
             <div className={styles.content}>
-                <Splitter style={{  overflowY: 'auto' }}>
+                <Splitter style={{ overflowY: 'auto' }}>
                     <SplitterPanel size={30} minSize={0}>
-                        <DataTable 
-                            value={selectedNodes}
-                            reorderableRows
-                            onRowReorder={onRowReorder}
-                            style={{ width: '100%', height: '100%' }}
-                        >
-                         <Column
-                                body={rowData => renderAccordion(rowData)}
-                                header="Details"
-                            />
-                        </DataTable>
+                        <div className={styles.relativeContainer}>
+                            {hoveredNodeData ? (
+                                <div className={styles.hoverNodeInfo}>
+                                    <span>{hoveredNodeData.data.fullName}</span>
+                                </div>
+                            ) : (
+                                <div className={styles.dataTableContainer}>
+                                    <DataTable 
+                                        value={selectedNodes}
+                                        reorderableRows
+                                        onRowReorder={onRowReorder}
+                                        style={{ width: '100%', height: '100%' }}
+                                    >
+                                        <Column
+                                            body={rowData => renderAccordion(rowData)}
+                                            header="Details"
+                                        />
+                                    </DataTable>
+                                </div>
+                            )}
+                        </div>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
-                        <SigmaGraph className={styles.sigma} data={filteredData} onNodeClick={handleNodeClick}
-                        searchQuery={searchQuery}
+                        <SigmaGraph 
+                            onNodeHover={handleNodeHover} 
+                            className={styles.sigma} 
+                            data={filteredData} 
+                            onNodeClick={handleNodeClick}
+                            searchQuery={searchQuery}
                         />
                     </SplitterPanel>
                 </Splitter>
             </div>
             {dialogs.map((dialog) => (
                 <Dialog 
-                key={dialog.id} 
-                header={dialog.nodeData.data.fullName} 
-                maximizable 
-                modal={false} 
-                visible={true} 
-                onHide={() => handleCloseDialog(dialog.id)}
+                    key={dialog.id} 
+                    header={dialog.nodeData.data.fullName} 
+                    maximizable 
+                    modal={false} 
+                    visible={true} 
+                    onHide={() => handleCloseDialog(dialog.id)}
                 >
-                <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
+                    <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
                 </Dialog>
             ))}
         </>

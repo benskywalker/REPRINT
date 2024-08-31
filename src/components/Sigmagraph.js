@@ -8,7 +8,7 @@ import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accord
 import styles from './Sigmagraph.module.css';
 import { Slider } from '@mui/material';
 
-const SigmaGraph = ({ onNodeClick, searchQuery }) => {
+const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
@@ -127,6 +127,10 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
     const nodeId = event.data.node.id;
     const node = graphInstance.nodes(nodeId);
 
+    //get all info about the hovered node and store it in the state
+    const hoveredNodeData = graph.nodes.find((node) => node.id === nodeId);
+    onNodeHover(hoveredNodeData); // Pass the hovered node data to the parent component
+
     // Store the original color of the hovered node
     setHoveredNode({ id: nodeId, color: node.color });
 
@@ -156,6 +160,9 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
   const handleNodeOut = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
+
+    //set the hovered node data to null
+    onNodeHover(null); // Clear the hovered node data in the parent component
 
     //get the hovered node
     const hoveredNode = graphInstance.nodes(event.data.node.id);
@@ -358,15 +365,15 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
             )}
           </Sigma>
           <div className={styles.time}>
-
-          <Slider
-            value={timeRange}
-            onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
-            onChangeCommitted={handleTimeRangeChange} // Apply the filtering logic only when the user releases the handle            valueLabelDisplay="auto"
-            min={minDate}
-            max={maxDate}
-            step={1}
-            className={styles.slider}
+            <Slider
+              value={timeRange}
+              onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
+              onChangeCommitted={handleTimeRangeChange} // Apply the filtering logic only when the user releases the handle
+              valueLabelDisplay="auto"
+              min={minDate}
+              max={maxDate}
+              step={1}
+              className={styles.slider}
             />
           </div>
           {/* display the time period */}
@@ -380,31 +387,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery }) => {
           <br />
         </>
       )}
-
-      {/* <div className={styles.filterBox}> */}
-        {/* <Accordion activeIndex={0}>
-          {Object.keys(groupedOptions).map((type) => (
-            <AccordionTab key={type} header={type}>
-              {groupedOptions[type].map((option) => (
-                <div key={option.value} className={styles.checkbox}>
-                  <Checkbox
-                    inputId={option.value}
-                    value={option.value}
-                    checked={!!selectedFilters[option.value]}
-                    onChange={(e) => {
-                      console.log('Checkbox clicked:', e.value);
-                      handleFilterChange(e);
-                    }}
-                  />
-                  <label htmlFor={option.value} className={styles.checkboxLabel}>{option.label}</label>
-                </div>
-              ))}
-            </AccordionTab>
-          ))}
-        </Accordion> */}
-      {/* </div> */}
     </div>
-    
   );
 };
 

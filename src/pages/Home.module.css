@@ -17,6 +17,20 @@
     /* background-color: #41414c; */
 }
 
-.sigma{
-    max-height: 50vh;
-}
+.relativeContainer {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  
+  .hoverNodeInfo {
+    position: relative;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 10px;
+    z-index: 10; /* Ensure it appears above the DataTable */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+  }
+
+  
