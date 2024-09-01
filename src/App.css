@@ -4,6 +4,8 @@ html, body {
   height: 100%;
 }
 
+
+
 .sidecar{
   background-color: #dbd7c4;
   border: 3px solid #6C757D; 
@@ -40,5 +42,3 @@ html, body {
   background-color: #fff;
   color: #000000; /* Change this to your desired text color */
 }
-
-

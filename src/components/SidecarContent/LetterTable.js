@@ -11,6 +11,7 @@ import { Document, Packer, Paragraph, Table, TableCell, TableRow } from 'docx';
 import { Toolbar } from 'primereact/toolbar';
 import { InputIcon } from 'primereact/inputicon';
 import { IconField } from 'primereact/iconfield';
+import './LettersTable.css';
 
 export default function LetterTable({ nodeData, onRowClick }) {
     const [data, setData] = useState([]);
@@ -134,6 +135,7 @@ const renderHeader = () => {
                 globalFilter={globalFilter}
                 header={header}
                 onRowClick={handleRowClick}
+                className="custom-datatable"
             >
                 <Column
                     field="senderFullName"
