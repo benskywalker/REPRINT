@@ -40,6 +40,7 @@ const ApplyFilters = (filters) => {
   if(flist == null) {
     flist = [];
   }
+  let rfilt = false;
 
   useEffect(() => {
     //reset graph
@@ -47,8 +48,9 @@ const ApplyFilters = (filters) => {
       sigma.getGraph().setNodeAttribute(node, 'color', "#fffff0");
     })
     sigma.getGraph().forEachEdge((edge) => {
-        sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
+        sigma.getGraph().setEdgeAttribute(edge, 'hidden', true);
     });
+    rfilt = false;
 
     flist.forEach((filter) => {
       switch(filter) {
@@ -68,36 +70,45 @@ const ApplyFilters = (filters) => {
           break;
         case 'document':
           sigma.getGraph().forEachEdge((edge) => {
-            if(sigma.getGraph().getEdgeAttribute(edge, 'relation') !== 'document') {
-              sigma.getGraph().setEdgeAttribute(edge, 'hidden', true);
+            if(sigma.getGraph().getEdgeAttribute(edge, 'relation') == 'document') {
+              sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
             }
+            rfilt = true;
           });
           break;
         case 'organization':
             sigma.getGraph().forEachEdge((edge) => {
-                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') !== 'organization') {
-                sigma.getGraph().setEdgeAttribute(edge, 'hidden', 'true');
+                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') == 'organization') {
+                sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
                 }
             });
+            rfilt = true;
             break;
         case 'religion':
             sigma.getGraph().forEachEdge((edge) => {
-                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') !== 'religion') {
-                sigma.getGraph().setEdgeAttribute(edge, 'hidden', 'true');
+                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') == 'religion') {
+                sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
                 }
             });
+            rfilt = true;
             break;
         case 'familial':
             sigma.getGraph().forEachEdge((edge) => {
-                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') !== 'familial') {
-                sigma.getGraph().setEdgeAttribute(edge, 'hidden', 'true');
+                if(sigma.getGraph().getEdgeAttribute(edge, 'relation') == 'familial') {
+                sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
                 }
             });
+            rfilt = true;
             break;
         default:
           break;
       }
     });
+    if(!rfilt) {
+      sigma.getGraph().forEachEdge((edge) => {
+        sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
+      });
+    }
   }, [sigma, flist]);
 
   return null;
