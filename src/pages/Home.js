@@ -11,6 +11,7 @@ import { Dialog } from 'primereact/dialog'; // Import Dialog component from Prim
 import { v4 as uuidv4 } from 'uuid'; // Import uuid function
 import { DataTable } from 'primereact/datatable'; // Import DataTable and Column components from PrimeReact
 import { Column } from 'primereact/column'; // Import Column component from PrimeReact
+import { DisplayGraph } from "../components/graph";
 
 const Home = ({ searchQuery }) => {
     const [data, setData] = useState([]);
@@ -124,13 +125,7 @@ const Home = ({ searchQuery }) => {
                         </div>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
-                        <SigmaGraph 
-                            onNodeHover={handleNodeHover} 
-                            className={styles.sigma} 
-                            data={filteredData} 
-                            onNodeClick={handleNodeClick}
-                            searchQuery={searchQuery}
-                        />
+                        <DisplayGraph />
                     </SplitterPanel>
                 </Splitter>
             </div>

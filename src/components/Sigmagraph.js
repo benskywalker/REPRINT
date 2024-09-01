@@ -47,6 +47,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
 
         // Process nodes
         data.nodes.forEach((node) => {
+          console.log(node);
           const newNode = {
             id: node.id,
             label: node.personStdName || node.organizationName || node.religionDesc,
