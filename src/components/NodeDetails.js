@@ -32,9 +32,9 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabs, setTabs] = useState([
-    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} /> },
-    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} /> },
-    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} /> },
+    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container"/> },
+    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick}  className="tab-content-container"/> },
+    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick}  className="tab-content-container" /> },
     { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
   ]);
 
@@ -50,7 +50,7 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
   return (
     <div className={"sidecar"}>
-      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable>
+      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}

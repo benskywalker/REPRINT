@@ -60,6 +60,13 @@ const Home = ({ searchQuery }) => {
         }
     }, [timeRange, document]);
 
+    useEffect(() => {
+        if (dialogs.length > 0) {
+            // Trigger re-render to ensure Dialog resizes correctly
+            setDialogs([...dialogs]);
+        }
+    }, [dialogs]);
+
     const handleNodeHover = (nodeData) => {
         setHoveredNodeData(nodeData);
     };
@@ -136,15 +143,17 @@ const Home = ({ searchQuery }) => {
             </div>
             {dialogs.map((dialog) => (
                 <Dialog 
-                    key={dialog.id} 
-                    header={dialog.nodeData.data.fullName} 
-                    maximizable 
-                    modal={false} 
-                    visible={true} 
-                    onHide={() => handleCloseDialog(dialog.id)}
-                >
-                    <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
-                </Dialog>
+    key={dialog.id} 
+    header={dialog.nodeData.data.fullName} 
+    maximizable 
+    modal={false} 
+    visible={true} 
+    onHide={() => handleCloseDialog(dialog.id)}
+    style={{ width: '35vw', height: '70vh' }} /* Set a consistent height */
+    breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+>
+    <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick}/>
+</Dialog>
             ))}
         </>
     );
