@@ -73,7 +73,7 @@ const Gallery = ({ searchQuery }) => {
   flist.map((filter) => {
     filteredPeople
       .filter(
-        (person) => `${person.firstName} ${person.lastName}` === filter.code
+        (person) => `${person.firstName} ${person.lastName}` === filter.code.toLowerCase()
       )
       .forEach((person, index) => {
         if (!filterPeople.some((p) => p.personID === person.personID)) {
