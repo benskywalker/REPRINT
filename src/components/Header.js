@@ -10,6 +10,9 @@ import "primeicons/primeicons.css";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import PrimeReact from "primereact/api"; // import PrimeReact to use changeTheme function
+import { Image } from "primereact/image";
+import logoImage from './images/logo.png';
+
 
 const Header = ({ onUploadClick, onSearchChange }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
@@ -35,7 +38,10 @@ const Header = ({ onUploadClick, onSearchChange }) => {
         activeclassname={styles.activeLink}
         className={styles.title}
       >
-        Network Analysis
+        <div className={styles.logo}>
+          <Image src={logoImage} alt="logo" />
+        </div>
+        {/* <Image src={logo} alt="logo"  className={styles.logo}/> */}
       </NavLink>
       <InputText
         placeholder="Search"
