@@ -1,17 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 
 import Graph from "graphology";
-import forceAtlas2 from 'graphology-layout-forceatlas2';
-import { random } from 'graphology-layout';
 
 import { SigmaContainer, useLoadGraph, ControlsContainer, ZoomControl, FullScreenControl } from "@react-sigma/core";
-import { animateNodes } from "sigma/utils";
 import "@react-sigma/core/lib/react-sigma.min.css";
 
-import axios, { formToJSON } from 'axios';
+import axios from 'axios';
 
 import GraphFilter from './graphFilter';
 import GraphEvents from './graphEvents';
+import LayoutController from './layoutController.js';
 
 const sigmaStyle = { height: "95vh", width: "100%", "background-color": "black" };
 
@@ -59,18 +57,6 @@ export const LoadGraph = () => {
             graph.setNodeAttribute(node, 'size', degree);
         })
 
-        //randomize node positions
-        const randomLayout = random(graph);
-        graph.forEachNode((node) => {
-            graph.setNodeAttribute(node, 'x', randomLayout[node].x);
-            graph.setNodeAttribute(node, 'y', randomLayout[node].y);
-        })
-
-        //apply ForceAtlas2 layout
-        const sensibleSettings = forceAtlas2.inferSettings(graph);
-        const positions = forceAtlas2(graph, {iterations: 100, settings: sensibleSettings});
-        animateNodes(graph, positions, 1000);
-
         loadGraph(graph)
             } catch (error) {
                 console.error("Error fetching data: ", error);
@@ -78,14 +64,14 @@ export const LoadGraph = () => {
         }
         //fetch graph
         fetchData();
-
-        graph.forEachNode((node) => {
-            console.log(node);
-        })
     }, [loadGraph]);
 }
 
-export const DisplayGraph = () => {
+export const DisplayGraph = ({ onNodeClick }) => {
+    const handleNodeClick = (node) => {
+        onNodeClick(node);
+    }
+
     return (
         <SigmaContainer style = {sigmaStyle} display = 'flex' >
             <LoadGraph/>
@@ -96,7 +82,10 @@ export const DisplayGraph = () => {
             <ControlsContainer position={"bottom-right"}>
                 <GraphFilter/>
             </ControlsContainer>
-            <GraphEvents/>
+            <GraphEvents onNodeClick = { handleNodeClick }/>
+            <ControlsContainer position={"top-left"}>
+                <LayoutController/>
+            </ControlsContainer>
         </SigmaContainer>
     )
 }

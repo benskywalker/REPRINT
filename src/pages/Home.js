@@ -66,7 +66,8 @@ const Home = ({ searchQuery }) => {
     };
 
     const handleNodeClick = (node) => {
-        setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
+        console.log(node);
+        //setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
     const handleCloseNode = (rowIndex) => {
@@ -125,7 +126,7 @@ const Home = ({ searchQuery }) => {
                         </div>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
-                        <DisplayGraph />
+                        <DisplayGraph onNodeClick = {handleNodeClick}/>
                     </SplitterPanel>
                 </Splitter>
             </div>

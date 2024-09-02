@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useRegisterEvents, useSigma } from '@react-sigma/core';
 
 //component that listens to events
-const GraphEvents = () => {
+const GraphEvents = ({ onNodeClick }) => {
     const registerEvents = useRegisterEvents();
     const sigma = useSigma();
 
@@ -18,7 +18,17 @@ const GraphEvents = () => {
                 sigma.getGraph().setNodeAttribute(node, "hidden", false);
             });
 
+            sigma.getGraph().forEachEdge((edge) => {
+                if(!sigma.getGraph().hasExtremity(edge, node)) {
+                    sigma.getGraph().setEdgeAttribute(edge, 'hidden', true);
+                }
+            });
         }
+
+        const handleNodeClick = (node) => {
+            onNodeClick(node);
+        }
+
         //events
         registerEvents({
             enterNode: (event) => 
@@ -32,13 +42,17 @@ const GraphEvents = () => {
                 sigma.getGraph().mapNodes((node) => {
                     sigma.getGraph().setNodeAttribute(node, 'hidden', false);
                 })
+                sigma.getGraph().mapEdges((edge) => {
+                    sigma.getGraph().setEdgeAttribute(edge, 'hidden', false);
+                })
             },
             clickNode: (event) => 
             {
-                console.log(sigma.getGraph().getNodeAttribute(event.node, "label"));
+                const node = sigma.getGraph().getNodeAttribute(event.node, "label");
+                handleNodeClick(node);
             },
         })
-    }, [registerEvents, sigma]);
+    }, [registerEvents, sigma, onNodeClick]);
 
     return null;
 };
