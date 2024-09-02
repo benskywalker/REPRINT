@@ -16,19 +16,15 @@ const ApplyLayouts = (layout) => {
         const sensibleSettings = forceAtlas2.inferSettings(sigma.getGraph());
 
         const fpos = forceAtlas2(sigma.getGraph(), { iterations: 100, settings: sensibleSettings });
-        const cpos = circular(sigma.getGraph());
 
         const rlayout = () => {
             const positions = random(sigma.getGraph());
-            animateNodes(sigma.getGraph(), positions, { duration: 500 });
+            animateNodes(sigma.getGraph(), positions, { duration: 1000 });
         }
 
         switch(layout.layout) {
             case 'ForceAtlas2':
-                animateNodes(sigma.getGraph(), fpos, { duration: 500 });
-                break;
-            case 'Circular':
-                animateNodes(sigma.getGraph(), cpos, { duration: 500 });
+                animateNodes(sigma.getGraph(), fpos, { duration: 1000 });
                 break;
             case 'Random':
                 rlayout();
@@ -43,7 +39,7 @@ const ApplyLayouts = (layout) => {
 }
 
 const LayoutController = () => {
-    const layouts = ['ForceAtlas2', 'Circular', 'Random'];
+    const layouts = ['ForceAtlas2', 'Random'];
     const [layout, setLayout] = useState('Random');
   return (
     <div>

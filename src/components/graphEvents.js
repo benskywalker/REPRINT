@@ -48,8 +48,9 @@ const GraphEvents = ({ onNodeClick }) => {
             },
             clickNode: (event) => 
             {
-                const node = sigma.getGraph().getNodeAttribute(event.node, "label");
-                handleNodeClick(node);
+                const nodeData = sigma.getGraph().getNodeAttributes(event.node);
+                console.log(nodeData);
+                handleNodeClick(nodeData);
             },
         })
     }, [registerEvents, sigma, onNodeClick]);

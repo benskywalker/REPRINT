@@ -38,8 +38,9 @@ export const LoadGraph = () => {
                 // Add nodes
                 data.nodes.forEach((node) => {
                     console.log(node);
-                    const nodeLabel = node.fullName || node.organizationName || node.religionDesc;
-                    graph.mergeNode(node.id, { label: nodeLabel, x: 0, y: 0, color: '#fffff0', size: 5 });
+                    const nodeLabel = node.fullName || node.organizationName || node.religionDesc || node.personStdName;
+                    const data = node;
+                    graph.mergeNode(node.id, { label: nodeLabel, x: 0, y: 0, color: '#fffff0', size: 5, data: data });
                 });
 
                 // Add edges
