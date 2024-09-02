@@ -12,7 +12,6 @@ import { centrality } from 'graphology-metrics';
 import pagerank from 'graphology-pagerank';
 import modularity from 'graphology-communities-louvain';
 
-
 const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
@@ -58,7 +57,6 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   
     return metrics;
   };
-  
 
   useEffect(() => {
     const fetchData = async () => {
@@ -128,12 +126,33 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
         });
 
         const graphologyGraph = buildGraphologyGraph(nodes, edges);
+
+        // Compute communities using Louvain method
+        const communities = modularity(graphologyGraph);
+
+        // Apply community-based coloring
+        const communityColors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3'];
+        graphologyGraph.forEachNode((node, attributes) => {
+          const communityId = communities[node];
+          graphologyGraph.setNodeAttribute(node, 'community', communityId);
+          graphologyGraph.setNodeAttribute(node, 'color', communityColors[communityId % communityColors.length]);
+        });
+
+        // Update nodes with community colors
+        const updatedNodes = nodes.map((node) => {
+          const communityId = graphologyGraph.getNodeAttribute(node.id, 'community');
+          return {
+            ...node,
+            color: communityColors[communityId % communityColors.length],
+          };
+        });
+
         const calculatedMetrics = computeMetrics(graphologyGraph);
         setMetrics(calculatedMetrics);
         console.log('Metrics:', calculatedMetrics);
 
-        setGraph({ nodes, edges });
-        setOriginalGraph({ nodes, edges });
+        setGraph({ nodes: updatedNodes, edges });
+        setOriginalGraph({ nodes: updatedNodes, edges });
         setLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
@@ -203,7 +222,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
         graphInstance.edges().forEach((edge) => {
           graphInstance.edges(edge.id).hidden = false;
         });
-        node.color = '#fffff0';
+        node.color = hoveredNode.color;
       }
       setHoveredNode(null);
     }
@@ -335,17 +354,25 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
             onOutNode={handleNodeOut}
             ref={sigmaRef}
           >
-            <RandomizeNodePositions />
             <NOverlap gridSize={10} maxIterations={100} maxNodeOverlap={0.5} />
             <RandomizeNodePositions />
             <RelativeSize initialSize={15} />
             {forceAtlasActive ? (
               <ForceAtlas2
-                iterationsPerRender={1}
-                timeout={3000}
-                barnesHutOptimize={false}
-                gravity={1}
-                scalingRatio={2}
+                barnesHutOptimize={true}  // Use Barnes-Hut optimization
+                barnesHutTheta={0.5}  // Barnes-Hut theta parameter
+                linLogMode={false}  // Use LinLog mode
+                outboundAttractionDistribution={false}  // Use outbound attraction distribution
+                adjustSizes={false}  // Adjust node sizes
+                edgeWeightInfluence={0}  // Edge weight influence
+                scalingRatio={2}  // Scaling ratio
+                strongGravityMode={false}  // Strong gravity mode
+                gravity={1}  // Gravity
+                slowDown={1}  // Slow down
+                startingIterations={1}  // Starting iterations
+                iterationsPerRender={1}  // Iterations per render
+                worker={true}  // Use worker
+
               />
             ) : (
               <></>
