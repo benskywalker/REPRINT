@@ -2,11 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2, NOverlap } from 'react-sigma';
 import ClipLoader from 'react-spinners/ClipLoader';
-import NodeDialog from './NodeDialog'; // Assuming you have a NodeDialog component
-import { Checkbox } from 'primereact/checkbox'; // Import Checkbox from PrimeReact
-import { Accordion, AccordionTab } from 'primereact/accordion'; // Import Accordion components from PrimeReact
+import NodeDialog from './NodeDialog';
+import { Checkbox } from 'primereact/checkbox';
+import { Accordion, AccordionTab } from 'primereact/accordion';
 import styles from './Sigmagraph.module.css';
 import { Slider } from '@mui/material';
+import Graph from 'graphology';
+import { centrality } from 'graphology-metrics';
+import pagerank from 'graphology-pagerank';
+import modularity from 'graphology-communities-louvain';
+
 
 const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
@@ -19,33 +24,60 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   const [globalFilter, setGlobalFilter] = useState('');
   const [hoveredNode, setHoveredNode] = useState(null);
   const [forceAtlasActive, setForceAtlasActive] = useState(true);
-  const [selectedFilters, setSelectedFilters] = useState({}); // State for selected filters
-  // State for time range slider from the 15th century to today's date
+  const [selectedFilters, setSelectedFilters] = useState({});
   const [timeRange, setTimeRange] = useState([1600, 1700]);
   const [minDate, setMinDate] = useState(1600);
   const [maxDate, setMaxDate] = useState(1500);
+  const [metrics, setMetrics] = useState(null);
 
   const sigmaRef = useRef(null);
+
+  const buildGraphologyGraph = (nodes, edges) => {
+    const graph = new Graph();
+
+    nodes.forEach(node => {
+      graph.addNode(node.id, { label: node.label, data: node.data });
+    });
+
+    edges.forEach(edge => {
+      graph.addEdge(edge.source, edge.target, { data: edge });
+    });
+
+    return graph;
+  };
+
+  const computeMetrics = (graph) => {
+    const metrics = {};
+  
+    metrics.degreeCentrality = centrality.degree(graph);
+    metrics.betweennessCentrality = centrality.betweenness(graph);
+    metrics.closenessCentrality = centrality.closeness(graph);
+    metrics.eigenvectorCentrality = centrality.eigenvector(graph);
+    metrics.pageRank = pagerank(graph); // Use pagerank from graphology-pagerank
+    metrics.modularity = modularity(graph);
+  
+    return metrics;
+  };
+  
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get('http://localhost:4000/relations');
         const data = response.data;
+
         const nodes = [];
         const edges = [];
         const nodeIds = new Set();
-        const edgeIds = new Set(); // To track unique edges
+        const edgeIds = new Set();
 
-        // Define color mapping for edge types
         const edgeColors = {
-          document: '#5d94eb', // Example color for document edges   
-          organization: '#33FF57', // Example color for organization edges
-          religion: '#3357FF', // Example color for religion edges
-          relationship: '#FF33A1', // Example color for relationship edges
+          document: '#5d94eb',
+          organization: '#33FF57',
+          religion: '#3357FF',
+          relationship: '#FF33A1',
         };
 
-        // Process nodes
         data.nodes.forEach((node) => {
           const newNode = {
             id: node.id,
@@ -61,22 +93,20 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
           }
         });
 
-        // Process edges
         data.edges.forEach((edge) => {
-          if (edge.from !== edge.to) { // Ensure nodes aren't connected to themselves
+          if (edge.from !== edge.to) {
             const edgeId = `edge-${edge.from}-${edge.to}`;
 
-            if (!edgeIds.has(edgeId)) { // Ensure no duplicate edges
+            if (!edgeIds.has(edgeId)) {
               const newEdge = {
                 id: edgeId,
                 source: edge.from,
                 target: edge.to,
-                color: edgeColors[edge.type] || '#ccc', // Use color mapping
+                color: edgeColors[edge.type] || '#ccc',
                 size: 2,
                 ...edge,
               };
 
-              //set the min and max date
               if (newEdge.date) {
                 const date = new Date(newEdge.date);
                 if (date.getFullYear() < minDate) {
@@ -87,17 +117,20 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
                 }
               }
 
-
               edges.push(newEdge);
               edgeIds.add(edgeId);
             }
           }
         });
 
-        // Populate the nodes' documents array
         nodes.forEach((node) => {
           node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
         });
+
+        const graphologyGraph = buildGraphologyGraph(nodes, edges);
+        const calculatedMetrics = computeMetrics(graphologyGraph);
+        setMetrics(calculatedMetrics);
+        console.log('Metrics:', calculatedMetrics);
 
         setGraph({ nodes, edges });
         setOriginalGraph({ nodes, edges });
@@ -113,11 +146,19 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
 
   const handleNodeClick = (event) => {
     const nodeId = event.data.node.id;
-    console.log('Node clicked:', nodeId);
     const nodeData = graph.nodes.find((node) => node.id === nodeId);
-    setSelectedNode(nodeData);
+
+    const nodeMetrics = {
+      degree: metrics.degreeCentrality[nodeId],
+      betweenness: metrics.betweennessCentrality[nodeId],
+      closeness: metrics.closenessCentrality[nodeId],
+      eigenvector: metrics.eigenvectorCentrality[nodeId],
+      pagerank: metrics.pageRank[nodeId],
+    };
+
+    setSelectedNode({ ...nodeData, metrics: nodeMetrics });
     setNodeDialogVisible(true);
-    onNodeClick(nodeData); // Pass the node data to the parent component
+    onNodeClick(nodeData);
   };
 
   const handleNodeHover = (event) => {
@@ -127,62 +168,46 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
     const nodeId = event.data.node.id;
     const node = graphInstance.nodes(nodeId);
 
-    //get all info about the hovered node and store it in the state
     const hoveredNodeData = graph.nodes.find((node) => node.id === nodeId);
-    onNodeHover(hoveredNodeData); // Pass the hovered node data to the parent component
+    onNodeHover(hoveredNodeData);
 
-    // Store the original color of the hovered node
     setHoveredNode({ id: nodeId, color: node.color });
 
-    // Change the color of the hovered node to pruple
     node.color = '#3aa2f4';
-    
-    //show the nodes label
+
     node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
 
-    // Access and modify connected edges
     graphInstance.edges().forEach((edge) => {
       if (edge.source === nodeId || edge.target === nodeId) {
-        // If the edge is connected to the hovered node
-        // color the edge light blue and increase its size
         graphInstance.edges(edge.id).color = '#add8e6';
         graphInstance.edges(edge.id).size = 3;
       } else {
-        //make edge and node invisible
-        graphInstance.edges(edge.id).hidden = true; 
-        
+        graphInstance.edges(edge.id).hidden = true;
       }
     });
 
-    sigmaInstance.refresh(); // Refresh the graph to apply changes
+    sigmaInstance.refresh();
   };
 
   const handleNodeOut = (event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
 
-    //set the hovered node data to null
-    onNodeHover(null); // Clear the hovered node data in the parent component
+    onNodeHover(null);
 
-    //get the hovered node
     const hoveredNode = graphInstance.nodes(event.data.node.id);
-    // Restore the color of the previously hovered node to '#fffff0'
 
-    // Restore the color of the previously hovered node to '#fffff0'
     if (hoveredNode) {
       const node = graphInstance.nodes(hoveredNode.id);
       if (node) {
-        //make the edge and node visible
         graphInstance.edges().forEach((edge) => {
           graphInstance.edges(edge.id).hidden = false;
-          
         });
         node.color = '#fffff0';
       }
       setHoveredNode(null);
     }
 
-    // Restore original colors of edges
     originalGraph.edges.forEach((edge) => {
       const graphEdge = graphInstance.edges(edge.id);
       if (graphEdge) {
@@ -191,36 +216,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
       }
     });
 
-    sigmaInstance.refresh(); // Refresh the graph to apply changes
-  };
-
-  const filterOptions = [
-    { label: 'Document', value: 'document', type: 'Relations' },
-    { label: 'Religion', value: 'religion', type: 'Relations' },
-    { label: 'Organization', value: 'organization', type: 'Relations' },
-    { label: 'Person', value: 'person', type: 'Relations' },
-  ];
-
-  const groupedOptions = filterOptions.reduce((acc, option) => {
-    if (!acc[option.type]) {
-      acc[option.type] = [];
-    }
-    acc[option.type].push(option);
-    return acc;
-  }, {});
-
-  const handleFilterChange = (e) => {
-    const selectedValue = e.value;
-
-    let updatedFilters = { ...selectedFilters };
-
-    if (updatedFilters[selectedValue]) {
-      delete updatedFilters[selectedValue];
-    } else {
-      updatedFilters[selectedValue] = true;
-    }
-
-    setSelectedFilters(updatedFilters);
+    sigmaInstance.refresh();
   };
 
   useEffect(() => {
@@ -236,7 +232,6 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
           const matchesSearchQuery = searchQuery ? node.data.fullName.toLowerCase().includes(searchQuery.toLowerCase()) : true;
           return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id) || matchesSearchQuery;
         });
-        
 
         setGraph({ nodes: filteredNodes, edges: filteredEdges });
       } else {
@@ -247,22 +242,21 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
 
   const handleTimeRangeChange = (event, newValue) => {
     setTimeRange(newValue);
-  
+
     const parseDate = (dateStr) => {
       if (typeof dateStr === 'number') {
-        // If the date is a number, treat it as a year
-        return new Date(dateStr, 0); // January 1st of the given year
+        return new Date(dateStr, 0);
       }
-  
+
       if (typeof dateStr !== 'string') {
         return null;
       }
-  
+
       const parsedDate = Date.parse(dateStr);
       if (!isNaN(parsedDate)) {
         return new Date(parsedDate);
       }
-  
+
       const parts = dateStr.split('-');
       if (parts.length === 3) {
         return new Date(parts[0], parts[1] - 1, parts[2]);
@@ -271,29 +265,26 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
       } else if (parts.length === 1) {
         return new Date(parts[0]);
       }
-  
+
       return null;
     };
-  
+
     const startDate = parseDate(newValue[0]);
     const endDate = parseDate(newValue[1]);
-  
+
     if (startDate === null && endDate === null) {
-      // Reset to the original graph data
       setGraph(originalGraph);
       return;
     }
-  
+
     const filteredEdges = originalGraph.edges.filter((edge) => {
       const edgeDate = parseDate(edge.date);
       return edgeDate >= startDate && edgeDate <= endDate;
     });
-  
-    // Filter the nodes by node.data.birthDate and node.data.deathDate
+
     const filteredNodes = originalGraph.nodes.filter((node) => {
       const birthDate = parseDate(node.data.birthDate);
       const deathDate = parseDate(node.data.deathDate);
-      // If birthDate or deathDate is null, don't filter them out
       if (
         birthDate === null ||
         deathDate === null ||
@@ -306,31 +297,27 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
       ) {
         return true;
       }
-  
+
       return birthDate >= startDate && deathDate <= endDate;
     });
-  
-    // Calculate the degree of each node
+
     const nodeDegrees = {};
     filteredEdges.forEach((edge) => {
       nodeDegrees[edge.source] = (nodeDegrees[edge.source] || 0) + 1;
       nodeDegrees[edge.target] = (nodeDegrees[edge.target] || 0) + 1;
     });
-  
-    // Update node sizes based on their degrees
+
     const updatedNodes = filteredNodes.map((node) => {
       const degree = nodeDegrees[node.id] || 0;
       return {
         ...node,
-        size: degree + 1, // Adjust the size formula as needed
+        size: degree + 1,
       };
     });
-  
+
     setGraph({ nodes: updatedNodes, edges: filteredEdges });
   };
 
-  
-  
   return (
     <div className={styles.content}>
       {loading ? (
@@ -367,8 +354,8 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
           <div className={styles.time}>
             <Slider
               value={timeRange}
-              onChange={(event, newValue) => setTimeRange(newValue)} // Update the state as the slider moves
-              onChangeCommitted={handleTimeRangeChange} // Apply the filtering logic only when the user releases the handle
+              onChange={(event, newValue) => setTimeRange(newValue)}
+              onChangeCommitted={handleTimeRangeChange}
               valueLabelDisplay="auto"
               min={minDate}
               max={maxDate}
@@ -376,15 +363,10 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
               className={styles.slider}
             />
           </div>
-          {/* display the time period */}
           <div className={styles.timePeriod}>
             <span>{timeRange[0]}</span> -
             <span>{timeRange[1]}</span>
           </div>
-          <br />
-          <br />
-          <br />
-          <br />
         </>
       )}
     </div>
