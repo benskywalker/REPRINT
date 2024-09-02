@@ -126,7 +126,7 @@ const Home = ({ searchQuery }) => {
                         </div>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
-                        <DisplayGraph onNodeClick = {handleNodeClick}/>
+                        <DisplayGraph onNodeClick = {handleNodeClick} search={ searchQuery }/>
                     </SplitterPanel>
                 </Splitter>
             </div>

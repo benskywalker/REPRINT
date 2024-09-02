@@ -38,7 +38,9 @@ const GraphEvents = ({ onNodeClick }) => {
             },
             leaveNode: (event) => 
             {
-                sigma.getGraph().setNodeAttribute(event.node, "highlighted", false);
+                if(sigma.getGraph().getNodeAttribute(event.node, "isSearched") === false) {
+                    sigma.getGraph().setNodeAttribute(event.node, "highlighted", false);
+                }
                 sigma.getGraph().mapNodes((node) => {
                     sigma.getGraph().setNodeAttribute(node, 'hidden', false);
                 })

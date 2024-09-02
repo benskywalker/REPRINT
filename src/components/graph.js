@@ -10,6 +10,7 @@ import axios from 'axios';
 import GraphFilter from './graphFilter';
 import GraphEvents from './graphEvents';
 import LayoutController from './layoutController.js';
+import GraphSearch from './graphSearch.js';
 
 const sigmaStyle = { height: "95vh", width: "100%", "background-color": "black" };
 
@@ -40,7 +41,7 @@ export const LoadGraph = () => {
                     console.log(node);
                     const nodeLabel = node.fullName || node.organizationName || node.religionDesc || node.personStdName;
                     const data = node;
-                    graph.mergeNode(node.id, { label: nodeLabel, x: 0, y: 0, color: '#fffff0', size: 5, data: data });
+                    graph.mergeNode(node.id, { label: nodeLabel, x: 0, y: 0, color: '#fffff0', size: 5, data: data, isSearched: false });
                 });
 
                 // Add edges
@@ -49,6 +50,7 @@ export const LoadGraph = () => {
                     //if edge is not a self loop
                     if (edge.from == edge.to) return;
                     graph.mergeEdgeWithKey(edgeId, edge.from, edge.to, { relation: edge.type, color: edgeColors[edge.type] });
+                    console.log(graph.getEdgeAttributes(edgeId));
                 });
 
                 //set sizes
@@ -68,7 +70,7 @@ export const LoadGraph = () => {
     }, [loadGraph]);
 }
 
-export const DisplayGraph = ({ onNodeClick }) => {
+export const DisplayGraph = ({ onNodeClick, search }) => {
     const handleNodeClick = (node) => {
         onNodeClick(node);
     }
@@ -83,10 +85,11 @@ export const DisplayGraph = ({ onNodeClick }) => {
             <ControlsContainer position={"bottom-right"}>
                 <GraphFilter/>
             </ControlsContainer>
-            <GraphEvents onNodeClick = { handleNodeClick }/>
             <ControlsContainer position={"top-left"}>
                 <LayoutController/>
             </ControlsContainer>
+            <GraphEvents onNodeClick = { handleNodeClick }/>
+            <GraphSearch search={ search }/>
         </SigmaContainer>
     )
 }
