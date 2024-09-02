@@ -9,9 +9,14 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
+import PrimeReact from "primereact/api"; // import PrimeReact to use changeTheme function
+import { Image } from "primereact/image";
+import logoImage from './images/logo.png';
+
 
 const Header = ({ onUploadClick, onSearchChange }) => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
+  const [selectedTheme, setSelectedTheme] = useState("soho-dark"); // default theme
 
   const handleInputChange = (event) => {
     onSearchChange(event.target.value);
@@ -19,6 +24,13 @@ const Header = ({ onUploadClick, onSearchChange }) => {
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
+
+  const toggleTheme = () => {
+    const newTheme = selectedTheme === "saga-blue" ? "soho-dark" : "saga-blue";
+    PrimeReact.changeTheme(selectedTheme, newTheme, "theme-link");
+    setSelectedTheme(newTheme);
+  };
+
   return (
     <div className={styles.header}>
       <NavLink
@@ -26,7 +38,10 @@ const Header = ({ onUploadClick, onSearchChange }) => {
         activeclassname={styles.activeLink}
         className={styles.title}
       >
-        Network Analysis
+        <div className={styles.logo}>
+          <Image src={logoImage} alt="logo" />
+        </div>
+        {/* <Image src={logo} alt="logo"  className={styles.logo}/> */}
       </NavLink>
       <InputText
         placeholder="Search"
@@ -66,7 +81,11 @@ const Header = ({ onUploadClick, onSearchChange }) => {
           </li>
         </ul>
         <hr></hr>
-        <Button>Button</Button>
+        <Button
+        style={{ width: "25%" }}
+          icon={selectedTheme === "saga-blue" ? "pi pi-moon" : "pi pi-sun"}
+          onClick={toggleTheme}
+        />
       </Sidebar>
     </div>
   );

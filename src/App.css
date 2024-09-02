@@ -4,19 +4,22 @@ html, body {
   height: 100%;
 }
 
+
+
 .sidecar{
   background-color: #dbd7c4;
   border: 3px solid #6C757D; 
   padding: 25px;
   border-radius: 25px;
   color: #000000; /* Change this to your desired text color */
+  height: 100%;
 }
  
 .sidecar.p-tabview-nav {
-  background-color: #dbd7c4 !important;
-  height: 100%;
-  border-bottom: 3px solid #04151F;
-  color: #000000; /* Change this to your desired text color */
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Ensure that the arrows and tabs are spaced correctly */
+  white-space: nowrap;
 }
 
 .sidecar .p-tabview-nav-link {
@@ -35,10 +38,41 @@ html, body {
   background-color: #c4d7f2 !important;
   color: #fff;
 }
-
-.sidecar .p-tabview .p-tabview-panels {
-  background-color: #fff;
-  color: #000000; /* Change this to your desired text color */
+.sidecar .p-tabview {
+  height: 100%;
+  
 }
 
+.sidecar .p-tabview .p-tabview-panels {
+    height: calc(100% - 40px); /* Adjusted height to account for header, padding, etc. */
+    background-color: #fff;
+    overflow-y: auto; /* Hide overflow at this level */
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
+    color:#000000;
+  
 
+}
+
+.tab-content-container {
+  height: calc(100% - 40px); /* Adjusted to ensure it calculates properly */
+  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  padding: 1rem; /* Optional padding */
+}
+
+.sidecar .p-tabview-nav-prev,
+.sidecar .p-tabview-nav-next {
+  cursor: pointer;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  z-index: 5; /* Make sure the arrows are clickable and above other elements */
+  padding-bottom: 8px;
+}
+
+/* .sidecar .p-tabview-nav-prev .p-icon,
+.sidecar .p-tabview-nav-next */

@@ -32,9 +32,9 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabs, setTabs] = useState([
-    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} /> },
-    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} /> },
-    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} /> },
+    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container"/> },
+    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick}  className="tab-content-container"/> },
+    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick}  className="tab-content-container" /> },
     { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
   ]);
 

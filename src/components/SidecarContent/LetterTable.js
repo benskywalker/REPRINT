@@ -8,7 +8,10 @@ import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { Document, Packer, Paragraph, Table, TableCell, TableRow } from 'docx';
-
+import { Toolbar } from 'primereact/toolbar';
+import { InputIcon } from 'primereact/inputicon';
+import { IconField } from 'primereact/iconfield';
+import './LettersTable.css';
 
 export default function LetterTable({ nodeData, onRowClick }) {
     const [data, setData] = useState([]);
@@ -21,24 +24,32 @@ export default function LetterTable({ nodeData, onRowClick }) {
             setDocuments(nodeData.data.documents);
         }
     }, [nodeData]);
+const renderHeader = () => {
+    const leftContents = (
+        <span className="p-input-icon-left">
+            <IconField iconPosition="left">
+                <InputIcon className="pi pi-search"> </InputIcon>
+                <InputText 
+                    type="search"
+                    onInput={(e) => setGlobalFilter(e.target.value)}
+                    placeholder="Global Search"
+                />
+            </IconField>
+        </span>
+    );
 
-    const renderHeader = () => {
-        return (
-            <div className="table-header">
-                <span className="p-input-icon-left">
-                    <i className="pi pi-search" />
-                    <InputText
-                        type="search"
-                        onInput={(e) => setGlobalFilter(e.target.value)}
-                        placeholder="Global Search"
-                    />
-                </span>
-                <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger" />
-                <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success" />
-                <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary" />
-            </div>
-        );
-    };
+    const rightContents = (
+        <>
+            <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger"   style={{ width: '150px' ,marginRight:'8px'}} />
+            <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success"   style={{ width: '150px' ,marginRight:'8px'}} />
+            <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary"   style={{ width: '150px', marginRight:'8px' }} />
+        </>
+    );
+
+    return (
+        <Toolbar left={leftContents} right={rightContents} />
+    );
+};
 
     const getFilteredData = () => {
         // Retrieve the filtered data from the DataTable
@@ -124,6 +135,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
                 globalFilter={globalFilter}
                 header={header}
                 onRowClick={handleRowClick}
+                className="custom-datatable"
             >
                 <Column
                     field="senderFullName"
