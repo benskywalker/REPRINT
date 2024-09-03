@@ -1,98 +1,168 @@
-import React from "react";
-
+import React, { useState, useEffect } from "react";
 import axios from "axios";
-
 import { AutoComplete } from "primereact/autocomplete";
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
+import { Button } from "primereact/button"; // Import Button component
 
 const QueryTool = () => {
-  const [keywords, setKeywords] = React.useState(null);
-  const [filteredSuggestions, setFilteredSuggestions] = React.useState(null);
-  const [results, setResults] = React.useState(null);
+  const [data, setData] = useState({
+    person: [],
+    keyword: [],
+    organizationtype: [],
+    occupation: [],
+    place: [],
+    relationshiptype: [],
+    religion: [],
+    repositorie: [],
+    role: [],
+  });
 
-  const suggestions = [
-    {
-      label: "Name",
-      code: "n",
-      items: [
-        { keyword: "Pemberton", value: "pemberton"},
-        { keyword: "Harrison", value: "harrison"},
-        { keyword: "Allcock", value: "allcock"},
-      ]
-    },
-    {
-      label: "Religion",
-      code: "r",
-      items: [
-        { keyword: "Anabaptist", value: "anabaptist"},
-        { keyword: "Quaker", value: "quaker"},
-        { keyword: "Pietist", value: "pietist"},
-      ]
-    },
-    {
-      label: "Location",
-      code: "l",
-      items: [
-        { keyword: "Pennsylvania", value: "pennsylvania"},
-        { keyword: "New Jersey", value: "new jersey"},
-        { keyword: "New York", value: "new york"},
-      ]
-    },
-    {
-      label: "Event",
-      code: "e",
-      items: [
-        { keyword: "marriage", value: "marriage"},
-        { keyword: "birth", value: "birth"},
-        { keyword: "death", value: "death"},
-      ]
-    },
-    {
-      label: "Relationship",
-      code: "r",
-      items: [
-        { keyword: "parent", value: "parent"},
-        { keyword: "child", value: "child"},
-        { keyword: "spouse", value: "spouse"},
-      ]
-    }
-  ];
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState({});
+  const [selectedTerms, setSelectedTerms] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [submittedTerms, setSubmittedTerms] = useState({}); // New state for categorized submitted terms
 
-  const search = (event) => {
-    let query = event.query;
-    let _filteredKeywords = [];
+  // Placeholder for API call - Replace with your API endpoint
+  const apiEndpoint = "http://localhost:4000/base_query";
 
-    for (let type of suggestions) {
-        let filteredKeywords = type.items.filter((item) => item.keyword?.toLowerCase().indexOf(query.toLowerCase()) !== -1);
-        if (filteredKeywords && filteredKeywords.length) {
-            _filteredKeywords.push({ ...type, ...{ items: filteredKeywords } });
-        }
-    }
-    setFilteredSuggestions(_filteredKeywords);
-}
+  useEffect(() => {
+    // Fetch data from API
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(apiEndpoint);
+        setData(response.data); // Assuming the data from API matches the structure
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [apiEndpoint]);
+
+  useEffect(() => {
+    // Filter data based on search term
+    const filterData = () => {
+      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
+      const filtered = {
+        person: data.person.filter((p) =>
+          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
+        ),
+        keyword: data.keyword.filter((k) =>
+          k.keyword.toLowerCase().includes(term)
+        ),
+        organizationtype: data.organizationtype.filter((o) =>
+          o.organizationName.toLowerCase().includes(term)
+        ),
+        occupation: data.occupation.filter((o) =>
+          (o.occupationDesc || "").toLowerCase().includes(term)
+        ),
+        place: data.place.filter((p) =>
+          p.placeNameStd.toLowerCase().includes(term)
+        ),
+        relationshiptype: data.relationshiptype.filter((r) =>
+          r.relationshipDesc.toLowerCase().includes(term)
+        ),
+        religion: data.religion.filter((r) =>
+          r.religionDesc.toLowerCase().includes(term)
+        ),
+        repositorie: data.repositorie.filter((r) =>
+          r.repoDesc.toLowerCase().includes(term)
+        ),
+        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
+      };
+      setFilteredData(filtered);
+    };
+    filterData();
+  }, [searchTerm, data]);
+
+  const searchSuggestions = (event) => {
+    const query = event.query.toLowerCase();
+    const allData = [
+      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
+      ...data.keyword.map((k) => k.keyword),
+      ...data.organizationtype.map((o) => o.organizationName),
+      ...data.occupation.map((o) => o.occupationDesc || ""),
+      ...data.place.map((p) => p.placeNameStd),
+      ...data.relationshiptype.map((r) => r.relationshipDesc),
+      ...data.religion.map((r) => r.religionDesc),
+      ...data.repositorie.map((r) => r.repoDesc),
+      ...data.role.map((r) => r.roleDesc),
+    ];
+    setSuggestions(
+      allData.filter((item) => item.toLowerCase().includes(query))
+    );
+  };
+
+  const handleSubmit = () => {
+    const categorizedTerms = {
+      person: [],
+      keyword: [],
+      organizationtype: [],
+      occupation: [],
+      place: [],
+      relationshiptype: [],
+      religion: [],
+      repositorie: [],
+      role: [],
+    };
+
+    selectedTerms.forEach((term) => {
+      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
+        categorizedTerms.person.push(term);
+      } else if (data.keyword.some((k) => k.keyword === term)) {
+        categorizedTerms.keyword.push(term);
+      } else if (
+        data.organizationtype.some((o) => o.organizationName === term)
+      ) {
+        categorizedTerms.organizationtype.push(term);
+      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
+        categorizedTerms.occupation.push(term);
+      } else if (data.place.some((p) => p.placeNameStd === term)) {
+        categorizedTerms.place.push(term);
+      } else if (
+        data.relationshiptype.some((r) => r.relationshipDesc === term)
+      ) {
+        categorizedTerms.relationshiptype.push(term);
+      } else if (data.religion.some((r) => r.religionDesc === term)) {
+        categorizedTerms.religion.push(term);
+      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
+        categorizedTerms.repositorie.push(term);
+      } else if (data.role.some((r) => r.roleDesc === term)) {
+        categorizedTerms.role.push(term);
+      }
+    });
+
+    setSubmittedTerms(categorizedTerms);
+  };
 
   return (
     <div>
       <AutoComplete
-        group
+        value={searchTerm}
+        suggestions={suggestions}
         multiple
-        value={keywords}
-        suggestions={filteredSuggestions}
-        field="keyword"
-        placeholder="Enter a query"
-        completeMethod={search}
-        onChange={(e) => setKeywords(e.value)}
-        optionGroupLabel="label"
-        optionGroupChildren="items"
-        dropdown
+        completeMethod={searchSuggestions}
+        onChange={(e) => {
+          setSearchTerm(e.value);
+          setSelectedTerms(e.value); // Update selectedTerms state
+        }}
+        placeholder="Search..."
       />
-      <DataTable value={results}>
-        <Column field="name" header="Name" />
-      </DataTable>
-
+      <Button label="Submit" onClick={handleSubmit} /> {/* Add Submit button */}
+      <div>
+        <h3>Selected Terms:</h3>
+        {Object.keys(submittedTerms).map((category) => (
+          <div key={category}>
+            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+            <ul>
+              {submittedTerms[category].map((term, index) => (
+                <li key={index}>{term}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default QueryTool;
