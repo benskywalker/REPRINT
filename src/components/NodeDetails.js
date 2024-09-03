@@ -6,30 +6,30 @@ import LetterTable from './SidecarContent/LetterTable';
 import Relationships from './SidecarContent/Relationships';
 import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
+import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 
 const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
-  const handleRowClick = (rowData) => {
-    const newTabKey = `Letter-${rowData.id}`;
-    setTabs((prevTabs) => {
-      const existingTab = prevTabs.find(tab => tab.key === newTabKey);
+const handleRowClick = (rowData) => {
+  const newTabKey = `Letter-${rowData.id}`;
+  setTabs((prevTabs) => {
+    const existingTab = prevTabs.find(tab => tab.key === newTabKey);
 
-      if (!existingTab) {
-        const newTab = {
-          key: newTabKey,
-          header: `Letter ${rowData.id}`,
-          content: <div>{JSON.stringify(rowData)}</div>
-        };
-        const newTabs = [...prevTabs, newTab];
-        setActiveIndex(newTabs.length - 1); // Set the new tab as active
-        return newTabs;
-      } else {
-        setActiveIndex(prevTabs.indexOf(existingTab)); // Focus on the existing tab
-        return prevTabs;
-      }
-    });
-  };
-
+    if (!existingTab) {
+      const newTab = {
+        key: newTabKey,
+        header: `Letter ${rowData.id}`,
+        content: <Letter id={rowData.id} />
+      };
+      const newTabs = [...prevTabs, newTab];
+      setActiveIndex(newTabs.length - 1); // Set the new tab as active
+      return newTabs;
+    } else {
+      setActiveIndex(prevTabs.indexOf(existingTab)); // Focus on the existing tab
+      return prevTabs;
+    }
+  });
+};
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabs, setTabs] = useState([
     { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container"/> },

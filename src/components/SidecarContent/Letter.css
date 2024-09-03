@@ -1,0 +1,12 @@
+.letterSplitter {
+    height: 100%;
+  }
+  
+  .letterSplitterPanel {
+    overflow: hidden;
+    display: flex;
+  }
+  
+  .letterSplitterPanel.closed {
+    display: none;
+  }
