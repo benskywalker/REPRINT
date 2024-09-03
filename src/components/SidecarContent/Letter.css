@@ -1,12 +1,25 @@
 .letterSplitter {
-    height: 100%;
+    height: 100%; /* Ensure the Splitter takes full height */
+    display: flex;
+    flex: 1;
   }
   
   .letterSplitterPanel {
     overflow: hidden;
     display: flex;
-  }
+    height: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.letterSplitterPanel img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Adjust to 'cover' if you want the image to fill the space */
+}
   
   .letterSplitterPanel.closed {
     display: none;
   }
+  

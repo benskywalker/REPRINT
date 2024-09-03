@@ -76,3 +76,10 @@ html, body {
 
 /* .sidecar .p-tabview-nav-prev .p-icon,
 .sidecar .p-tabview-nav-next */
+
+.sidecar .p-tabview-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it takes full height */
+}
+
