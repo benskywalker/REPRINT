@@ -83,3 +83,20 @@ html, body {
   height: 100%; /* Ensure it takes full height */
 }
 
+.biographyContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Stack the image and text vertically */
+  margin-bottom: 1rem; /* Adjust as needed for spacing */
+}
+
+.biographyContent img {
+  width: 100%;
+  height: auto; /* Ensure the image maintains its aspect ratio */
+  margin-bottom: 1rem; /* Add some space between the image and the text */
+}
+
+.biographyContent p {
+  margin-top: 0;
+}
