@@ -1,9 +1,15 @@
 import React from "react";
+
+import axios from "axios";
+
 import { AutoComplete } from "primereact/autocomplete";
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 const QueryTool = () => {
   const [keywords, setKeywords] = React.useState(null);
   const [filteredSuggestions, setFilteredSuggestions] = React.useState(null);
+  const [results, setResults] = React.useState(null);
 
   const suggestions = [
     {
@@ -81,6 +87,10 @@ const QueryTool = () => {
         optionGroupChildren="items"
         dropdown
       />
+      <DataTable value={results}>
+        <Column field="name" header="Name" />
+      </DataTable>
+
     </div>
   )
 }
