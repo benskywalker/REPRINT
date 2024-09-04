@@ -7,7 +7,7 @@
   height: 100vh; /* Full height of the viewport */
 }
 
-.autocomplete .p-autocomplete-multiple-container{
+.autocomplete .p-autocomplete-multiple-container {
   min-width: 500px !important;
+  max-width: 500px !important;
 }
-

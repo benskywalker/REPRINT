@@ -136,7 +136,7 @@ const QueryTool = () => {
     <div className="container">
       <AutoComplete
         className="autocomplete"
-        style={{ width: "50%" }} // Inline style to override PrimeReact CSS
+        // Inline style to override PrimeReact CSS
         value={searchTerm}
         suggestions={suggestions}
         multiple
