@@ -88,10 +88,25 @@ const Home = ({ searchQuery }) => {
     const renderHeader = (node, index) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{node.data.fullName}</span>
-            <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(node)} />
-            <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
+            <Button 
+                icon="pi pi-external-link" 
+                className="p-button-rounded p-button-text" 
+                onClick={(event) => {
+                    event.stopPropagation(); // Prevents the accordion from opening
+                    handleOpenClick(node);
+                }} 
+            />
+            <Button 
+                icon="pi pi-times" 
+                className="p-button-rounded p-button-text" 
+                onClick={(event) => {
+                    event.stopPropagation(); // Prevents the accordion from opening
+                    handleCloseNode(index);
+                }} 
+            />
         </div>
     );
+    
 
     const renderAccordion = (rowData) => (
         <Accordion>
