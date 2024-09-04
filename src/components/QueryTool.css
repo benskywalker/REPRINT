@@ -5,9 +5,29 @@
   align-items: center;
   justify-content: center;
   height: 100vh; /* Full height of the viewport */
+  overflow: auto;
 }
 
 .autocomplete .p-autocomplete-multiple-container {
   min-width: 500px !important;
   max-width: 500px !important;
+  margin-bottom: 10px;
+  overflow: auto !important;
+  max-height: 300px !important;
+}
+
+.button {
+  height: 35px;
+  margin-bottom: 10px;
+}
+
+.results {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: center;
+  width: 25%;
+  height: 50%;
+  overflow: auto;
+  padding-top: 25px;
 }

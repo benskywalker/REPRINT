@@ -3,6 +3,7 @@ import axios from "axios";
 import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import "./QueryTool.css";
+import { Card } from "primereact/card";
 
 const QueryTool = () => {
   const [data, setData] = useState({
@@ -148,19 +149,18 @@ const QueryTool = () => {
         placeholder="Search..."
       />
       <Button label="Submit" className="button" onClick={handleSubmit} />
-      <div>
-        <h3>Selected Terms:</h3>
+      <Card title="Selected Results" className="results">
         {Object.keys(submittedTerms).map((category) => (
-          <div key={category}>
+          <>
             <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
             <ul>
               {submittedTerms[category].map((term, index) => (
                 <li key={index}>{term}</li>
               ))}
             </ul>
-          </div>
+          </>
         ))}
-      </div>
+      </Card>
     </div>
   );
 };
