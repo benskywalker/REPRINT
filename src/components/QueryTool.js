@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AutoComplete } from "primereact/autocomplete";
-import { Button } from "primereact/button"; // Import Button component
+import { Button } from "primereact/button";
+import "./QueryTool.css";
 
 const QueryTool = () => {
   const [data, setData] = useState({
@@ -20,17 +21,15 @@ const QueryTool = () => {
   const [filteredData, setFilteredData] = useState({});
   const [selectedTerms, setSelectedTerms] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
-  const [submittedTerms, setSubmittedTerms] = useState({}); // New state for categorized submitted terms
+  const [submittedTerms, setSubmittedTerms] = useState({});
 
-  // Placeholder for API call - Replace with your API endpoint
   const apiEndpoint = "http://localhost:4000/base_query";
 
   useEffect(() => {
-    // Fetch data from API
     const fetchData = async () => {
       try {
         const response = await axios.get(apiEndpoint);
-        setData(response.data); // Assuming the data from API matches the structure
+        setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -39,7 +38,6 @@ const QueryTool = () => {
   }, [apiEndpoint]);
 
   useEffect(() => {
-    // Filter data based on search term
     const filterData = () => {
       const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
       const filtered = {
@@ -135,19 +133,21 @@ const QueryTool = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <AutoComplete
+        className="autocomplete"
+        style={{ width: "50%" }} // Inline style to override PrimeReact CSS
         value={searchTerm}
         suggestions={suggestions}
         multiple
         completeMethod={searchSuggestions}
         onChange={(e) => {
           setSearchTerm(e.value);
-          setSelectedTerms(e.value); // Update selectedTerms state
+          setSelectedTerms(e.value);
         }}
         placeholder="Search..."
       />
-      <Button label="Submit" onClick={handleSubmit} /> {/* Add Submit button */}
+      <Button label="Submit" className="button" onClick={handleSubmit} />
       <div>
         <h3>Selected Terms:</h3>
         {Object.keys(submittedTerms).map((category) => (
