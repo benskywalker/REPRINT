@@ -147,6 +147,7 @@ const QueryTool = () => {
         classname="search"
         style={{ width: "30%" }}
         size={50}
+        autoResize={false}
       />
       <Button label="Submit" onClick={handleSubmit} className="submit-button" />
       <div>
