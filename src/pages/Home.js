@@ -108,16 +108,15 @@ const Home = ({ searchQuery }) => {
     );
     
 
-    const renderAccordion = (rowData) => (
-        <Accordion>
-            <AccordionTab header={renderHeader(rowData, selectedNodes.indexOf(rowData))}>
-                <div style={{ overflow: 'auto', maxHeight: '100%' }}>
-                    <NodeDetails nodeData={rowData} handleNodeClick={handleNodeClick} />
+    const renderAccordion = (rowData, index) => (
+        <Accordion key={rowData.data.id}>  {/* Assuming each node has a unique 'id' */}
+            <AccordionTab header={renderHeader(rowData, index)}>
+                <div style={{ overflow: 'auto', maxHeight: '45vh' }}>
+                    <NodeDetails key={rowData.data.id} nodeData={rowData} handleNodeClick={handleNodeClick} className="accordion-node-details"/>
                 </div>
             </AccordionTab>
         </Accordion>
     );
-
     return (
         <>
             <div className={styles.content}>
@@ -138,7 +137,7 @@ const Home = ({ searchQuery }) => {
                                     >
                                         <Column
                                             body={rowData => renderAccordion(rowData)}
-                                            header="Details"
+                                            header="Sidecars"
                                         />
                                     </DataTable>
                                 </div>
