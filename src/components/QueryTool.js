@@ -144,10 +144,9 @@ const QueryTool = () => {
           setSelectedTerms(e.value);
         }}
         placeholder="Search..."
-        classname="search"
+        classname="search-bar"
         style={{ width: "30%" }}
         size={50}
-        autoResize={false}
       />
       <Button label="Submit" onClick={handleSubmit} className="submit-button" />
       <div>
