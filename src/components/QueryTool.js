@@ -22,7 +22,6 @@ const QueryTool = () => {
   const [selectedTerms, setSelectedTerms] = useState([]);
   const [suggestions, setSuggestions] = useState([]);
   const [submittedTerms, setSubmittedTerms] = useState({});
-  const [submittedTerms, setSubmittedTerms] = useState({});
 
   const apiEndpoint = "http://localhost:4000/base_query";
 
@@ -30,7 +29,6 @@ const QueryTool = () => {
     const fetchData = async () => {
       try {
         const response = await axios.get(apiEndpoint);
-        setData(response.data);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -136,7 +134,6 @@ const QueryTool = () => {
 
   return (
     <div className="container">
-    <div className="container">
       <AutoComplete
         className="autocomplete"
         style={{ width: "50%" }} // Inline style to override PrimeReact CSS
@@ -147,12 +144,8 @@ const QueryTool = () => {
         onChange={(e) => {
           setSearchTerm(e.value);
           setSelectedTerms(e.value);
-          setSelectedTerms(e.value);
         }}
         placeholder="Search..."
-        classname="search-bar"
-        style={{ width: "30%" }}
-        size={50}
       />
       <Button label="Submit" className="button" onClick={handleSubmit} />
       <div>
