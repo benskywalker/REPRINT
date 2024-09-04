@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import 'primeicons/primeicons.css'; // Ensure PrimeIcons are imported
 import { TabView, TabPanel } from 'primereact/tabview';
 import './NodeDetails.module.css';
@@ -6,30 +6,32 @@ import LetterTable from './SidecarContent/LetterTable';
 import Relationships from './SidecarContent/Relationships';
 import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
+import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 
 const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
-  const handleRowClick = (rowData) => {
-    const newTabKey = `Letter-${rowData.id}`;
-    setTabs((prevTabs) => {
-      const existingTab = prevTabs.find(tab => tab.key === newTabKey);
+const handleRowClick = (rowData) => {
+  const newTabKey = `Letter-${rowData.id}`;
+  setTabs((prevTabs) => {
+    const existingTab = prevTabs.find(tab => tab.key === newTabKey);
 
-      if (!existingTab) {
-        const newTab = {
-          key: newTabKey,
-          header: `Letter ${rowData.id}`,
-          content: <div>{JSON.stringify(rowData)}</div>
-        };
-        const newTabs = [...prevTabs, newTab];
-        setActiveIndex(newTabs.length - 1); // Set the new tab as active
-        return newTabs;
-      } else {
-        setActiveIndex(prevTabs.indexOf(existingTab)); // Focus on the existing tab
-        return prevTabs;
-      }
-    });
-  };
-
+    if (!existingTab) {
+      const newTab = {
+        key: newTabKey,
+        header: `Letter ${rowData.id}`,
+        content: <Letter id={rowData.id} />
+      };
+      const newTabs = [...prevTabs, newTab];
+      setActiveIndex(newTabs.length - 1); // Set the new tab as active
+      return newTabs;
+    } else {
+      setActiveIndex(prevTabs.indexOf(existingTab)); // Focus on the existing tab
+      return prevTabs;
+    }
+  });
+};
+  const [firstRender, setFirstRender] = useState(true);
+  const [tabClosed, setTabClosed] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [tabs, setTabs] = useState([
     { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container"/> },
@@ -40,13 +42,32 @@ const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
   const handleTabClose = (key) => {
     setTabs((prevTabs) => {
-      const newTabs = prevTabs.filter(tab => tab.key !== key);
-      if (activeIndex >= newTabs.length) {
-        setActiveIndex(newTabs.length - 1);
-      }
-      return newTabs;
+        const newTabs = prevTabs.filter(tab => tab.key !== key);
+        
+        // Only update the active index if the closed tab was the active one
+        // if (tabs[activeIndex].key === key) {
+        //     // Adjust the activeIndex if the active tab was the one closed
+        //     if (activeIndex >= newTabs.length) {
+        //     }
+        // }
+            console.log(activeIndex);
+            setTabClosed(true);
+            return newTabs;
     });
-  };
+};
+
+useEffect(() => {
+  if (firstRender){
+    setFirstRender(false);
+    return;
+  }
+  if(tabs.length === 4)
+  setActiveIndex(3);
+else
+setActiveIndex(tabs.length - 1);
+  setTabClosed(false);
+}
+, [tabClosed]);
 
   return (
     <div className={"sidecar"}>

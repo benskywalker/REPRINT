@@ -7,11 +7,12 @@ html, body {
 
 
 .sidecar{
-  background-color: #dbd7c4;
-  border: 3px solid #6C757D; 
+  /* background-color: #dbd7c4;
+  border: 3px solid #6C757D;  */
   padding: 25px;
   border-radius: 25px;
-  color: #000000; /* Change this to your desired text color */
+  /* color: #000000;  */
+  /* Change this to your desired text color */
   height: 100%;
 }
  
@@ -23,8 +24,8 @@ html, body {
 }
 
 .sidecar .p-tabview-nav-link {
-  color: #ffffff;
-  background-color: #1755A5 !important;
+  /* color: #ffffff; */
+  /* background-color: #1755A5 !important; */
   padding: 0.5rem 1rem;
   margin-right: 5px;
   margin-top: 8px;
@@ -35,8 +36,8 @@ html, body {
 }
 
 .sidecar .p-tabview-nav-link:hover {
-  background-color: #c4d7f2 !important;
-  color: #fff;
+  /* background-color: #c4d7f2 !important;
+  color: #fff; */
 }
 .sidecar .p-tabview {
   height: 100%;
@@ -45,11 +46,11 @@ html, body {
 
 .sidecar .p-tabview .p-tabview-panels {
     height: calc(100% - 40px); /* Adjusted height to account for header, padding, etc. */
-    background-color: #fff;
+    /* background-color: #fff; */
     overflow-y: auto; /* Hide overflow at this level */
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
-    color:#000000;
+    /* color:#000000; */
   
 
 }
@@ -76,3 +77,27 @@ html, body {
 
 /* .sidecar .p-tabview-nav-prev .p-icon,
 .sidecar .p-tabview-nav-next */
+
+.sidecar .p-tabview-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure it takes full height */
+}
+
+.biographyContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column; /* Stack the image and text vertically */
+  margin-bottom: 1rem; /* Adjust as needed for spacing */
+}
+
+.biographyContent img {
+  width: 100%;
+  height: auto; /* Ensure the image maintains its aspect ratio */
+  margin-bottom: 1rem; /* Add some space between the image and the text */
+}
+
+.biographyContent p {
+  margin-top: 0;
+}

@@ -26,8 +26,8 @@
 }
 
 .custom-datatable .p-datatable-thead > tr > th:hover {
-    background-color: #1755A5; /* Replace with your desired hover color */
-    color: #000; /* Optionally, change the text color on hover */
+    /* background-color: #1755A5; 
+    color: #000;  */
 }
 
 /* .custom-datatable .p-datatable-thead > tr > th.p-highlight .p-sortable-column-icon {
@@ -36,6 +36,6 @@
 
 /* Optionally, change the background color of the header when sorted */
 .custom-datatable .p-datatable-thead > tr > th.p-highlight {
-    background-color: #dbd7c4; /* Replace with your desired background color */
-    color: #000; /* Change the text color on click */
+    /* background-color: #dbd7c4; 
+    color: #000;  */
 }

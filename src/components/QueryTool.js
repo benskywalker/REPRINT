@@ -1,284 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { Dropdown } from 'primereact/dropdown';
-import { InputText } from 'primereact/inputtext';
-import { Button } from 'primereact/button';
-import { DataTable } from 'primereact/datatable';
-import { Column } from 'primereact/column';
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-import './QueryTool.css';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import { AutoComplete } from "primereact/autocomplete";
+import { Button } from "primereact/button"; // Import Button component
 
 const QueryTool = () => {
-  const [query, setQuery] = useState('');
-  const [result, setResult] = useState(null);
-  const [columns, setColumns] = useState([]);
-  const [tables, setTables] = useState([]);
-  const [joins, setJoins] = useState([]);
-  const [selectedColumns, setSelectedColumns] = useState([{ column: {}, table: {}, alias: '' }]);
-  const [selectedTables, setSelectedTables] = useState([{ table: {}, alias: '' }]);
-  const [selectedJoins, setSelectedJoins] = useState([{}]);
-  const [whereClauses, setWhereClauses] = useState([{ column: {}, operator: '=', value: '' }]);
+  const [data, setData] = useState({
+    person: [],
+    keyword: [],
+    organizationtype: [],
+    occupation: [],
+    place: [],
+    relationshiptype: [],
+    religion: [],
+    repositorie: [],
+    role: [],
+  });
+
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredData, setFilteredData] = useState({});
+  const [selectedTerms, setSelectedTerms] = useState([]);
+  const [suggestions, setSuggestions] = useState([]);
+  const [submittedTerms, setSubmittedTerms] = useState({}); // New state for categorized submitted terms
+
+  // Placeholder for API call - Replace with your API endpoint
+  const apiEndpoint = "http://localhost:4000/base_query";
 
   useEffect(() => {
-    // Fetch available columns and tables from your API or define them statically
-    setColumns([
-      { label: 'Column1', value: 'column1' },
-      { label: 'Column2', value: 'column2' }
-      // Add more columns as needed
-    ]);
+    // Fetch data from API
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(apiEndpoint);
+        setData(response.data); // Assuming the data from API matches the structure
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+    fetchData();
+  }, [apiEndpoint]);
 
-    setTables([
-      { label: 'altkeyword', value: 'altkeyword' },
-      { label: 'altoccupation', value: 'altoccupation' },
-      { label: 'altorganization', value: 'altorganization' },
-      { label: 'altperson', value: 'altperson' },
-      { label: 'altplace', value: 'altplace' },
-      { label: 'altreligion', value: 'altreligion' },
-      { label: 'document', value: 'document' },
-      { label: 'documentedit', value: 'documentedit' },
-      { label: 'documenttype', value: 'documenttype' },
-      { label: 'failed_insert_log', value: 'failed_insert_log' },
-      { label: 'file_type', value: 'file_type' },
-      { label: 'import_pp', value: 'import_pp' },
-      { label: 'individualnotification', value: 'individualnotification' },
-      { label: 'keyword', value: 'keyword' },
-      { label: 'keyword2document', value: 'keyword2document' },
-      { label: 'language', value: 'language' },
-      { label: 'libraryofcongress', value: 'libraryofcongress' },
-      { label: 'libraryofcongress2doc', value: 'libraryofcongress2doc' },
-      { label: 'mentions', value: 'mentions' },
-      { label: 'mentiontype', value: 'mentiontype' },
-      { label: 'mention_nodes', value: 'mention_nodes' },
-      { label: 'notification', value: 'notification' },
-      { label: 'occupationtype', value: 'occupationtype' },
-      { label: 'organization', value: 'organization' },
-      { label: 'organization2document', value: 'organization2document' },
-      { label: 'organization2religion', value: 'organization2religion' },
-      { label: 'pdf_documents', value: 'pdf_documents' },
-      { label: 'person', value: 'person' },
-      { label: 'person2document', value: 'person2document' },
-      { label: 'person2occupation', value: 'person2occupation' },
-      { label: 'person2organization', value: 'person2organization' },
-      { label: 'person2religion', value: 'person2religion' },
-      { label: 'place', value: 'place' },
-      { label: 'place2document', value: 'place2document' },
-      { label: 'prefix_std', value: 'prefix_std' },
-      { label: 'relatedletters', value: 'relatedletters' },
-      { label: 'relationship', value: 'relationship' },
-      { label: 'relationshiptype', value: 'relationshiptype' },
-      { label: 'religion', value: 'religion' },
-      { label: 'repository', value: 'repository' },
-      { label: 'request', value: 'request' },
-      { label: 'role', value: 'role' },
-      { label: 'suffix_std', value: 'suffix_std' },
-      { label: 'users', value: 'users' }
-    ]);
+  useEffect(() => {
+    // Filter data based on search term
+    const filterData = () => {
+      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
+      const filtered = {
+        person: data.person.filter((p) =>
+          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
+        ),
+        keyword: data.keyword.filter((k) =>
+          k.keyword.toLowerCase().includes(term)
+        ),
+        organizationtype: data.organizationtype.filter((o) =>
+          o.organizationName.toLowerCase().includes(term)
+        ),
+        occupation: data.occupation.filter((o) =>
+          (o.occupationDesc || "").toLowerCase().includes(term)
+        ),
+        place: data.place.filter((p) =>
+          p.placeNameStd.toLowerCase().includes(term)
+        ),
+        relationshiptype: data.relationshiptype.filter((r) =>
+          r.relationshipDesc.toLowerCase().includes(term)
+        ),
+        religion: data.religion.filter((r) =>
+          r.religionDesc.toLowerCase().includes(term)
+        ),
+        repositorie: data.repositorie.filter((r) =>
+          r.repoDesc.toLowerCase().includes(term)
+        ),
+        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
+      };
+      setFilteredData(filtered);
+    };
+    filterData();
+  }, [searchTerm, data]);
 
-    setJoins([
-      { label: 'INNER JOIN', value: 'INNER JOIN' },
-      { label: 'LEFT JOIN', value: 'LEFT JOIN' },
-      { label: 'RIGHT JOIN', value: 'RIGHT JOIN' }
-      // Add more join types as needed
-    ]);
-  }, []);
-
-  const handleQuerySubmit = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/custom-query', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          fields: selectedColumns.map(col => ({
-            column: col.column.value,
-            table: col.table.value,
-            alias: col.alias
-          })), // Use selected columns, tables, and aliases
-          tables: selectedTables.map(tbl => ({
-            table: tbl.table.value,
-            alias: tbl.alias
-          })), // Use selected tables and aliases
-          joins: selectedJoins.map(join => join.value), // Use selected joins
-          whereClauses: whereClauses.map(clause => ({
-            column: clause.column.value,
-            operator: clause.operator,
-            value: clause.value
-          })) // Use where clauses
-        })
-      });
-
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      console.error('Failed to run query:', error);
-      setResult({ error: 'Failed to run query' });
-    }
+  const searchSuggestions = (event) => {
+    const query = event.query.toLowerCase();
+    const allData = [
+      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
+      ...data.keyword.map((k) => k.keyword),
+      ...data.organizationtype.map((o) => o.organizationName),
+      ...data.occupation.map((o) => o.occupationDesc || ""),
+      ...data.place.map((p) => p.placeNameStd),
+      ...data.relationshiptype.map((r) => r.relationshipDesc),
+      ...data.religion.map((r) => r.religionDesc),
+      ...data.repositorie.map((r) => r.repoDesc),
+      ...data.role.map((r) => r.roleDesc),
+    ];
+    setSuggestions(
+      allData.filter((item) => item.toLowerCase().includes(query))
+    );
   };
 
-  const addColumnDropdown = () => {
-    setSelectedColumns([...selectedColumns, { column: {}, table: {}, alias: '' }]);
-  };
+  const handleSubmit = () => {
+    const categorizedTerms = {
+      person: [],
+      keyword: [],
+      organizationtype: [],
+      occupation: [],
+      place: [],
+      relationshiptype: [],
+      religion: [],
+      repositorie: [],
+      role: [],
+    };
 
-  const addTableDropdown = () => {
-    setSelectedTables([...selectedTables, { table: {}, alias: '' }]);
-    setSelectedJoins([...selectedJoins, {}]);
-  };
+    selectedTerms.forEach((term) => {
+      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
+        categorizedTerms.person.push(term);
+      } else if (data.keyword.some((k) => k.keyword === term)) {
+        categorizedTerms.keyword.push(term);
+      } else if (
+        data.organizationtype.some((o) => o.organizationName === term)
+      ) {
+        categorizedTerms.organizationtype.push(term);
+      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
+        categorizedTerms.occupation.push(term);
+      } else if (data.place.some((p) => p.placeNameStd === term)) {
+        categorizedTerms.place.push(term);
+      } else if (
+        data.relationshiptype.some((r) => r.relationshipDesc === term)
+      ) {
+        categorizedTerms.relationshiptype.push(term);
+      } else if (data.religion.some((r) => r.religionDesc === term)) {
+        categorizedTerms.religion.push(term);
+      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
+        categorizedTerms.repositorie.push(term);
+      } else if (data.role.some((r) => r.roleDesc === term)) {
+        categorizedTerms.role.push(term);
+      }
+    });
 
-  const addWhereClause = () => {
-    setWhereClauses([...whereClauses, { column: {}, operator: '=', value: '' }]);
-  };
-
-  const removeColumn = (index) => {
-    const newColumns = [...selectedColumns];
-    newColumns.splice(index, 1);
-    setSelectedColumns(newColumns);
-  };
-
-  const removeTable = (index) => {
-    const newTables = [...selectedTables];
-    newTables.splice(index, 1);
-    setSelectedTables(newTables);
-    const newJoins = [...selectedJoins];
-    newJoins.splice(index - 1, 1);
-    setSelectedJoins(newJoins);
-  };
-
-  const removeWhereClause = (index) => {
-    const newClauses = [...whereClauses];
-    newClauses.splice(index, 1);
-    setWhereClauses(newClauses);
+    setSubmittedTerms(categorizedTerms);
   };
 
   return (
-    <div className='query-tool-card'>
-      <h1>Query Tool</h1>
-      <h3>Select the table(s) you would like to select from:</h3>
-      {selectedTables.map((table, index) => (
-        <div key={index}>
-          <Dropdown
-            className='dropdown'
-            value={table.table}
-            options={tables}
-            onChange={e => {
-              const newTables = [...selectedTables];
-              newTables[index] = { ...newTables[index], table: e.value };
-              setSelectedTables(newTables);
-            }}
-            placeholder='Select Table'
-          />
-          <InputText
-            className='input'
-            type='text'
-            value={table.alias}
-            onChange={e => {
-              const newTables = [...selectedTables];
-              newTables[index] = { ...newTables[index], alias: e.target.value };
-              setSelectedTables(newTables);
-            }}
-            placeholder='Alias'
-          />
-          {index > 0 && (
-            <Dropdown
-              className='dropdown'
-              value={selectedJoins[index - 1]}
-              options={joins}
-              onChange={e => {
-                const newJoins = [...selectedJoins];
-                newJoins[index - 1] = e.value;
-                setSelectedJoins(newJoins);
-              }}
-              placeholder='Select Join'
-            />
-          )}
-          <Button onClick={() => removeTable(index)}>- Remove Table</Button>
-        </div>
-      ))}
-      <Button onClick={addTableDropdown}>+ Add Table</Button>
-      {selectedColumns.map((col, index) => (
-        <div key={index}>
-          <Dropdown
-            className='dropdown'
-            value={col.column}
-            options={columns}
-            onChange={e => {
-              const newColumns = [...selectedColumns];
-              newColumns[index] = { ...newColumns[index], column: e.value };
-              setSelectedColumns(newColumns);
-            }}
-            placeholder='Select Column'
-          />
-          <InputText
-            className='input'
-            type='text'
-            value={col.alias}
-            onChange={e => {
-              const newColumns = [...selectedColumns];
-              newColumns[index] = { ...newColumns[index], alias: e.target.value };
-              setSelectedColumns(newColumns);
-            }}
-            placeholder='Alias'
-          />
-          <Button onClick={() => removeColumn(index)}>- Remove Column</Button>
-        </div>
-      ))}
-      <Button onClick={addColumnDropdown}>+ Add Column</Button>
-      {whereClauses.map((clause, index) => (
-        <div key={index}>
-          <Dropdown
-            className='dropdown'
-            value={clause.column}
-            options={columns}
-            onChange={e => {
-              const newClauses = [...whereClauses];
-              newClauses[index] = { ...newClauses[index], column: e.value };
-              setWhereClauses(newClauses);
-            }}
-            placeholder='Select Column'
-          />
-            <InputText
-                className='input'
-                type='text'
-                value={clause.operator}
-                onChange={e => {
-                const newClauses = [...whereClauses];
-                newClauses[index] = { ...newClauses[index], operator: e.target.value };
-                setWhereClauses(newClauses);
-                }}
-                placeholder='Operator'
-            />
-
-            <InputText
-                className='input'
-                type='text'
-                value={clause.value}
-                onChange={e => {
-                const newClauses = [...whereClauses];
-                newClauses[index] = { ...newClauses[index], value: e.target.value };
-                setWhereClauses(newClauses);
-                }}
-                placeholder='Value'
-
-            />
-
-            <Button onClick={() => removeWhereClause(index)}>- Remove Where Clause</Button>
-
-        </div>
+    <div>
+      <AutoComplete
+        value={searchTerm}
+        suggestions={suggestions}
+        multiple
+        completeMethod={searchSuggestions}
+        onChange={(e) => {
+          setSearchTerm(e.value);
+          setSelectedTerms(e.value); // Update selectedTerms state
+        }}
+        placeholder="Search..."
+      />
+      <Button label="Submit" onClick={handleSubmit} /> {/* Add Submit button */}
+      <div>
+        <h3>Selected Terms:</h3>
+        {Object.keys(submittedTerms).map((category) => (
+          <div key={category}>
+            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
+            <ul>
+              {submittedTerms[category].map((term, index) => (
+                <li key={index}>{term}</li>
+              ))}
+            </ul>
+          </div>
         ))}
-        <Button onClick={addWhereClause}>+ Add Where Clause</Button>
-        <Button onClick={handleQuerySubmit}>Run Query</Button>
-
-        {result && !result.error && (
-        <DataTable value={result}>
-            {selectedColumns.map((col, index) => (
-            <Column key={index} field={col.alias || col.column.value} header={col.alias || col.column.label} />
-            ))}
-        </DataTable>
-        )}
-
-        {result && result.error && <div>Error: {result.error}</div>}
+      </div>
     </div>
-    );
-}
+  );
+};
 
 export default QueryTool;
