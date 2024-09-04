@@ -25,9 +25,28 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  text-align: center;
   position: center;
   width: 25%;
   height: 50%;
   overflow: auto;
-  padding-top: 25px;
+}
+
+.results h4 {
+  font-size: 1.5em; /* Make the title text bigger */
+  margin-bottom: 10px; /* Add some space below the title */
+}
+
+.results ul {
+  list-style-type: none; /* Removes bullet points */
+  padding: 0; /* Removes default padding */
+}
+
+.results li {
+  font-size: 1em; /* Default size for list items */
+  margin-bottom: 5px; /* Add some space between list items */
+}
+
+.p-card-title {
+  font-size: 2em;
 }
