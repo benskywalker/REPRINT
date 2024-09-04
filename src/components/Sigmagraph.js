@@ -166,7 +166,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   const handleNodeClick = (event) => {
     const nodeId = event.data.node.id;
     const nodeData = graph.nodes.find((node) => node.id === nodeId);
-
+    
     const nodeMetrics = {
       degree: metrics.degreeCentrality[nodeId],
       betweenness: metrics.betweennessCentrality[nodeId],
@@ -181,61 +181,69 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
   };
 
   const handleNodeHover = (event) => {
+    // const sigmaInstance = sigmaRef.current.sigma;
+    // const graphInstance = sigmaInstance.graph;
+
+    // const nodeId = event.data.node.id;
+    // const node = graphInstance.nodes(nodeId);
+
+    // const hoveredNodeData = graph.nodes.find((node) => node.id === nodeId);
+    // onNodeHover(hoveredNodeData);
+
+    // setHoveredNode({ id: nodeId, color: node.color });
+
+    // node.color = '#3aa2f4';
+
+    // node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
+
+    // graphInstance.edges().forEach((edge) => {
+    //   if (edge.source === nodeId || edge.target === nodeId) {
+    //     graphInstance.edges(edge.id).color = '#add8e6';
+    //     graphInstance.edges(edge.id).size = 3;
+    //   } else {
+    //     graphInstance.edges(edge.id).hidden = true;
+    //   }
+    // });
+
+    // sigmaInstance.refresh();
+
+    //get the current node
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
 
-    const nodeId = event.data.node.id;
-    const node = graphInstance.nodes(nodeId);
+    
 
-    const hoveredNodeData = graph.nodes.find((node) => node.id === nodeId);
-    onNodeHover(hoveredNodeData);
 
-    setHoveredNode({ id: nodeId, color: node.color });
 
-    node.color = '#3aa2f4';
-
-    node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
-
+    //get the edges of the current node
+    const edges = graphInstance.edges().filter((edge) => edge.source === event.data.node.id || edge.target === event.data.node.id);
+    //hide edges that are not connected to the current node
     graphInstance.edges().forEach((edge) => {
-      if (edge.source === nodeId || edge.target === nodeId) {
-        graphInstance.edges(edge.id).color = '#add8e6';
-        graphInstance.edges(edge.id).size = 3;
-      } else {
+      if (!edges.includes(edge)) {
         graphInstance.edges(edge.id).hidden = true;
       }
     });
 
+    //refresh the graph
     sigmaInstance.refresh();
   };
 
   const handleNodeOut = (event) => {
+    //reset the node color
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
+    
 
-    onNodeHover(null);
-
-    const hoveredNode = graphInstance.nodes(event.data.node.id);
-
-    if (hoveredNode) {
-      const node = graphInstance.nodes(hoveredNode.id);
-      if (node) {
-        graphInstance.edges().forEach((edge) => {
-          graphInstance.edges(edge.id).hidden = false;
-        });
-        node.color = hoveredNode.color;
-      }
-      setHoveredNode(null);
-    }
-
-    originalGraph.edges.forEach((edge) => {
-      const graphEdge = graphInstance.edges(edge.id);
-      if (graphEdge) {
-        graphEdge.color = edge.color;
-        graphEdge.size = edge.size;
-      }
+    //show all edges
+    graphInstance.edges().forEach((edge) => {
+      graphInstance.edges(edge.id).hidden = false;
     });
 
+    //refresh the graph
     sigmaInstance.refresh();
+
+   
+
   };
 
   useEffect(() => {
@@ -354,9 +362,9 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
             onOutNode={handleNodeOut}
             ref={sigmaRef}
           >
-            <NOverlap gridSize={10} maxIterations={100} maxNodeOverlap={0.5} />
+            <NOverlap gridSize={1} maxIterations={1} maxNodeOverlap={0.5} />
             <RandomizeNodePositions />
-            <RelativeSize initialSize={15} />
+            <RelativeSize initialSize={1} />
             {forceAtlasActive ? (
               <ForceAtlas2
                 barnesHutOptimize={true}  // Use Barnes-Hut optimization
@@ -370,9 +378,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
                 gravity={1}  // Gravity
                 slowDown={1}  // Slow down
                 startingIterations={1}  // Starting iterations
-                iterationsPerRender={1}  // Iterations per render
                 worker={true}  // Use worker
-
               />
             ) : (
               <></>
@@ -401,3 +407,4 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
 };
 
 export default SigmaGraph;
+		
