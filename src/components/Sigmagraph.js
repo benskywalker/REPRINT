@@ -12,7 +12,7 @@ import { centrality } from 'graphology-metrics';
 import pagerank from 'graphology-pagerank';
 import modularity from 'graphology-communities-louvain';
 
-const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, handleGraphUpdate }) => {
+const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, handleGraphUpdate, handleNodeunHover }) => {
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -47,6 +47,21 @@ const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, h
       graphInstance.edges(edge.id).hidden = false;
     });
 
+
+    //get node metrics
+    // const nodeMetrics = {
+    //   degree: centrality.degree(graphInstance, event.data.node.id),
+    //   betweenness: centrality.betweenness(graphInstance, event.data.node.id),
+    //   closeness: centrality.closeness(graphInstance, event.data.node.id),
+    //   eigenvector: centrality.eigenvector(graphInstance, event.data.node.id),
+    //   pageRank: pagerank(graphInstance, event.data.node.id),
+    // }
+    //set the hovered node
+    setHoveredNode(event.data.node.id);
+    setNodeDialogVisible(true)
+    onNodeHover(event.data.node);
+    
+
     // Refresh the graph
     sigmaInstance.refresh();
   }, []);
@@ -59,6 +74,11 @@ const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, h
     graphInstance.edges().forEach((edge) => {
       graphInstance.edges(edge.id).hidden = true;
     });
+
+    //un set the hovered node
+    setHoveredNode(null);
+    setNodeDialogVisible(false);
+    handleNodeunHover();
 
     // Refresh the graph
     sigmaInstance.refresh();

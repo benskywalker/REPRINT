@@ -97,18 +97,22 @@ const Home = ({ searchQuery }) => {
 
     const handleNodeHover = (nodeData) => {
 
-        const nodeMetrics = {
-            degreeCentrality: metrics.degreeCentrality[nodeData.id],
-            betweennessCentrality: metrics.betweennessCentrality[nodeData.id],
-            closenessCentrality: metrics.closenessCentrality[nodeData.id],
-            eigenvectorCentrality: metrics.eigenvectorCentrality[nodeData.id],
-            pageRank: metrics.pageRank[nodeData.id],
-            community: metrics.modularity[nodeData.id],
-        };
-        console.log(nodeMetrics);
+        // const nodeMetrics = {
+        //     degreeCentrality: metrics.degreeCentrality[nodeData.id],
+        //     betweennessCentrality: metrics.betweennessCentrality[nodeData.id],
+        //     closenessCentrality: metrics.closenessCentrality[nodeData.id],
+        //     eigenvectorCentrality: metrics.eigenvectorCentrality[nodeData.id],
+        //     pageRank: metrics.pageRank[nodeData.id],
+        //     community: metrics.modularity[nodeData.id],
+        // };
+        // console.log(nodeMetrics);
 
         setHoveredNodeData(nodeData);
     };
+
+    const handleNodeOut = () => {
+        setHoveredNodeData(null);
+    }
 
     const handleNodeClick = (node) => {
         console.log("Node clicked:", node);
@@ -197,6 +201,7 @@ const Home = ({ searchQuery }) => {
                                 data={filteredData} 
                                 onNodeClick={handleNodeClick}
                                 searchQuery={searchQuery}
+                                handleNodeunHover={handleNodeOut}
                                 // handleGraphUpdate={handleGraphUpdate}
                             />
                         )}
