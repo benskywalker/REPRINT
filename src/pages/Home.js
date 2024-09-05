@@ -55,9 +55,9 @@ const Home = ({ searchQuery }) => {
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
     };
 
-    // const handleGraphUpdate = (graph) => {
-    //     setGraph(graph);
-    // }
+    const handleGraphUpdate = (graph) => {
+        setGraph(graph);
+    }
     
 
     useEffect(() => {
@@ -202,7 +202,7 @@ const Home = ({ searchQuery }) => {
                                 onNodeClick={handleNodeClick}
                                 searchQuery={searchQuery}
                                 handleNodeunHover={handleNodeOut}
-                                // handleGraphUpdate={handleGraphUpdate}
+                                handleGraphUpdate={handleGraphUpdate}
                             />
                         )}
                     </SplitterPanel>

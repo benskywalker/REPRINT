@@ -117,7 +117,7 @@ const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, h
     const endDate = parseDate(newValue[1]);
 
     if (startDate === null && endDate === null) {
-      // handleGraphUpdate(originalGraph);
+      handleGraphUpdate(originalGraph);
       return;
     }
 
@@ -159,7 +159,7 @@ const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, h
       };
     });
 
-    // handleGraphUpdate({ nodes: updatedNodes, edges: filteredEdges });
+    handleGraphUpdate({ nodes: updatedNodes, edges: filteredEdges });
   }, [originalGraph]);
 
   return (
