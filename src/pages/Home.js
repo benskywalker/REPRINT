@@ -11,7 +11,13 @@ import { Dialog } from 'primereact/dialog'; // Import Dialog component from Prim
 import { v4 as uuidv4 } from 'uuid'; // Import uuid function
 import { DataTable } from 'primereact/datatable'; // Import DataTable and Column components from PrimeReact
 import { Column } from 'primereact/column'; // Import Column component from PrimeReact
-
+import axios from 'axios';
+import Graph from 'graphology';
+import { centrality } from 'graphology-metrics';
+import pagerank from 'graphology-pagerank';
+import modularity from 'graphology-communities-louvain';
+import ClipLoader from 'react-spinners/ClipLoader'; // Import ClipLoader from react-spinners
+import fetchGraphData from "../components/GraphData";
 const Home = ({ searchQuery }) => {
     const [data, setData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
@@ -21,6 +27,24 @@ const Home = ({ searchQuery }) => {
     const [timeRange, setTimeRange] = useState([0, 100]);
     const [dialogs, setDialogs] = useState([]);
     const [hoveredNodeData, setHoveredNodeData] = useState(null);
+    const [graph, setGraph] = useState({ nodes: [], edges: [] });
+    const [minDate, setMinDate] = useState(1600);
+    const [maxDate, setMaxDate] = useState(1500);
+    const [metrics, setMetrics] = useState(null);
+    const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
+
+    const getGraphData = async () => {
+        const graphData = await fetchGraphData("http://localhost:4000/relations");
+        console.log(graphData);
+        setGraph(graphData.graph);
+    }
+
+    useEffect(() => {
+        console.log("Fetching graph data on mount");
+
+        getGraphData();
+    }, []);
+
 
     const handleOpenClick = (rowData) => {
         const id = uuidv4();
@@ -30,6 +54,10 @@ const Home = ({ searchQuery }) => {
     const handleCloseDialog = (id) => {
         setDialogs((prevDialogs) => prevDialogs.filter(dialog => dialog.id !== id));
     };
+
+    // const handleGraphUpdate = (graph) => {
+    //     setGraph(graph);
+    // }
     
 
     useEffect(() => {
@@ -68,10 +96,22 @@ const Home = ({ searchQuery }) => {
     }, [dialogs]);
 
     const handleNodeHover = (nodeData) => {
+
+        const nodeMetrics = {
+            degreeCentrality: metrics.degreeCentrality[nodeData.id],
+            betweennessCentrality: metrics.betweennessCentrality[nodeData.id],
+            closenessCentrality: metrics.closenessCentrality[nodeData.id],
+            eigenvectorCentrality: metrics.eigenvectorCentrality[nodeData.id],
+            pageRank: metrics.pageRank[nodeData.id],
+            community: metrics.modularity[nodeData.id],
+        };
+        console.log(nodeMetrics);
+
         setHoveredNodeData(nodeData);
     };
 
     const handleNodeClick = (node) => {
+        console.log("Node clicked:", node);
         setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     };
 
@@ -131,13 +171,21 @@ const Home = ({ searchQuery }) => {
                         </div>
                     </SplitterPanel>
                     <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
-                        <SigmaGraph 
-                            onNodeHover={handleNodeHover} 
-                            className={styles.sigma} 
-                            data={filteredData} 
-                            onNodeClick={handleNodeClick}
-                            searchQuery={searchQuery}
-                        />
+                        {loading ? (
+                            <div className={styles.loaderContainer}>
+                                <ClipLoader color="#36d7b7" loading={loading} size={150} />
+                            </div>
+                        ) : (
+                            <SigmaGraph 
+                                graph={graph}
+                                onNodeHover={handleNodeHover} 
+                                className={styles.sigma} 
+                                data={filteredData} 
+                                onNodeClick={handleNodeClick}
+                                searchQuery={searchQuery}
+                                // handleGraphUpdate={handleGraphUpdate}
+                            />
+                        )}
                     </SplitterPanel>
                 </Splitter>
             </div>

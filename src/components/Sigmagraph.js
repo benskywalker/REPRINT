@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import axios from 'axios';
 import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2, NOverlap } from 'react-sigma';
 import ClipLoader from 'react-spinners/ClipLoader';
@@ -12,8 +12,7 @@ import { centrality } from 'graphology-metrics';
 import pagerank from 'graphology-pagerank';
 import modularity from 'graphology-communities-louvain';
 
-const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
-  const [graph, setGraph] = useState({ nodes: [], edges: [] });
+const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, handleGraphUpdate }) => {
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [loading, setLoading] = useState(true);
   const [selectedNode, setSelectedNode] = useState(null);
@@ -31,243 +30,41 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
 
   const sigmaRef = useRef(null);
 
-  const buildGraphologyGraph = (nodes, edges) => {
-    const graph = new Graph();
-
-    nodes.forEach(node => {
-      graph.addNode(node.id, { label: node.label, data: node.data });
-    });
-
-    edges.forEach(edge => {
-      graph.addEdge(edge.source, edge.target, { data: edge });
-    });
-
-    return graph;
-  };
-
-  const computeMetrics = (graph) => {
-    const metrics = {};
-  
-    metrics.degreeCentrality = centrality.degree(graph);
-    metrics.betweennessCentrality = centrality.betweenness(graph);
-    metrics.closenessCentrality = centrality.closeness(graph);
-    metrics.eigenvectorCentrality = centrality.eigenvector(graph);
-    metrics.pageRank = pagerank(graph); // Use pagerank from graphology-pagerank
-    metrics.modularity = modularity(graph);
-  
-    return metrics;
-  };
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('http://localhost:4000/relations');
-        const data = response.data;
-
-        const nodes = [];
-        const edges = [];
-        const nodeIds = new Set();
-        const edgeIds = new Set();
-
-        const edgeColors = {
-          document: '#5d94eb',
-          organization: '#33FF57',
-          religion: '#3357FF',
-          relationship: '#FF33A1',
-        };
-
-        data.nodes.forEach((node) => {
-          const newNode = {
-            id: node.id,
-            label: node.personStdName || node.organizationName || node.religionDesc,
-            size: 3,
-            color: '#fffff0',
-            data: node,
-          };
-
-          if (!nodeIds.has(newNode.id)) {
-            nodes.push(newNode);
-            nodeIds.add(newNode.id);
-          }
-        });
-
-        data.edges.forEach((edge) => {
-          if (edge.from !== edge.to) {
-            const edgeId = `edge-${edge.from}-${edge.to}`;
-
-            if (!edgeIds.has(edgeId)) {
-              const newEdge = {
-                id: edgeId,
-                source: edge.from,
-                target: edge.to,
-                color: edgeColors[edge.type] || '#ccc',
-                size: 2,
-                ...edge,
-              };
-
-              if (newEdge.date) {
-                const date = new Date(newEdge.date);
-                if (date.getFullYear() < minDate) {
-                  setMinDate(date.getFullYear());
-                }
-                if (date.getFullYear() > maxDate) {
-                  setMaxDate(date.getFullYear());
-                }
-              }
-
-              edges.push(newEdge);
-              edgeIds.add(edgeId);
-            }
-          }
-        });
-
-        nodes.forEach((node) => {
-          node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
-        });
-
-        const graphologyGraph = buildGraphologyGraph(nodes, edges);
-
-        // Compute communities using Louvain method
-        const communities = modularity(graphologyGraph);
-
-        // Apply community-based coloring
-        const communityColors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3'];
-        graphologyGraph.forEachNode((node, attributes) => {
-          const communityId = communities[node];
-          graphologyGraph.setNodeAttribute(node, 'community', communityId);
-          graphologyGraph.setNodeAttribute(node, 'color', communityColors[communityId % communityColors.length]);
-        });
-
-        // Update nodes with community colors
-        const updatedNodes = nodes.map((node) => {
-          const communityId = graphologyGraph.getNodeAttribute(node.id, 'community');
-          return {
-            ...node,
-            color: communityColors[communityId % communityColors.length],
-          };
-        });
-
-        const calculatedMetrics = computeMetrics(graphologyGraph);
-        setMetrics(calculatedMetrics);
-        console.log('Metrics:', calculatedMetrics);
-
-        setGraph({ nodes: updatedNodes, edges });
-        setOriginalGraph({ nodes: updatedNodes, edges });
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  const handleNodeClick = (event) => {
+  const handleNodeClick = useCallback((event) => {
     const nodeId = event.data.node.id;
     const nodeData = graph.nodes.find((node) => node.id === nodeId);
-    
-    const nodeMetrics = {
-      degree: metrics.degreeCentrality[nodeId],
-      betweenness: metrics.betweennessCentrality[nodeId],
-      closeness: metrics.closenessCentrality[nodeId],
-      eigenvector: metrics.eigenvectorCentrality[nodeId],
-      pagerank: metrics.pageRank[nodeId],
-    };
-
-    setSelectedNode({ ...nodeData, metrics: nodeMetrics });
-    setNodeDialogVisible(true);
     onNodeClick(nodeData);
-  };
+  }, [graph, onNodeClick]);
 
-  const handleNodeHover = (event) => {
-    // const sigmaInstance = sigmaRef.current.sigma;
-    // const graphInstance = sigmaInstance.graph;
-
-    // const nodeId = event.data.node.id;
-    // const node = graphInstance.nodes(nodeId);
-
-    // const hoveredNodeData = graph.nodes.find((node) => node.id === nodeId);
-    // onNodeHover(hoveredNodeData);
-
-    // setHoveredNode({ id: nodeId, color: node.color });
-
-    // node.color = '#3aa2f4';
-
-    // node.label = node.data.personStdName || node.data.organizationName || node.data.religionDesc;
-
-    // graphInstance.edges().forEach((edge) => {
-    //   if (edge.source === nodeId || edge.target === nodeId) {
-    //     graphInstance.edges(edge.id).color = '#add8e6';
-    //     graphInstance.edges(edge.id).size = 3;
-    //   } else {
-    //     graphInstance.edges(edge.id).hidden = true;
-    //   }
-    // });
-
-    // sigmaInstance.refresh();
-
-    //get the current node
+  const handleNodeHover = useCallback((event) => {
     const sigmaInstance = sigmaRef.current.sigma;
     const graphInstance = sigmaInstance.graph;
 
-    
-
-
-
-    //get the edges of the current node
+    // Get the edges of the current node
     const edges = graphInstance.edges().filter((edge) => edge.source === event.data.node.id || edge.target === event.data.node.id);
-    //hide edges that are not connected to the current node
-    graphInstance.edges().forEach((edge) => {
-      if (!edges.includes(edge)) {
-        graphInstance.edges(edge.id).hidden = true;
-      }
-    });
-
-    //refresh the graph
-    sigmaInstance.refresh();
-  };
-
-  const handleNodeOut = (event) => {
-    //reset the node color
-    const sigmaInstance = sigmaRef.current.sigma;
-    const graphInstance = sigmaInstance.graph;
-    
-
-    //show all edges
-    graphInstance.edges().forEach((edge) => {
+    // Show the edges
+    edges.forEach((edge) => {
       graphInstance.edges(edge.id).hidden = false;
     });
 
-    //refresh the graph
+    // Refresh the graph
     sigmaInstance.refresh();
+  }, []);
 
-   
+  const handleNodeOut = useCallback((event) => {
+    const sigmaInstance = sigmaRef.current.sigma;
+    const graphInstance = sigmaInstance.graph;
 
-  };
+    // Hide the edges
+    graphInstance.edges().forEach((edge) => {
+      graphInstance.edges(edge.id).hidden = true;
+    });
 
-  useEffect(() => {
-    if (Object.keys(selectedFilters).length === 0 && !searchQuery) {
-      setGraph(originalGraph);
-    } else {
-      if (originalGraph.edges && originalGraph.nodes) {
-        const filteredEdges = originalGraph.edges.filter((edge) => {
-          return selectedFilters[edge.type];
-        });
+    // Refresh the graph
+    sigmaInstance.refresh();
+  }, []);
 
-        const filteredNodes = originalGraph.nodes.filter((node) => {
-          const matchesSearchQuery = searchQuery ? node.data.fullName.toLowerCase().includes(searchQuery.toLowerCase()) : true;
-          return filteredEdges.some((edge) => edge.source === node.id || edge.target === node.id) || matchesSearchQuery;
-        });
-
-        setGraph({ nodes: filteredNodes, edges: filteredEdges });
-      } else {
-        console.error('Original graph nodes or edges are undefined');
-      }
-    }
-  }, [selectedFilters, originalGraph, searchQuery]);
-
-  const handleTimeRangeChange = (event, newValue) => {
+  const handleTimeRangeChange = useCallback((event, newValue) => {
     setTimeRange(newValue);
 
     const parseDate = (dateStr) => {
@@ -300,7 +97,7 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
     const endDate = parseDate(newValue[1]);
 
     if (startDate === null && endDate === null) {
-      setGraph(originalGraph);
+      // handleGraphUpdate(originalGraph);
       return;
     }
 
@@ -342,69 +139,58 @@ const SigmaGraph = ({ onNodeClick, searchQuery, onNodeHover }) => {
       };
     });
 
-    setGraph({ nodes: updatedNodes, edges: filteredEdges });
-  };
+    // handleGraphUpdate({ nodes: updatedNodes, edges: filteredEdges });
+  }, [originalGraph]);
 
   return (
     <div className={styles.content}>
-      {loading ? (
-        <div className={styles.loaderContainer}>
-          <ClipLoader size={50} color={'#123abc'} loading={loading} />
-        </div>
-      ) : (
-        <>
-          <Sigma
-            key={JSON.stringify(graph)}
-            graph={graph}
-            style={{ width: '100%', height: '100vh' }}
-            onClickNode={handleNodeClick}
-            onOverNode={handleNodeHover}
-            onOutNode={handleNodeOut}
-            ref={sigmaRef}
-          >
-            <NOverlap gridSize={1} maxIterations={1} maxNodeOverlap={0.5} />
-            <RandomizeNodePositions />
-            <RelativeSize initialSize={1} />
-            {forceAtlasActive ? (
-              <ForceAtlas2
-                barnesHutOptimize={true}  // Use Barnes-Hut optimization
-                barnesHutTheta={0.5}  // Barnes-Hut theta parameter
-                linLogMode={false}  // Use LinLog mode
-                outboundAttractionDistribution={false}  // Use outbound attraction distribution
-                adjustSizes={false}  // Adjust node sizes
-                edgeWeightInfluence={0}  // Edge weight influence
-                scalingRatio={2}  // Scaling ratio
-                strongGravityMode={false}  // Strong gravity mode
-                gravity={1}  // Gravity
-                slowDown={1}  // Slow down
-                startingIterations={1}  // Starting iterations
-                worker={true}  // Use worker
-              />
-            ) : (
-              <></>
-            )}
-          </Sigma>
-          <div className={styles.time}>
-            <Slider
-              value={timeRange}
-              onChange={(event, newValue) => setTimeRange(newValue)}
-              onChangeCommitted={handleTimeRangeChange}
-              valueLabelDisplay="auto"
-              min={minDate}
-              max={maxDate}
-              step={1}
-              className={styles.slider}
+      <>
+        <Sigma
+          key="sigma-graph"
+          graph={graph}
+          style={{ width: '100%', height: '100vh' }}
+          onClickNode={handleNodeClick}
+          onOverNode={handleNodeHover}
+          onOutNode={handleNodeOut}
+          ref={sigmaRef}
+        >
+          <NOverlap gridSize={1} maxIterations={1} maxNodeOverlap={0.5} />
+          <RandomizeNodePositions />
+          <RelativeSize initialSize={1} />
+            <ForceAtlas2
+              barnesHutOptimize={true}  // Use Barnes-Hut optimization
+              barnesHutTheta={0.5}  // Barnes-Hut theta parameter
+              linLogMode={false}  // Use LinLog mode
+              outboundAttractionDistribution={false}  // Use outbound attraction distribution
+              adjustSizes={false}  // Adjust node sizes
+              edgeWeightInfluence={0}  // Edge weight influence
+              scalingRatio={2}  // Scaling ratio
+              strongGravityMode={false}  // Strong gravity mode
+              gravity={.01}  // Gravity
+              slowDown={5}  // Slow down
+              startingIterations={1}  // Starting iterations
+              worker={true}  // Use worker
             />
-          </div>
-          <div className={styles.timePeriod}>
-            <span>{timeRange[0]}</span> -
-            <span>{timeRange[1]}</span>
-          </div>
-        </>
-      )}
+        </Sigma>
+        <div className={styles.time}>
+          <Slider
+            value={timeRange}
+            onChange={(event, newValue) => setTimeRange(newValue)}
+            onChangeCommitted={handleTimeRangeChange}
+            valueLabelDisplay="auto"
+            min={minDate}
+            max={maxDate}
+            step={1}
+            className={styles.slider}
+          />
+        </div>
+        <div className={styles.timePeriod}>
+          <span>{timeRange[0]}</span> -
+          <span>{timeRange[1]}</span>
+        </div>
+      </>
     </div>
   );
-};
+});
 
 export default SigmaGraph;
-		
