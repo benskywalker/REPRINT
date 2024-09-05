@@ -9,14 +9,14 @@
 
 .gallery-item {
   display: flex;
+  align-items: flex-start;
   flex-direction: column;
-  align-items: center;
   border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
-  width: 200px; /* Increased width */
+  width: 350px; /* Increased width */
   height: 200px; /* Increased height */
   cursor: pointer;
   /* background-color: white; */
@@ -27,15 +27,45 @@
 }
 
 .gallery-item img {
-  width: 100%;
+  position: relative;
+  border-radius: 5px;
+  margin-right: 10px;
+  width: 50%;
   height: 150px; /* Adjusted height */
   object-fit: cover;
 }
 
-.gallery-item div {
-  padding: 10px;
-  text-align: center;
-  font-size: 16px;
+.gallery-text {
+  text-align: start;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.gallery-title {
+  font-size: 15px;
   font-weight: bold;
-  word-wrap: break-word; /* Ensure text wraps properly */
+  white-space: nowrap;
+  /* background-color: beige; */
+}
+
+.gallery-subtitle {
+  font-size: 14px;
+  font-style: italic;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  /* background-color: beige; */
+}
+
+.gallery-bio {
+  font-size: 12px;
+  /* font-weight: bold; */
+  /* background-color: beige; */
+}
+
+.p-card-content {
+  display: flex;
+  align-items: start;
+  padding: 10px;
+  /* background-color: beige; */
 }

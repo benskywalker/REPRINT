@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
-import NodeDetails from "../components/NodeDetails";
+
 import { Dialog } from "primereact/dialog";
+
+import NodeDetails from "../components/NodeDetails";
 import Filter from "../components/Filter";
+import GalleryEntry from "../components/GalleryEntry";
+
 import "../components/Filter.css";
 import "./Gallery.css";
 
@@ -38,6 +42,7 @@ const Gallery = ({ searchQuery }) => {
   }, []);
 
   const handleButtonClick = (person) => {
+    console.log(person);
     const newDialog = {
       id: person.personID,
       nodeData: {
@@ -101,11 +106,10 @@ const Gallery = ({ searchQuery }) => {
             className="gallery-item"
             onClick={() => handleButtonClick(person)}
           >
-            <img
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"
-              alt={person.firstName + " " + person.lastName}
+            <GalleryEntry
+              image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
+              name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
             />
-            <div>{capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}</div>
           </div>
         ))}
       </div>
