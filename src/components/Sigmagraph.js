@@ -154,7 +154,7 @@ const SigmaGraph = React.memo(({ onNodeClick, searchQuery, onNodeHover, graph, h
           onOutNode={handleNodeOut}
           ref={sigmaRef}
         >
-          <NOverlap gridSize={1} maxIterations={1} maxNodeOverlap={0.5} />
+          {/* <NOverlap gridSize={1} maxIterations={1} maxNodeOverlap={0.5} /> */}
           <RandomizeNodePositions />
           <RelativeSize initialSize={1} />
             <ForceAtlas2
