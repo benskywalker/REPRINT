@@ -88,21 +88,35 @@ const Home = ({ searchQuery }) => {
     const renderHeader = (node, index) => (
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span>{node.data.fullName}</span>
-            <Button icon="pi pi-external-link" className="p-button-rounded p-button-text" onClick={() => handleOpenClick(node)} />
-            <Button icon="pi pi-times" className="p-button-rounded p-button-text" onClick={() => handleCloseNode(index)} />
+            <Button 
+                icon="pi pi-external-link" 
+                className="p-button-rounded p-button-text" 
+                onClick={(event) => {
+                    event.stopPropagation(); // Prevents the accordion from opening
+                    handleOpenClick(node);
+                }} 
+            />
+            <Button 
+                icon="pi pi-times" 
+                className="p-button-rounded p-button-text" 
+                onClick={(event) => {
+                    event.stopPropagation(); // Prevents the accordion from opening
+                    handleCloseNode(index);
+                }} 
+            />
         </div>
     );
+    
 
-    const renderAccordion = (rowData) => (
-        <Accordion>
-            <AccordionTab header={renderHeader(rowData, selectedNodes.indexOf(rowData))}>
-                <div style={{ overflow: 'auto', maxHeight: '100%' }}>
-                    <NodeDetails nodeData={rowData} handleNodeClick={handleNodeClick} />
+    const renderAccordion = (rowData, index) => (
+        <Accordion key={rowData.data.id}>  {/* Assuming each node has a unique 'id' */}
+            <AccordionTab header={renderHeader(rowData, index)}>
+                <div style={{ overflow: 'auto', maxHeight: '45vh' }}>
+                    <NodeDetails key={rowData.data.id} nodeData={rowData} handleNodeClick={handleNodeClick} className="accordion-node-details"/>
                 </div>
             </AccordionTab>
         </Accordion>
     );
-
     return (
         <>
             <div className={styles.content}>
@@ -123,7 +137,7 @@ const Home = ({ searchQuery }) => {
                                     >
                                         <Column
                                             body={rowData => renderAccordion(rowData)}
-                                            header="Details"
+                                            header="Sidecars"
                                         />
                                     </DataTable>
                                 </div>

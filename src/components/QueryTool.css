@@ -33,7 +33,7 @@
 }
 
 .results h4 {
-  font-size: 1.5em; /* Make the title text bigger */
+  font-size: 1.8em; /* Make the title text bigger */
   margin-bottom: 10px; /* Add some space below the title */
 }
 
@@ -48,5 +48,5 @@
 }
 
 .p-card-title {
-  font-size: 2em;
+  font-size: 2.5em;
 }
