@@ -4,10 +4,8 @@ import { centrality } from 'graphology-metrics';
 import pagerank from 'graphology-pagerank';
 import modularity from 'graphology-communities-louvain';
 
-const fetchGraphData = async (url) => {
+const fetchGraphData = async (url, minDate, maxDate) => {
     const graph = { nodes: [], edges: [] };
-    let minDate = 1600;
-    let maxDate = 1500;
     let metrics = null;
     let originalGraph = { nodes: [], edges: [] };
 
@@ -39,7 +37,11 @@ const fetchGraphData = async (url) => {
     };
 
     try {
-        const response = await axios.get(url);
+        const body = {
+          minDate,
+          maxDate,
+        };
+        const response = await axios.post(url, body);
         const data = response.data;
 
         const nodes = [];
