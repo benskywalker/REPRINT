@@ -155,10 +155,10 @@ const Home = ({ searchQuery }) => {
   };
   
   const handleTimeRangeCommit = async (event, newValue) => {
-    // Update the graph by pruning nodes and edges that are outside the time range
-    const graphData = await fetchGraphData('http://localhost:4000/relations', newValue[0], newValue[1]);
-    setGraph(graphData.graph);
-    setMetrics(graphData.metrics);
+    // // Update the graph by pruning nodes and edges that are outside the time range
+    // const graphData = await fetchGraphData('http://localhost:4000/relations', newValue[0], newValue[1]);
+    // setGraph(graphData.graph);
+    // setMetrics(graphData.metrics);
   };
   const renderHeader = (node, index) => (
     <div
