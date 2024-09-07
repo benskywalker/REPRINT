@@ -11,10 +11,10 @@
 
 
 .relativeContainer {
-    position: relative;
-    width: 100%;
-    /* calculate height by 100vh - header height */
-    /* height: calc(100vh - 60px); */
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto; /* Ensure the content adapts */
   }
   
   .hoverNodeInfo {
@@ -26,14 +26,6 @@
     z-index: 10; /* Ensure it appears above the DataTable */
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
   }
-
-  .accordion .accordion-node-details {
-    /* Add your custom styles here */
-    /* height: 2vh; */
-    /* Any other styles you want to apply */
-}
-
-
 
 .graphContainer {
     width: 100%;
@@ -69,3 +61,19 @@
     height: 100vh;
     width: 100%;
 }
+
+.dataTableContainer {
+    height: 100%;
+    overflow-y: auto; /* Enable scrolling for large content */
+  }
+  
+  .accordionContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  
+  .accordionContainer .p-accordion-content {
+    flex-grow: 1;
+    overflow-y: auto;
+  }

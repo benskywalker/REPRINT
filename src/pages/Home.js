@@ -187,14 +187,13 @@ const Home = ({ searchQuery }) => {
   )
 
   const renderAccordion = (rowData, index) => (
-    <Accordion key={rowData.data.id}>  {/* Use a unique key */}
+    <Accordion key={rowData.data.id} >  {/* Use a unique key */}
       <AccordionTab header={renderHeader(rowData, index)}>
-        <div style={{ overflow: 'auto', maxHeight: '45vh' }}>
+        <div style={{ overflow: 'auto', maxHeight: '45vh', width:'auto' }}>
           <NodeDetails
             key={rowData.data.id}
             nodeData={rowData}
             handleNodeClick={handleNodeClick}
-            className='accordion-node-details'
           />
         </div>
       </AccordionTab>
@@ -204,28 +203,28 @@ const Home = ({ searchQuery }) => {
     <>
       <div className={styles.content}>
         <Splitter style={{ overflowY: 'auto' }}>
-          <SplitterPanel size={30} minSize={0}>
+          <SplitterPanel size={30} minSize={0}  style={{ overflow: 'auto' }}>
             <div className={styles.relativeContainer}>
-              {hoveredNodeData ? (
+              {/* {hoveredNodeData ? (
                 <div className={styles.hoverNodeInfo}>
                   <span>{hoveredNodeData.data.fullName}</span>
                 </div>
-              ) : (
+              ) : ( */}
                 <div className={styles.dataTableContainer}>
-<DataTable
-  value={selectedNodes}
-  reorderableRows
-  onRowReorder={onRowReorder}
-  style={{ width: '100%', height: '100%' }}
-  key={selectedNodes.length}  
->
-  <Column
-    body={(rowData, index) => renderAccordion(rowData, index)}
-    header="Sidecars"
-  />
-</DataTable>
+                  <DataTable
+                    value={selectedNodes}
+                    reorderableRows
+                    onRowReorder={onRowReorder}
+                    style={{ width: '100%', height: '100%' }}
+                    key={selectedNodes.length}  
+                  >
+                    <Column
+                      body={(rowData, index) => renderAccordion(rowData, index)}
+                      header={hoveredNodeData ? hoveredNodeData.data.fullName : 'Sidecars'}
+                    />
+                  </DataTable>
                 </div>
-              )}
+              {/* )} */}
             </div>
           </SplitterPanel>
           <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
