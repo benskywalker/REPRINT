@@ -105,12 +105,13 @@ const Home = ({ searchQuery }) => {
     setSelectedNodes(prevSelectedNodes => [...prevSelectedNodes, node])
   }
 
-  const handleCloseNode = rowIndex => {
-    setSelectedNodes(prevSelectedNodes =>
-      prevSelectedNodes.filter((_, index) => index !== rowIndex)
-    )
-  }
-
+  const handleCloseNode = (rowIndex) => {
+    console.log(rowIndex.rowIndex)
+    setSelectedNodes((prevSelectedNodes) => {
+      const updatedNodes = prevSelectedNodes.filter((_, index) => index !== rowIndex.rowIndex);
+      return [...updatedNodes];  // Ensure a new array is returned to trigger re-render
+    });
+  };
   const onRowReorder = event => {
     setSelectedNodes(event.value) // Update the state with new row order
   }
@@ -174,6 +175,7 @@ const Home = ({ searchQuery }) => {
         className='p-button-rounded p-button-text'
         onClick={event => {
           event.stopPropagation() // Prevents the accordion from opening
+          event.preventDefault();  // Prevent the default behavior (URL change)
           handleOpenClick(node)
         }}
       />
@@ -182,6 +184,7 @@ const Home = ({ searchQuery }) => {
         className='p-button-rounded p-button-text'
         onClick={event => {
           event.stopPropagation() // Prevents the accordion from opening
+          event.preventDefault();  // Prevent the default behavior (URL change)
           handleCloseNode(index)
         }}
       />
@@ -189,9 +192,7 @@ const Home = ({ searchQuery }) => {
   )
 
   const renderAccordion = (rowData, index) => (
-    <Accordion key={rowData.data.id}>
-      {' '}
-      {/* Assuming each node has a unique 'id' */}
+    <Accordion key={rowData.data.id}>  {/* Use a unique key */}
       <AccordionTab header={renderHeader(rowData, index)}>
         <div style={{ overflow: 'auto', maxHeight: '45vh' }}>
           <NodeDetails
@@ -203,7 +204,7 @@ const Home = ({ searchQuery }) => {
         </div>
       </AccordionTab>
     </Accordion>
-  )
+  );
   return (
     <>
       <div className={styles.content}>
@@ -216,17 +217,18 @@ const Home = ({ searchQuery }) => {
                 </div>
               ) : (
                 <div className={styles.dataTableContainer}>
-                  <DataTable
-                    value={selectedNodes}
-                    reorderableRows
-                    onRowReorder={onRowReorder}
-                    style={{ width: '100%', height: '100%' }}
-                  >
-                    <Column
-                      body={rowData => renderAccordion(rowData)}
-                      header='Sidecars'
-                    />
-                  </DataTable>
+<DataTable
+  value={selectedNodes}
+  reorderableRows
+  onRowReorder={onRowReorder}
+  style={{ width: '100%', height: '100%' }}
+  key={selectedNodes.length}  
+>
+  <Column
+    body={(rowData, index) => renderAccordion(rowData, index)}
+    header="Sidecars"
+  />
+</DataTable>
                 </div>
               )}
             </div>
