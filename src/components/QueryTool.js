@@ -1,168 +1,84 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { AutoComplete } from "primereact/autocomplete";
-import { Button } from "primereact/button";
+
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { InputText } from "primereact/inputtext";
+import { InputIcon } from "primereact/inputicon";
+import { IconField } from "primereact/iconfield";
+
 import "./QueryTool.css";
-import { Card } from "primereact/card";
+import { FilterMatchMode } from "primereact/api";
 
 const QueryTool = () => {
-  const [data, setData] = useState({
-    person: [],
-    keyword: [],
-    organizationtype: [],
-    occupation: [],
-    place: [],
-    relationshiptype: [],
-    religion: [],
-    repositorie: [],
-    role: [],
-  });
+  const [people, setPeople] = useState([]);
+  const [globalFilterValue, setGlobalFilterValue] = useState('');
+  const [filters, setFilters] = useState({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    birthDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    deathDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    gender: { value: null, matchMode: FilterMatchMode.CONTAINS },
+});
+  const [loading, setLoading] = useState(true);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState({});
-  const [selectedTerms, setSelectedTerms] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [submittedTerms, setSubmittedTerms] = useState({});
+const onGlobalFilterChange = (e) => {
+  const value = e.target.value;
+  let _filters = { ...filters };
 
-  const apiEndpoint = "http://localhost:4000/base_query";
+  _filters['global'].value = value;
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(apiEndpoint);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [apiEndpoint]);
+  setFilters(_filters);
+  setGlobalFilterValue(value);
+};
 
   useEffect(() => {
-    const filterData = () => {
-      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
-      const filtered = {
-        person: data.person.filter((p) =>
-          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
-        ),
-        keyword: data.keyword.filter((k) =>
-          k.keyword.toLowerCase().includes(term)
-        ),
-        organizationtype: data.organizationtype.filter((o) =>
-          o.organizationName.toLowerCase().includes(term)
-        ),
-        occupation: data.occupation.filter((o) =>
-          (o.occupationDesc || "").toLowerCase().includes(term)
-        ),
-        place: data.place.filter((p) =>
-          p.placeNameStd.toLowerCase().includes(term)
-        ),
-        relationshiptype: data.relationshiptype.filter((r) =>
-          r.relationshipDesc.toLowerCase().includes(term)
-        ),
-        religion: data.religion.filter((r) =>
-          r.religionDesc.toLowerCase().includes(term)
-        ),
-        repositorie: data.repositorie.filter((r) =>
-          r.repoDesc.toLowerCase().includes(term)
-        ),
-        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
-      };
-      setFilteredData(filtered);
+    const getPeople = async () => {
+      const response = await axios.get("http://localhost:4000/persons");
+      setPeople(response.data);
+      setLoading(false);
     };
-    filterData();
-  }, [searchTerm, data]);
 
-  const searchSuggestions = (event) => {
-    const query = event.query.toLowerCase();
-    const allData = [
-      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
-      ...data.keyword.map((k) => k.keyword),
-      ...data.organizationtype.map((o) => o.organizationName),
-      ...data.occupation.map((o) => o.occupationDesc || ""),
-      ...data.place.map((p) => p.placeNameStd),
-      ...data.relationshiptype.map((r) => r.relationshipDesc),
-      ...data.religion.map((r) => r.religionDesc),
-      ...data.repositorie.map((r) => r.repoDesc),
-      ...data.role.map((r) => r.roleDesc),
-    ];
-    setSuggestions(
-      allData.filter((item) => item.toLowerCase().includes(query))
+    getPeople();
+  }, []);
+
+  const capitalize = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  }
+
+  people.map((person) => {
+    person.name = capitalize(person.firstName) + " " + capitalize(person.lastName);
+  })
+
+  const peopleColumns = [
+    { field : "name", header : "Name" },
+    { field : "birthDate", header : "DOB" },
+    { field : "deathDate", header : "DOD" },
+    { field : "gender", header : "Gender"},
+  ];
+
+  const globalFilterFields = ['name'];
+
+  const renderHeader = () => {
+    return (
+        <div className="flex justify-content-end">
+            <IconField iconPosition="left">
+                <InputIcon className="pi pi-search" />
+                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+            </IconField>
+        </div>
     );
-  };
+}
 
-  const handleSubmit = () => {
-    const categorizedTerms = {
-      person: [],
-      keyword: [],
-      organizationtype: [],
-      occupation: [],
-      place: [],
-      relationshiptype: [],
-      religion: [],
-      repositorie: [],
-      role: [],
-    };
-
-    selectedTerms.forEach((term) => {
-      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
-        categorizedTerms.person.push(term);
-      } else if (data.keyword.some((k) => k.keyword === term)) {
-        categorizedTerms.keyword.push(term);
-      } else if (
-        data.organizationtype.some((o) => o.organizationName === term)
-      ) {
-        categorizedTerms.organizationtype.push(term);
-      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
-        categorizedTerms.occupation.push(term);
-      } else if (data.place.some((p) => p.placeNameStd === term)) {
-        categorizedTerms.place.push(term);
-      } else if (
-        data.relationshiptype.some((r) => r.relationshipDesc === term)
-      ) {
-        categorizedTerms.relationshiptype.push(term);
-      } else if (data.religion.some((r) => r.religionDesc === term)) {
-        categorizedTerms.religion.push(term);
-      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
-        categorizedTerms.repositorie.push(term);
-      } else if (data.role.some((r) => r.roleDesc === term)) {
-        categorizedTerms.role.push(term);
-      }
-    });
-
-    setSubmittedTerms(categorizedTerms);
-  };
+  const header = renderHeader();
 
   return (
-    <div className="container">
-      <AutoComplete
-        className="autocomplete"
-        // Inline style to override PrimeReact CSS
-        value={searchTerm}
-        suggestions={suggestions}
-        multiple
-        completeMethod={searchSuggestions}
-        onChange={(e) => {
-          setSearchTerm(e.value);
-          setSelectedTerms(e.value);
-        }}
-        placeholder="Search..."
-      />
-      <Button label="Submit" className="button" onClick={handleSubmit} />
-      <Card title="Selected Results" className="results">
-        {Object.keys(submittedTerms).map((category) => (
-          <>
-            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-            <ul>
-              {submittedTerms[category].map((term, index) => (
-                <li key={index}>{term}</li>
-              ))}
-            </ul>
-          </>
-        ))}
-      </Card>
-    </div>
-  );
+     <DataTable value = {people} dataKey = 'personID' filter = {filters} filterDisplay="row" paginator rows={20} header = {header} size = "small" tableStyle={{ minWidth: '50rem' }} showGridlines globalFilterFields={globalFilterFields} loading = {loading}>
+      {peopleColumns.map((col, i) => (
+        <Column key = {i} field = {col.field} header = {col.header} sortable filter filterPlaceholder="Search" />
+      ))}
+     </DataTable>
+   );
 };
 
 export default QueryTool;
