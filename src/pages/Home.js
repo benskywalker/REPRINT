@@ -51,7 +51,9 @@ const Home = ({ searchQuery }) => {
   }
 
   const handleCloseDialog = id => {
+    console.log('Closing dialog:', id)
     setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id))
+    console.log(dialogs)
   }
 
   const handleGraphUpdate = graph => {
@@ -84,13 +86,6 @@ const Home = ({ searchQuery }) => {
       setFilteredData(filtered)
     }
   }, [timeRange, document])
-
-  useEffect(() => {
-    if (dialogs.length > 0) {
-      // Trigger re-render to ensure Dialog resizes correctly
-      setDialogs([...dialogs])
-    }
-  }, [dialogs])
 
   const handleNodeHover = nodeData => {
     setHoveredNodeData(nodeData)
