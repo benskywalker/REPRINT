@@ -27,6 +27,7 @@ const Home = ({ searchQuery }) => {
   const [maxDate, setMaxDate] = useState(1800)
   const [metrics, setMetrics] = useState(null)
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] })
+  const [showEdges, setShowEdges] = useState(true)
 
   const getGraphData = async () => {
     const graphData = await fetchGraphData('http://localhost:4000/relations', 1600, 1700)
@@ -238,6 +239,7 @@ const Home = ({ searchQuery }) => {
               </div>
             ) : (
               <div className={styles.graphContainer}>
+                <Button label='Show Edges' onClick={() => setShowEdges(!showEdges)} />
                 <SigmaGraph
                   graph={graph}
                   onNodeHover={handleNodeHover}
@@ -247,6 +249,7 @@ const Home = ({ searchQuery }) => {
                   searchQuery={searchQuery}
                   handleNodeunHover={handleNodeOut}
                   handleGraphUpdate={handleGraphUpdate}
+                  showEdges={showEdges}
                 />
                 <div className={styles.sliderContainer}>
                   <Slider

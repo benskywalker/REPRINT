@@ -36,6 +36,26 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         return metrics;
     };
 
+    // Helper function to generate random dark colors
+    const generateRandomDarkColor = () => {
+      const r = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
+  const g = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
+  const b = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
+  return `rgb(${r}, ${g}, ${b})`;
+    };
+
+    const getEdgeColor = (type) => {
+      const edgeColors = {
+        document: '#33415C',  // Dark blue
+        organization: '#4B3F72',  // Dark purple
+        religion: '#3A3F44',  // Dark grey
+        relationship: '#4A566E',  // Grey-blue
+        default: '#2C2E3E',  // A fallback dark blue-grey color
+      };
+
+      return edgeColors[type] || edgeColors.default;
+    };
+
     try {
         const body = {
           minDate,
@@ -49,20 +69,16 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         const nodeIds = new Set();
         const edgeIds = new Set();
 
-        const edgeColors = {
-          document: '#5d94eb',
-          organization: '#33FF57',
-          religion: '#3357FF',
-          relationship: '#FF33A1',
-        };
-
         data.nodes.forEach((node) => {
           const newNode = {
             id: node.id,
             label: node.personStdName || node.organizationName || node.religionDesc,
-            size: 3,
-            color: '#fffff0',
+            size: 15, // Slightly larger node size
+            color: '#336699', // Professional blue color
+            borderColor: '#000000', // Black border for sharper contrast
+            borderWidth: 3, // Thicker borders for clarity
             data: node,
+            highlighted: false, // Option to highlight nodes on hover later
           };
 
           if (!nodeIds.has(newNode.id)) {
@@ -80,9 +96,11 @@ const fetchGraphData = async (url, minDate, maxDate) => {
                 id: edgeId,
                 source: edge.from,
                 target: edge.to,
-                color: edgeColors[edge.type] || '#ccc',
-                size: 2,
-                hidden: true,
+                color: getEdgeColor(edge.type), // Use the updated color palette for edges
+                size: 2.5, // Slightly thicker for visibility
+                hidden: false,
+                type: 'curvedArrow', // Curved edges for a more organic look
+                opacity: 0.85, // Slight transparency for a polished look
                 ...edge,
               };
 
@@ -116,12 +134,15 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         // Compute communities using Louvain method
         const communities = modularity(graphologyGraph);
 
-        // Apply community-based coloring
-        const communityColors = ['#e41a1c', '#377eb8', '#4daf4a', '#984ea3'];
+        // Assign random dark colors to communities
+        const communityColors = {};
         graphologyGraph.forEachNode((node, attributes) => {
           const communityId = communities[node];
+          if (!communityColors[communityId]) {
+            communityColors[communityId] = generateRandomDarkColor(); // Generate random dark color
+          }
           graphologyGraph.setNodeAttribute(node, 'community', communityId);
-          graphologyGraph.setNodeAttribute(node, 'color', communityColors[communityId % communityColors.length]);
+          graphologyGraph.setNodeAttribute(node, 'color', communityColors[communityId]);
         });
 
         // Update nodes with community colors
@@ -129,7 +150,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
           const communityId = graphologyGraph.getNodeAttribute(node.id, 'community');
           return {
             ...node,
-            color: communityColors[communityId % communityColors.length],
+            color: communityColors[communityId],
           };
         });
 

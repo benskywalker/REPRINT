@@ -1,23 +1,45 @@
-import React, { useRef, useCallback, useEffect } from 'react'
-import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2 } from 'react-sigma'
-import styles from './Sigmagraph.module.css'
+import React, { useRef, useCallback, useEffect } from 'react';
+import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2 } from 'react-sigma';
+import styles from './Sigmagraph.module.css';
 
-const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover }) => {
+const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover, showEdges }) => {
   const sigmaRef = useRef(null);
+  const showEdgesRef = useRef(showEdges);
+
+  useEffect(() => {
+    showEdgesRef.current = showEdges;
+  }, [showEdges]);
 
   useEffect(() => {
     if (!sigmaRef.current) {
       console.error('Sigma instance not found');
       return;
     }
-    //if the graph is empty, return
+    // If the graph is empty, return
     if (!graph?.nodes.length) {
       return;
     }
 
     console.log('Graph data updated:', graph);
 
-  }, [graph]);
+    // Handle showEdges change
+    const sigmaInstance = sigmaRef.current.sigma;
+    const graphInstance = sigmaInstance.graph;
+
+    if (showEdges) {
+      graphInstance.edges().forEach(edge => {
+        graphInstance.edges(edge.id).hidden = false;
+      });
+      console.log('Showing all edges');
+    } else {
+      graphInstance.edges().forEach(edge => {
+        graphInstance.edges(edge.id).hidden = true;
+      });
+      console.log('Hiding all edges');
+    }
+
+    sigmaInstance.refresh();
+  }, [graph, showEdges]);
 
   const handleNodeClick = useCallback(
     event => {
@@ -39,10 +61,16 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover }) => {
           edge => edge.source === event.data.node.id || edge.target === event.data.node.id
         );
 
+      // Show all edges connected to the node
       edges.forEach(edge => {
         graphInstance.edges(edge.id).hidden = false;
       });
-
+      // Hide all edges not connected to the node
+      graphInstance.edges().forEach(edge => {
+        if (edge.source !== event.data.node.id && edge.target !== event.data.node.id) {
+          graphInstance.edges(edge.id).hidden = true;
+        }
+      });
       onNodeHover(event.data.node);
       sigmaInstance.refresh();
     },
@@ -54,9 +82,21 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover }) => {
       const sigmaInstance = sigmaRef.current.sigma;
       const graphInstance = sigmaInstance.graph;
 
-      graphInstance.edges().forEach(edge => {
-        graphInstance.edges(edge.id).hidden = true;
-      });
+      console.log('showEdges value:', showEdgesRef.current);
+
+      if (showEdgesRef.current) {
+        console.log('Showing all edges');
+        // Show all edges
+        graphInstance.edges().forEach(edge => {
+          graphInstance.edges(edge.id).hidden = false;
+        });
+      } else {
+        console.log('Hiding all edges');
+        // Hide all edges
+        graphInstance.edges().forEach(edge => {
+          graphInstance.edges(edge.id).hidden = true;
+        });
+      }
 
       handleNodeunHover();
       sigmaInstance.refresh();
@@ -94,6 +134,6 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover }) => {
       </Sigma>
     </div>
   );
-}
+};
 
 export default SigmaGraph;
