@@ -205,7 +205,7 @@ const Home = ({ searchQuery }) => {
     <>
       <div className={styles.content}>
         <Splitter style={{ overflowY: 'auto' }}>
-          <SplitterPanel size={30} minSize={0} style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+          <SplitterPanel size={30} minSize={0} style={{ display: 'flex', flexDirection: 'column', height: '90vh', overflowY: 'auto' }}>
             {/* DataTable for reordering */}
             <ToggleButton
   onIcon="pi pi-check" 
