@@ -13,23 +13,18 @@
   flex-direction: column;
 }
 
-.sidecar.p-tabview-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Ensure that the arrows and tabs are spaced correctly */
-  white-space: nowrap;
-}
+
 
 .sidecar .p-tabview-nav-link {
   /* color: #ffffff; */
   /* background-color: #1755A5 !important; */
   padding: 0.5rem 1rem;
   margin-right: 5px;
-  margin-top: 8px;
   font-family: 'Gentium Book Plus';
   font-size: large;
   text-decoration: none;
-  max-height: 35px;
+  height: 100%;
+  /* max-height: 35px; */
 }
 
 .sidecar .p-tabview-nav-link:hover {
@@ -45,7 +40,7 @@
     height: calc(100% - 40px); /* Adjusted height to account for header, padding, etc. */
     /* background-color: #fff; */
     flex-grow: 1;
-    overflow: hidden;
+    overflow: auto;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
     /* color:#000000; */
@@ -73,14 +68,6 @@
   padding-bottom: 8px;
 }
 
-/* .sidecar .p-tabview-nav-prev .p-icon,
-.sidecar .p-tabview-nav-next */
-
-.sidecar .p-tabview-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Ensure it takes full height */
-}
 
 .biographyContent {
   display: flex;
@@ -88,12 +75,6 @@
   align-items: center;
   flex-direction: column; /* Stack the image and text vertically */
   margin-bottom: 1rem; /* Adjust as needed for spacing */
-}
-
-.biographyContent img {
-  width: 100%;
-  height: auto; /* Ensure the image maintains its aspect ratio */
-  margin-bottom: 1rem; /* Add some space between the image and the text */
 }
 
 .biographyContent p {
