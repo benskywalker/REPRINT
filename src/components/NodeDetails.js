@@ -70,11 +70,12 @@ setActiveIndex(tabs.length - 1);
 , [tabClosed]);
 
   return (
-    <div className={"sidecar"}>
-      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable>
+    <div className="sidecar" style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable         style={{ flexGrow: 1, overflow: 'hidden' }}      >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}
+            style={{ height: '100%', overflow: 'auto' }}
             header={
               <div style={{ display: 'flex', alignItems: 'center' }}>
                 {tab.header}

@@ -52,7 +52,9 @@ const Home = ({ searchQuery }) => {
   }
 
   const handleCloseDialog = id => {
+    console.log('Closing dialog:', id)
     setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id))
+    console.log(dialogs)
   }
 
   const handleGraphUpdate = graph => {
@@ -86,13 +88,6 @@ const Home = ({ searchQuery }) => {
     }
   }, [timeRange, document])
 
-  useEffect(() => {
-    if (dialogs.length > 0) {
-      // Trigger re-render to ensure Dialog resizes correctly
-      setDialogs([...dialogs])
-    }
-  }, [dialogs])
-
   const handleNodeHover = nodeData => {
     setHoveredNodeData(nodeData)
   }
@@ -106,12 +101,13 @@ const Home = ({ searchQuery }) => {
     setSelectedNodes(prevSelectedNodes => [...prevSelectedNodes, node])
   }
 
-  const handleCloseNode = rowIndex => {
-    setSelectedNodes(prevSelectedNodes =>
-      prevSelectedNodes.filter((_, index) => index !== rowIndex)
-    )
-  }
-
+  const handleCloseNode = (rowIndex) => {
+    console.log(rowIndex.rowIndex)
+    setSelectedNodes((prevSelectedNodes) => {
+      const updatedNodes = prevSelectedNodes.filter((_, index) => index !== rowIndex.rowIndex);
+      return [...updatedNodes];  // Ensure a new array is returned to trigger re-render
+    });
+  };
   const onRowReorder = event => {
     setSelectedNodes(event.value) // Update the state with new row order
   }
@@ -175,6 +171,7 @@ const Home = ({ searchQuery }) => {
         className='p-button-rounded p-button-text'
         onClick={event => {
           event.stopPropagation() // Prevents the accordion from opening
+          event.preventDefault();  // Prevent the default behavior (URL change)
           handleOpenClick(node)
         }}
       />
@@ -183,6 +180,7 @@ const Home = ({ searchQuery }) => {
         className='p-button-rounded p-button-text'
         onClick={event => {
           event.stopPropagation() // Prevents the accordion from opening
+          event.preventDefault();  // Prevent the default behavior (URL change)
           handleCloseNode(index)
         }}
       />
@@ -190,47 +188,36 @@ const Home = ({ searchQuery }) => {
   )
 
   const renderAccordion = (rowData, index) => (
-    <Accordion key={rowData.data.id}>
-      {' '}
-      {/* Assuming each node has a unique 'id' */}
+    <Accordion key={rowData.data.id} style={{ width: '100%', flexGrow: 1 }}>
       <AccordionTab header={renderHeader(rowData, index)}>
-        <div style={{ overflow: 'auto', maxHeight: '45vh' }}>
+        <div style={{ overflow: 'auto', height: '100%' }}>
           <NodeDetails
             key={rowData.data.id}
             nodeData={rowData}
             handleNodeClick={handleNodeClick}
-            className='accordion-node-details'
           />
         </div>
       </AccordionTab>
     </Accordion>
-  )
+  );
+  
   return (
     <>
       <div className={styles.content}>
         <Splitter style={{ overflowY: 'auto' }}>
-          <SplitterPanel size={30} minSize={0}>
-            <div className={styles.relativeContainer}>
-              {hoveredNodeData ? (
-                <div className={styles.hoverNodeInfo}>
-                  <span>{hoveredNodeData.data.fullName}</span>
-                </div>
-              ) : (
-                <div className={styles.dataTableContainer}>
-                  <DataTable
+        <SplitterPanel size={30} minSize={0} style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+            {/* DataTable for reordering */}
+            <DataTable
                     value={selectedNodes}
                     reorderableRows
                     onRowReorder={onRowReorder}
-                    style={{ width: '100%', height: '100%' }}
+                    key={selectedNodes.length}  
                   >
                     <Column
-                      body={rowData => renderAccordion(rowData)}
-                      header='Sidecars'
+                      body={(rowData, index) => renderAccordion(rowData, index)}
+                      header={hoveredNodeData ? hoveredNodeData.data.fullName : 'Sidecars'}
                     />
                   </DataTable>
-                </div>
-              )}
-            </div>
           </SplitterPanel>
           <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
             {loading ? (
