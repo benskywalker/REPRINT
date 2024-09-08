@@ -2,7 +2,7 @@ import React, { useRef, useCallback, useEffect } from 'react';
 import { Sigma, RandomizeNodePositions, RelativeSize, ForceAtlas2 } from 'react-sigma';
 import styles from './Sigmagraph.module.css';
 
-const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover, showEdges }) => {
+const SigmaGraph = ({ onNodeClick, onNodeHover, graph = { nodes: [], edges: [] }, handleNodeunHover, showEdges }) => {
   const sigmaRef = useRef(null);
   const showEdgesRef = useRef(showEdges);
 
@@ -16,7 +16,7 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover, showEd
       return;
     }
     // If the graph is empty, return
-    if (!graph?.nodes.length) {
+    if (!graph?.nodes?.length) {
       return;
     }
 
@@ -46,6 +46,7 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph, handleNodeunHover, showEd
       const nodeId = event.data.node.id;
       const nodeData = graph.nodes.find(node => node.id === nodeId);
       onNodeClick(nodeData);
+      
     },
     [graph, onNodeClick]
   );

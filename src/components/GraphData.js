@@ -39,18 +39,19 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     // Helper function to generate random dark colors
     const generateRandomDarkColor = () => {
       const r = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
-  const g = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
-  const b = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
-  return `rgb(${r}, ${g}, ${b})`;
+      const g = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
+      const b = Math.floor(Math.random() * 155) + 100; // Range between 100 and 255
+      return `rgb(${r}, ${g}, ${b})`;
     };
 
+    // Modify the getEdgeColor function to return RGBA for transparency
     const getEdgeColor = (type) => {
       const edgeColors = {
-        document: '#33415C',  // Dark blue
-        organization: '#4B3F72',  // Dark purple
-        religion: '#3A3F44',  // Dark grey
-        relationship: '#4A566E',  // Grey-blue
-        default: '#2C2E3E',  // A fallback dark blue-grey color
+        document: 'rgba(51, 65, 92, 0.6)',  // Dark blue with transparency
+        organization: 'rgba(75, 63, 114, 0.6)',  // Dark purple with transparency
+        religion: 'rgba(58, 63, 68, 0.6)',  // Dark grey with transparency
+        relationship: 'rgba(74, 86, 110, 0.6)',  // Grey-blue with transparency
+        default: 'rgba(44, 46, 62, 0.6)',  // A fallback dark blue-grey color with transparency
       };
 
       return edgeColors[type] || edgeColors.default;
@@ -63,6 +64,10 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         };
         const response = await axios.post(url, body);
         const data = response.data;
+
+        if (!data.nodes || !data.edges) {
+          throw new Error('Invalid data format: nodes or edges are missing');
+        }
 
         const nodes = [];
         const edges = [];
@@ -96,7 +101,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
                 id: edgeId,
                 source: edge.from,
                 target: edge.to,
-                color: getEdgeColor(edge.type), // Use the updated color palette for edges
+                color: getEdgeColor(edge.type), // Use the updated color palette for edges with transparency
                 size: 2.5, // Slightly thicker for visibility
                 hidden: false,
                 type: 'curvedArrow', // Curved edges for a more organic look
@@ -128,6 +133,10 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         const filteredNodes = nodes.filter(node => 
             edges.some(edge => edge.source === node.id || edge.target === node.id)
         );
+
+        if (filteredNodes.length === 0 || edges.length === 0) {
+          throw new Error('No valid nodes or edges found');
+        }
 
         const graphologyGraph = buildGraphologyGraph(filteredNodes, edges);
 
