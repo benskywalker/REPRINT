@@ -6,24 +6,21 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
-import { AutoComplete } from "primereact/autocomplete";
+import { FilterMatchMode, FilterOperator } from "primereact/api";
 
 import "./QueryTool.css";
-import { FilterMatchMode } from "primereact/api";
 
 const QueryTool = () => {
   const [people, setPeople] = useState([]);
   const [globalFilterValue, setGlobalFilterValue] = useState('');
   const [filters, setFilters] = useState({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    birthDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    deathDate: { value: null, matchMode: FilterMatchMode.CONTAINS },
-    gender: { value: null, matchMode: FilterMatchMode.CONTAINS },
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    birthDate: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    deathDate: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    gender: { value: null, matchMode: FilterMatchMode.EQUALS },
 });
   const [loading, setLoading] = useState(true);
-
-  const [suggestions, setSuggestions] = useState([]);
 
 const onGlobalFilterChange = (e) => {
   const value = e.target.value;
@@ -33,13 +30,13 @@ const onGlobalFilterChange = (e) => {
 
   setFilters(_filters);
   setGlobalFilterValue(value);
+  console.log(filters);
 };
 
   useEffect(() => {
     const getPeople = async () => {
       const response = await axios.get("http://localhost:4000/persons");
       setPeople(response.data);
-      setSuggestions(people.map(person => person.firstName + " " + person.lastName));
       setLoading(false);
     };
 
@@ -63,18 +60,12 @@ const onGlobalFilterChange = (e) => {
 
   const globalFilterFields = ['name'];
 
-  const search = (e) => {
-    const value = e.query.toLowerCase();
-    const results = suggestions.filter((person) => person.toLowerCase().includes(value));
-    return results;
-  }
-
   const renderHeader = () => {
     return (
         <div className="flex justify-content-end">
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search" />
-                <AutoComplete value={globalFilterValue} suggestions={suggestions} completeMethod={search} field="name" onChange={onGlobalFilterChange} placeholder="Global Search" />
+                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
             </IconField>
         </div>
     );
@@ -83,10 +74,23 @@ const onGlobalFilterChange = (e) => {
   const header = renderHeader();
 
   return (
-     <DataTable value = {people} dataKey = 'personID' filter = {filters} filterDisplay="row" paginator rows={20} header = {header} size = "small" tableStyle={{ minWidth: '50rem' }} showGridlines globalFilterFields={globalFilterFields} loading = {loading}>
-      {peopleColumns.map((col, i) => (
-        <Column key = {i} field = {col.field} header = {col.header} sortable filter filterPlaceholder="Search" />
-      ))}
+     <DataTable 
+        value = {people}
+        dataKey = 'personID'
+        filter = {filters} 
+        filterDisplay="row" 
+        paginator 
+        rows={20} 
+        header = {header} 
+        size = "small" 
+        tableStyle={{ minWidth: '50rem' }} 
+        showGridlines 
+        globalFilterFields={globalFilterFields} 
+        loading = {loading}
+      >
+        {peopleColumns.map((col, i) => (
+          <Column key = {i} filter field = {col.field} filterField = {col.field} header = {col.header} sortable />
+        ))}
      </DataTable>
    );
 };
