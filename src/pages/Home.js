@@ -100,12 +100,12 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
-    console.log('Node clicked:', node);
-    setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
+    setSelectedNodes((prevSelectedNodes) => [
+      { ...node, isOpen: false }, ...prevSelectedNodes // Default to closed when adding a new node
+    ]);
   };
-
+  
   const handleCloseNode = (rowIndex) => {
-    console.log(rowIndex.rowIndex);
     setSelectedNodes((prevSelectedNodes) => {
       const updatedNodes = prevSelectedNodes.filter((_, index) => index !== rowIndex.rowIndex);
       return [...updatedNodes]; // Ensure a new array is returned to trigger re-render
@@ -113,7 +113,7 @@ const Home = ({ searchQuery }) => {
   };
 
   const onRowReorder = (event) => {
-    setSelectedNodes(event.value); // Update the state with new row order
+    setSelectedNodes(event.value); // Ensure the reordered nodes retain the `isOpen` state
   };
 
   const handleTimeRangeChange = (event, newValue) => {
@@ -191,10 +191,23 @@ const Home = ({ searchQuery }) => {
     </div>
   );
 
+  const toggleAccordion = (nodeId) => {
+    setSelectedNodes((prevSelectedNodes) =>
+      prevSelectedNodes.map((node) =>
+        node.data.id === nodeId ? { ...node, isOpen: !node.isOpen } : node
+      )
+    );
+  };
+  
   const renderAccordion = (rowData, index) => (
-    <Accordion key={rowData.data.id} style={{ width: '100%', flexGrow: 1 }}>
+    <Accordion
+      key={rowData.data.id}
+      activeIndex={selectedNodes.find((node) => node.data.id === rowData.data.id)?.isOpen ? 0 : null}
+      onTabChange={() => toggleAccordion(rowData.data.id)}
+      style={{ width: '100%', flexGrow: 1 }}
+    >
       <AccordionTab header={renderHeader(rowData, index)}>
-        <div style={{ overflow: 'auto', height: '100%', maxHeight:'45vh' }}>
+        <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
           <NodeDetails key={rowData.data.id} nodeData={rowData} handleNodeClick={handleNodeClick} />
         </div>
       </AccordionTab>
