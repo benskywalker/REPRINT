@@ -6,6 +6,7 @@ import { Column } from "primereact/column";
 import { InputText } from "primereact/inputtext";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
+import { AutoComplete } from "primereact/autocomplete";
 
 import "./QueryTool.css";
 import { FilterMatchMode } from "primereact/api";
@@ -22,6 +23,8 @@ const QueryTool = () => {
 });
   const [loading, setLoading] = useState(true);
 
+  const [suggestions, setSuggestions] = useState([]);
+
 const onGlobalFilterChange = (e) => {
   const value = e.target.value;
   let _filters = { ...filters };
@@ -36,6 +39,7 @@ const onGlobalFilterChange = (e) => {
     const getPeople = async () => {
       const response = await axios.get("http://localhost:4000/persons");
       setPeople(response.data);
+      setSuggestions(people.map(person => person.firstName + " " + person.lastName));
       setLoading(false);
     };
 
@@ -59,12 +63,18 @@ const onGlobalFilterChange = (e) => {
 
   const globalFilterFields = ['name'];
 
+  const search = (e) => {
+    const value = e.query.toLowerCase();
+    const results = suggestions.filter((person) => person.toLowerCase().includes(value));
+    return results;
+  }
+
   const renderHeader = () => {
     return (
         <div className="flex justify-content-end">
             <IconField iconPosition="left">
                 <InputIcon className="pi pi-search" />
-                <InputText value={globalFilterValue} onChange={onGlobalFilterChange} placeholder="Keyword Search" />
+                <AutoComplete value={globalFilterValue} suggestions={suggestions} completeMethod={search} field="name" onChange={onGlobalFilterChange} placeholder="Global Search" />
             </IconField>
         </div>
     );
