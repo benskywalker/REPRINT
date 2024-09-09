@@ -10,6 +10,8 @@
     position: relative;
     color: white;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    
 }
 
   

@@ -1,8 +1,4 @@
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-}
+
 
 
 
@@ -12,26 +8,23 @@ html, body {
   padding: 25px;
   border-radius: 25px;
   /* color: #000000;  */
-  /* Change this to your desired text color */
-}
- 
-.sidecar.p-tabview-nav {
+  height: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between; /* Ensure that the arrows and tabs are spaced correctly */
-  white-space: nowrap;
+  flex-direction: column;
 }
+
+
 
 .sidecar .p-tabview-nav-link {
   /* color: #ffffff; */
   /* background-color: #1755A5 !important; */
   padding: 0.5rem 1rem;
   margin-right: 5px;
-  margin-top: 8px;
   font-family: 'Gentium Book Plus';
   font-size: large;
   text-decoration: none;
-  max-height: 35px;
+  height: 100%;
+  /* max-height: 35px; */
 }
 
 .sidecar .p-tabview-nav-link:hover {
@@ -46,7 +39,8 @@ html, body {
 .sidecar .p-tabview .p-tabview-panels {
     height: calc(100% - 40px); /* Adjusted height to account for header, padding, etc. */
     /* background-color: #fff; */
-    overflow-y: auto; /* Hide overflow at this level */
+    flex-grow: 1;
+    overflow: auto;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
     /* color:#000000; */
@@ -56,7 +50,7 @@ html, body {
 
 .tab-content-container {
   height: calc(100% - 40px); /* Adjusted to ensure it calculates properly */
-  overflow-y: auto; /* Enable vertical scrolling if content overflows */
+  overflow: auto; /* Enable vertical scrolling if content overflows */
   padding: 1rem; /* Optional padding */
 }
 
@@ -74,14 +68,6 @@ html, body {
   padding-bottom: 8px;
 }
 
-/* .sidecar .p-tabview-nav-prev .p-icon,
-.sidecar .p-tabview-nav-next */
-
-.sidecar .p-tabview-panel {
-  display: flex;
-  flex-direction: column;
-  height: 100%; /* Ensure it takes full height */
-}
 
 .biographyContent {
   display: flex;
@@ -91,12 +77,96 @@ html, body {
   margin-bottom: 1rem; /* Adjust as needed for spacing */
 }
 
-.biographyContent img {
-  width: 100%;
-  height: auto; /* Ensure the image maintains its aspect ratio */
-  margin-bottom: 1rem; /* Add some space between the image and the text */
-}
-
 .biographyContent p {
   margin-top: 0;
 }
+
+
+.p-datatable-wrapper {    
+  /* background-color: red; */
+
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.p-datatable {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+
+.p-datatable-head{
+  display: flex;
+  flex-direction: row; /* Ensure the header is laid out in a row */
+  width: 100%;
+  /* background-color: red!important; */
+}
+.p-datatable-thead	> tr > th {
+  display: flex;
+  flex-direction: row; /* Ensure the header is laid out in a row */
+  width: 100%;
+  /* background-color: blue; */
+}
+
+.p-datatable-thead > tr {
+  display: flex;
+  flex-direction: row; /* Ensure the `tr` is laid out in a row */
+  width: 100%;
+}
+
+.p-datatable-table{      
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.p-datatable-tbody {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  flex-grow: 1;
+}
+
+.p-datatable-tbody > tr {
+  display: flex;
+  flex-direction: row; /* Ensure the `tr` is laid out in a row */
+  width: 100%;
+}
+
+.p-datatable-tbody > tr > td {
+  display: flex;
+  flex: 1; /* Ensure each cell takes up an equal amount of space */
+  align-items: center; /* Center content vertically */
+  justify-content: center; /* Center content horizontally */
+  overflow: hidden; /* Hide overflow content if needed */
+}
+
+
+/* ::-webkit-scrollbar {
+  width: 12px; 
+  height: 12px; 
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+  border-radius: 6px
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1755A5;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6C757D; 
+  border-radius: 6px;
+} */

@@ -70,8 +70,8 @@ setActiveIndex(tabs.length - 1);
 , [tabClosed]);
 
   return (
-    <div className={"sidecar"}>
-      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable>
+    <div className="sidecar">
+      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable              >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}

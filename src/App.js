@@ -11,7 +11,7 @@ import "./App.css";
 
 const Main = ({searchQuery}) => {
 
-  return <Home searchQuery={searchQuery} />;
+  return <Home className="home" searchQuery={searchQuery} />;
 };
 
 const App = () => {
@@ -22,7 +22,7 @@ const App = () => {
   };
 
   return (
-    <Router>
+    <Router >
       <Header onSearchChange={handleSearchChange} />
       <Routes>
         <Route path="/" element={<Main searchQuery={searchQuery} />} />
