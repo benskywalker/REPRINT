@@ -4,6 +4,7 @@ import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import "./QueryTool.css";
 import { Card } from "primereact/card";
+import SigmaGraph from "../components/Sigmagraph";
 
 const QueryTool = () => {
   const [data, setData] = useState({
@@ -91,7 +92,7 @@ const QueryTool = () => {
     );
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const categorizedTerms = {
       person: [],
       keyword: [],
@@ -129,7 +130,12 @@ const QueryTool = () => {
         categorizedTerms.role.push(term);
       }
     });
-
+    try {
+      const url = `http://localhost:4000/relations`;
+      const data = await axios.post(url, categorizedTerms);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
     setSubmittedTerms(categorizedTerms);
   };
 
