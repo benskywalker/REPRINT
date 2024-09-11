@@ -211,20 +211,6 @@ const Home = ({ searchQuery }) => {
     </div>
   );
 
-  const renderAccordion = (rowData, index) => (
-    <Accordion key={rowData.data.id} style={{ width: "100%", flexGrow: 1 }}>
-      <AccordionTab header={renderHeader(rowData, index)}>
-        <div style={{ overflow: "auto", height: "100%", maxHeight: "45vh" }}>
-          <NodeDetails
-            key={rowData.data.id}
-            nodeData={rowData}
-            handleNodeClick={handleNodeClick}
-          />
-        </div>
-      </AccordionTab>
-    </Accordion>
-  );
-
   const toggleAccordion = (nodeId) => {
     setSelectedNodes((prevSelectedNodes) =>
       prevSelectedNodes.map((node) =>
