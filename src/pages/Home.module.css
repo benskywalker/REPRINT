@@ -1,76 +1,82 @@
 .content {
-    color: white;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    margin: 0; /* Remove any margin */
-    padding: 0; /* Remove any padding */
-    /* calculate hieght by 100vh - header */
-    /* height: calc(100vh - 60px); */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  margin: 0; /* Remove any margin */
+  padding: 0; /* Remove any padding */
+  /* calculate hieght by 100vh - header */
+  /* height: calc(100vh - 60px); */
 }
 
-
 .relativeContainer {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    overflow: auto; /* Ensure the content adapts */
-  }
-  
-  .hoverNodeInfo {
-    position: relative;
-    top: 0;
-    left: 0;
-    width: 100%;
-    padding: 10px;
-    z-index: 10; /* Ensure it appears above the DataTable */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
-  }
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: auto; /* Ensure the content adapts */
+}
+
+.hoverNodeInfo {
+  position: relative;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 10px;
+  z-index: 10; /* Ensure it appears above the DataTable */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a shadow for better visibility */
+}
 
 .graphContainer {
-    width: 100%;
-    display: block;
-    position: relative;
-    margin: auto;
-
+  width: 100%;
+  display: block;
+  position: relative;
+  margin: auto;
 }
 
 .graphContainer .sliderContainer {
-    width: 100%;
-    position: relative;
-    margin: auto;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
+  width: 100%;
+  position: relative;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .graphContainer .sliderContainer .slider {
-    width: 80%;
-    position: relative;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
+  width: 80%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.loaderContainer{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
 }
 
+.accordionContainer {
+  background-color: red !important;
 
-  .accordionContainer {    background-color: red!important;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  
-  .accordionContainer .p-accordion-content {
-    flex-grow: 1;
-    overflow-y: auto;
-  }
+.accordionContainer .p-accordion-content {
+  flex-grow: 1;
+  overflow-y: auto;
+}
+
+.filterToolContainer {
+  position: relative;
+  width: 800px;
+  max-height: 400px;
+  top: 0;
+  right: 0;
+  z-index: 1000;
+  overflow: hidden !important;
+}

@@ -1,174 +1,94 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import { AutoComplete } from "primereact/autocomplete";
-import { Button } from "primereact/button";
 import "./FilterTool.css";
-import { Card } from "primereact/card";
 
-const QueryTool = () => {
-  const [data, setData] = useState({
-    person: [],
-    keyword: [],
-    organizationtype: [],
-    occupation: [],
-    place: [],
-    relationshiptype: [],
-    religion: [],
-    repositorie: [],
-    role: [],
-  });
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState({});
-  const [selectedTerms, setSelectedTerms] = useState([]);
+const FilterTool = ({ graph, setGraph, originalGraph }) => {
   const [suggestions, setSuggestions] = useState([]);
-  const [submittedTerms, setSubmittedTerms] = useState({});
-
-  const apiEndpoint = "http://localhost:4000/base_query";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(apiEndpoint);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [apiEndpoint]);
+  const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+  const [selectedTerms, setSelectedTerms] = useState([]);
 
   useEffect(() => {
-    const filterData = () => {
-      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
-      const filtered = {
-        person: data.person.filter((p) =>
-          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
-        ),
-        keyword: data.keyword.filter((k) =>
-          k.keyword.toLowerCase().includes(term)
-        ),
-        organizationtype: data.organizationtype.filter((o) =>
-          o.organizationName.toLowerCase().includes(term)
-        ),
-        occupation: data.occupation.filter((o) =>
-          (o.occupationDesc || "").toLowerCase().includes(term)
-        ),
-        place: data.place.filter((p) =>
-          p.placeNameStd.toLowerCase().includes(term)
-        ),
-        relationshiptype: data.relationshiptype.filter((r) =>
-          r.relationshipDesc.toLowerCase().includes(term)
-        ),
-        religion: data.religion.filter((r) =>
-          r.religionDesc.toLowerCase().includes(term)
-        ),
-        repositorie: data.repositorie.filter((r) =>
-          r.repoDesc.toLowerCase().includes(term)
-        ),
-        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
-      };
-      setFilteredData(filtered);
-    };
-    filterData();
-  }, [searchTerm, data]);
+    // Populate suggestions based on the current graph nodes
+    const allNodeLabels = originalGraph.nodes.map(
+      (node) => node.data.fullName || node.label
+    );
+    setSuggestions(allNodeLabels);
+  }, [originalGraph]);
 
   const searchSuggestions = (event) => {
     const query = event.query.toLowerCase();
-    const allData = [
-      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
-      ...data.keyword.map((k) => k.keyword),
-      ...data.organizationtype.map((o) => o.organizationName),
-      ...data.occupation.map((o) => o.occupationDesc || ""),
-      ...data.place.map((p) => p.placeNameStd),
-      ...data.relationshiptype.map((r) => r.relationshipDesc),
-      ...data.religion.map((r) => r.religionDesc),
-      ...data.repositorie.map((r) => r.repoDesc),
-      ...data.role.map((r) => r.roleDesc),
-    ];
-    setSuggestions(
-      allData.filter((item) => item.toLowerCase().includes(query))
+
+    // Filter suggestions based on the query, but exclude selected terms
+    const filtered = suggestions.filter(
+      (item) =>
+        item.toLowerCase().includes(query) && !selectedTerms.includes(item)
     );
+    setFilteredSuggestions(filtered);
   };
 
-  const handleSubmit = async () => {
-    const categorizedTerms = {
-      person: [],
-      keyword: [],
-      organizationtype: [],
-      occupation: [],
-      place: [],
-      relationshiptype: [],
-      religion: [],
-      repositorie: [],
-      role: [],
-    };
+  const filterGraph = (selectedNodes) => {
+    if (selectedNodes.length === 0) {
+      // If no chips selected, reset the graph to the original state
+      setGraph(originalGraph);
+      return;
+    }
 
-    selectedTerms.forEach((term) => {
-      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
-        categorizedTerms.person.push(term);
-      } else if (data.keyword.some((k) => k.keyword === term)) {
-        categorizedTerms.keyword.push(term);
-      } else if (
-        data.organizationtype.some((o) => o.organizationName === term)
-      ) {
-        categorizedTerms.organizationtype.push(term);
-      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
-        categorizedTerms.occupation.push(term);
-      } else if (data.place.some((p) => p.placeNameStd === term)) {
-        categorizedTerms.place.push(term);
-      } else if (
-        data.relationshiptype.some((r) => r.relationshipDesc === term)
-      ) {
-        categorizedTerms.relationshiptype.push(term);
-      } else if (data.religion.some((r) => r.religionDesc === term)) {
-        categorizedTerms.religion.push(term);
-      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
-        categorizedTerms.repositorie.push(term);
-      } else if (data.role.some((r) => r.roleDesc === term)) {
-        categorizedTerms.role.push(term);
+    // Filter nodes that match selected terms
+    const filteredNodes = originalGraph.nodes.filter((node) =>
+      selectedNodes.includes(node.data.fullName || node.label)
+    );
+
+    // Find all nodes directly connected to the filtered nodes
+    const connectedNodeIds = new Set(filteredNodes.map((node) => node.id));
+    const immediateConnections = new Set();
+
+    originalGraph.edges.forEach((edge) => {
+      if (connectedNodeIds.has(edge.source)) {
+        immediateConnections.add(edge.target);
+      }
+      if (connectedNodeIds.has(edge.target)) {
+        immediateConnections.add(edge.source);
       }
     });
-    try {
-      const url = `http://localhost:4000/relations`;
-      console.log(categorizedTerms);
-      const data = await axios.post(url, categorizedTerms);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-    setSubmittedTerms(categorizedTerms);
+
+    // Include only the selected nodes and their direct connections
+    const allFilteredNodes = originalGraph.nodes.filter(
+      (node) =>
+        connectedNodeIds.has(node.id) || immediateConnections.has(node.id)
+    );
+
+    // Filter edges connected to the filtered nodes
+    const filteredEdges = originalGraph.edges.filter(
+      (edge) =>
+        (connectedNodeIds.has(edge.source) &&
+          immediateConnections.has(edge.target)) ||
+        (connectedNodeIds.has(edge.target) &&
+          immediateConnections.has(edge.source))
+    );
+
+    setGraph({ nodes: allFilteredNodes, edges: filteredEdges });
+  };
+
+  const handleChange = (e) => {
+    const terms = e.value;
+    setSelectedTerms(terms);
+
+    // Filter graph based on selected terms (chips)
+    filterGraph(terms);
   };
 
   return (
     <div className="container">
       <AutoComplete
-        className="autocomplete"
-        // Inline style to override PrimeReact CSS
-        value={searchTerm}
-        suggestions={suggestions}
-        multiple
+        value={selectedTerms} // Bind to selectedTerms so chips remain visible
+        suggestions={filteredSuggestions}
         completeMethod={searchSuggestions}
-        onChange={(e) => {
-          setSearchTerm(e.value);
-          setSelectedTerms(e.value);
-        }}
+        multiple
+        onChange={handleChange}
         placeholder="Search..."
       />
-      <Button label="Submit" className="button" onClick={handleSubmit} />
-      <Card title="Selected Results" className="results">
-        {Object.keys(submittedTerms).map((category) => (
-          <>
-            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-            <ul>
-              {submittedTerms[category].map((term, index) => (
-                <li key={index}>{term}</li>
-              ))}
-            </ul>
-          </>
-        ))}
-      </Card>
     </div>
   );
 };
 
-export default QueryTool;
+export default FilterTool;

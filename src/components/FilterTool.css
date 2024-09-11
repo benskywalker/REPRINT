@@ -8,9 +8,9 @@
   overflow: auto;
 }
 
-.autocomplete .p-autocomplete-multiple-container {
-  min-width: 500px !important;
-  max-width: 500px !important;
+.p-autocomplete-multiple-container {
+  min-width: 400px !important;
+  max-width: 400px !important;
   margin-bottom: 10px;
   overflow: auto !important;
   max-height: 300px !important;
