@@ -4,7 +4,6 @@ import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
 import "./FilterTool.css";
 import { Card } from "primereact/card";
-import SigmaGraph from "./Sigmagraph";
 
 const QueryTool = () => {
   const [data, setData] = useState({
