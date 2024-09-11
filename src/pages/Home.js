@@ -100,17 +100,12 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
-    setSelectedNodes((prevSelectedNodes) => [
-      {
-        ...node,
-        isOpen: false,
-        activeTabIndex: 0, // Set the initial active tab index to 0
-      },
-      ...prevSelectedNodes,
-    ]);
+    console.log('Node clicked:', node);
+    setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
   };
-  
+
   const handleCloseNode = (rowIndex) => {
+    console.log(rowIndex.rowIndex);
     setSelectedNodes((prevSelectedNodes) => {
       const updatedNodes = prevSelectedNodes.filter((_, index) => index !== rowIndex.rowIndex);
       return [...updatedNodes]; // Ensure a new array is returned to trigger re-render
@@ -118,7 +113,7 @@ const Home = ({ searchQuery }) => {
   };
 
   const onRowReorder = (event) => {
-    setSelectedNodes(event.value); // Ensure the reordered nodes retain the `isOpen` state
+    setSelectedNodes(event.value); // Update the state with new row order
   };
 
   const handleTimeRangeChange = (event, newValue) => {
@@ -196,46 +191,15 @@ const Home = ({ searchQuery }) => {
     </div>
   );
 
-  const toggleAccordion = (nodeId) => {
-    setSelectedNodes((prevSelectedNodes) =>
-      prevSelectedNodes.map((node) =>
-        node.data.id === nodeId ? { ...node, isOpen: !node.isOpen } : node
-      )
-    );
-  };
-  
-  const renderAccordion = (rowData, index) => {
-    const activeTabIndex = selectedNodes.find(node => node.data.id === rowData.data.id)?.activeTabIndex || 0;
-  
-    const setActiveTabIndex = (newIndex) => {
-      setSelectedNodes((prevSelectedNodes) =>
-        prevSelectedNodes.map((node) =>
-          node.data.id === rowData.data.id ? { ...node, activeTabIndex: newIndex } : node
-        )
-      );
-    };
-  
-    return (
-      <Accordion
-        key={rowData.data.id}
-        activeIndex={selectedNodes.find((node) => node.data.id === rowData.data.id)?.isOpen ? 0 : null}
-        onTabChange={() => toggleAccordion(rowData.data.id)}
-        style={{ width: '100%', flexGrow: 1 }}
-      >
-        <AccordionTab header={renderHeader(rowData, index)}>
-          <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
-            <NodeDetails
-              key={rowData.data.id}
-              nodeData={rowData}
-              activeTabIndex={activeTabIndex}
-              setActiveTabIndex={setActiveTabIndex}
-              handleNodeClick={handleNodeClick}
-            />
-          </div>
-        </AccordionTab>
-      </Accordion>
-    );
-  };
+  const renderAccordion = (rowData, index) => (
+    <Accordion key={rowData.data.id} style={{ width: '100%', flexGrow: 1 }}>
+      <AccordionTab header={renderHeader(rowData, index)}>
+        <div style={{ overflow: 'auto', height: '100%', maxHeight:'45vh' }}>
+          <NodeDetails key={rowData.data.id} nodeData={rowData} handleNodeClick={handleNodeClick} />
+        </div>
+      </AccordionTab>
+    </Accordion>
+  );
 
   return (
     <>
@@ -315,17 +279,7 @@ const Home = ({ searchQuery }) => {
           }} /* Set a consistent height */
           breakpoints={{ '960px': '75vw', '641px': '100vw' }}
         >
- <NodeDetails
-      nodeData={dialog.nodeData}
-      handleNodeClick={handleNodeClick}
-      activeTabIndex={dialog.activeTabIndex}
-      setActiveTabIndex={(index) => {
-        const updatedDialogs = dialogs.map(dlg => 
-          dlg.id === dialog.id ? { ...dlg, activeTabIndex: index } : dlg
-        );
-        setDialogs(updatedDialogs);
-      }}
-    />
+          <NodeDetails nodeData={dialog.nodeData} handleNodeClick={handleNodeClick} />
         </Dialog>
       ))}
     </>
