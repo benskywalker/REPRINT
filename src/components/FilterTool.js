@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { AutoComplete } from "primereact/autocomplete";
 import { Button } from "primereact/button";
-import "./QueryTool.css";
+import "./FilterTool.css";
 import { Card } from "primereact/card";
 import SigmaGraph from "./Sigmagraph";
 
