@@ -1,174 +1,121 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
-import { AutoComplete } from "primereact/autocomplete";
+
+import { Dropdown} from "primereact/dropdown";
 import { Button } from "primereact/button";
-import "./QueryTool.css";
+import { ContextMenu } from "primereact/contextmenu";
 import { Card } from "primereact/card";
-import SigmaGraph from "../components/Sigmagraph";
+
+import "./QueryTool.css";
 
 const QueryTool = () => {
-  const [data, setData] = useState({
-    person: [],
-    keyword: [],
-    organizationtype: [],
-    occupation: [],
-    place: [],
-    relationshiptype: [],
-    religion: [],
-    repositorie: [],
-    role: [],
-  });
+  const [query, setQuery] = useState("");
+  const [dropdowns, setDropdowns] = useState(["SELECT", "FROM"]);
+  const [keywordDropdowns, setKeywordDropdowns] = useState(["*", "person"]);
+  const [selectedDropdown, setSelectedDropdown] = useState("");
+  const cm = useRef(null);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState({});
-  const [selectedTerms, setSelectedTerms] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [submittedTerms, setSubmittedTerms] = useState({});
+  const cmItems = [
+    { label: "Remove", icon: "pi pi-times", command: (e) => {removeClause(e.item.index); console.log(e)}}
+  ]
+  
+  const queryCommands = [
+    { label : "select", value: "SELECT" },
+    { label: "and", value: "AND" },
+    { label: "or", value: "OR" },
+    { label: "not", value: "NOT" },
+    { label: "where", value: "WHERE" },
+    { label: "from", value: "FROM" },
+    { label: "equals", value: "=" },
+    { label: "greater than", value: ">" },
+    { label: "less than", value: "<" },
+    { label: "greater than or equal to", value: ">=" },
+    { label: "less than or equal to", value: "<=" },
+    { label: "not equal to", value: "!=" },
+    { label: "like", value: "LIKE" },
+    { label: "in", value: "IN" }
+  ];
 
-  const apiEndpoint = "http://localhost:4000/base_query";
+  const keywordCommands = [
+    { label: "Everything", value: "*" },
+    { label: "People", value: "person" },
+    { label: "Organizations", value: "organization" },
+    { label: "Events", value: "event" },
+    { label: "Locations", value: "location" },
+    { label: "Documents", value: "document" },
+    { label: "Images", value: "image" },
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(apiEndpoint);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [apiEndpoint]);
+  ];
 
-  useEffect(() => {
-    const filterData = () => {
-      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
-      const filtered = {
-        person: data.person.filter((p) =>
-          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
-        ),
-        keyword: data.keyword.filter((k) =>
-          k.keyword.toLowerCase().includes(term)
-        ),
-        organizationtype: data.organizationtype.filter((o) =>
-          o.organizationName.toLowerCase().includes(term)
-        ),
-        occupation: data.occupation.filter((o) =>
-          (o.occupationDesc || "").toLowerCase().includes(term)
-        ),
-        place: data.place.filter((p) =>
-          p.placeNameStd.toLowerCase().includes(term)
-        ),
-        relationshiptype: data.relationshiptype.filter((r) =>
-          r.relationshipDesc.toLowerCase().includes(term)
-        ),
-        religion: data.religion.filter((r) =>
-          r.religionDesc.toLowerCase().includes(term)
-        ),
-        repositorie: data.repositorie.filter((r) =>
-          r.repoDesc.toLowerCase().includes(term)
-        ),
-        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
-      };
-      setFilteredData(filtered);
-    };
-    filterData();
-  }, [searchTerm, data]);
-
-  const searchSuggestions = (event) => {
-    const query = event.query.toLowerCase();
-    const allData = [
-      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
-      ...data.keyword.map((k) => k.keyword),
-      ...data.organizationtype.map((o) => o.organizationName),
-      ...data.occupation.map((o) => o.occupationDesc || ""),
-      ...data.place.map((p) => p.placeNameStd),
-      ...data.relationshiptype.map((r) => r.relationshipDesc),
-      ...data.religion.map((r) => r.religionDesc),
-      ...data.repositorie.map((r) => r.repoDesc),
-      ...data.role.map((r) => r.roleDesc),
-    ];
-    setSuggestions(
-      allData.filter((item) => item.toLowerCase().includes(query))
-    );
+  const onAddClause = () => {
+    setDropdowns([...dropdowns, "SELECT"]);
+    setKeywordDropdowns([...keywordDropdowns, "*"]);
+    console.log(dropdowns);
   };
 
-  const handleSubmit = async () => {
-    const categorizedTerms = {
-      person: [],
-      keyword: [],
-      organizationtype: [],
-      occupation: [],
-      place: [],
-      relationshiptype: [],
-      religion: [],
-      repositorie: [],
-      role: [],
-    };
+  const onDropdownChange = (value, index) => {
+    const newDropdowns = [...dropdowns];
+    newDropdowns[index] = value;
+    setDropdowns(newDropdowns);
+  };
 
-    selectedTerms.forEach((term) => {
-      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
-        categorizedTerms.person.push(term);
-      } else if (data.keyword.some((k) => k.keyword === term)) {
-        categorizedTerms.keyword.push(term);
-      } else if (
-        data.organizationtype.some((o) => o.organizationName === term)
-      ) {
-        categorizedTerms.organizationtype.push(term);
-      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
-        categorizedTerms.occupation.push(term);
-      } else if (data.place.some((p) => p.placeNameStd === term)) {
-        categorizedTerms.place.push(term);
-      } else if (
-        data.relationshiptype.some((r) => r.relationshipDesc === term)
-      ) {
-        categorizedTerms.relationshiptype.push(term);
-      } else if (data.religion.some((r) => r.religionDesc === term)) {
-        categorizedTerms.religion.push(term);
-      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
-        categorizedTerms.repositorie.push(term);
-      } else if (data.role.some((r) => r.roleDesc === term)) {
-        categorizedTerms.role.push(term);
-      }
-    });
-    try {
-      const url = `http://localhost:4000/relations`;
-      const data = await axios.post(url, categorizedTerms);
-    } catch (error) {
-      console.error("Error fetching data:", error);
+  const onKeywordDropdownChange = (value, index) => {
+    const newKeywordDropdowns = [...keywordDropdowns];
+    newKeywordDropdowns[index] = value;
+    setKeywordDropdowns(newKeywordDropdowns);
+  };
+
+  const onRightClick = (e, index) => {
+    if(cm.current) {
+      setSelectedDropdown(index);
+      cm.current.show(e);
     }
-    setSubmittedTerms(categorizedTerms);
-  };
+  }
 
-  return (
-    <div className="container">
-      <AutoComplete
-        className="autocomplete"
-        // Inline style to override PrimeReact CSS
-        value={searchTerm}
-        suggestions={suggestions}
-        multiple
-        completeMethod={searchSuggestions}
-        onChange={(e) => {
-          setSearchTerm(e.value);
-          setSelectedTerms(e.value);
-        }}
-        placeholder="Search..."
-      />
-      <Button label="Submit" className="button" onClick={handleSubmit} />
-      <Card title="Selected Results" className="results">
-        {Object.keys(submittedTerms).map((category) => (
-          <>
-            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-            <ul>
-              {submittedTerms[category].map((term, index) => (
-                <li key={index}>{term}</li>
-              ))}
-            </ul>
-          </>
+  const removeClause = () => {
+    const newDropdowns = [...dropdowns];
+    newDropdowns.splice(selectedDropdown, 1);
+    setDropdowns(newDropdowns);
+
+    const newKeywordDropdowns = [...keywordDropdowns];
+    newKeywordDropdowns.splice(selectedDropdown, 1);
+    setKeywordDropdowns(newKeywordDropdowns);
+  }
+
+  const Dropdowns = () => {
+    return(
+      <div>
+        {dropdowns.map((dropdown, index) => (
+          <div>
+            <Dropdown key = {index} value={dropdown} options={queryCommands} onChange={(e) => {onDropdownChange(e.value, index)}} onContextMenu={(e) => {onRightClick(e, index)}}/>
+            <Dropdown key = {"Keyword"+index} value={keywordDropdowns[index]} options={keywordCommands} onChange={(e) => {onKeywordDropdownChange(e.value, index)}} onContextMenu={(e) => {onRightClick(e, index)}}/>
+          </div>
         ))}
-      </Card>
+      </div>
+    );
+}
+  const onSubmit = () => {
+
+    //build query
+    let _query = "";
+    dropdowns.map((dropdown, index) => {
+      _query += dropdown + " ";
+      _query += keywordDropdowns[index] + " ";
+    });
+    _query = _query.slice(0, -1);
+    setQuery(_query + ";");
+
+    console.log(query);
+  }
+
+  return(
+    <div className="query-tool">
+      <ContextMenu model={cmItems} ref={cm}/>
+      <Button label = "Add Clause" onClick={onAddClause}/>
+      <Dropdowns/>
+      <Button label="Submit" onClick={onSubmit}/>
     </div>
   );
-};
+}
 
 export default QueryTool;
