@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
 
 import { Dropdown } from "primereact/dropdown";
 import { Button } from "primereact/button";
-import "./QueryTool.css";
+import { ContextMenu } from "primereact/contextmenu";
 import { Card } from "primereact/card";
-import SigmaGraph from "../components/Sigmagraph";
+
+import "./QueryTool.css";
 
 const QueryTool = () => {
   const [query, setQuery] = useState("");
