@@ -8,12 +8,7 @@ import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
 import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 
-const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex}) => {
-
-  const handleTabChange = (e) => {
-    setActiveIndex(e.index);
-    if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
-  };
+const NodeDetails = ({ nodeData, handleNodeClick }) => {
 
 const handleRowClick = (rowData) => {
   const newTabKey = `Letter-${rowData.id}`;
@@ -76,7 +71,7 @@ setActiveIndex(tabs.length - 1);
 
   return (
     <div className="sidecar">
-      <TabView activeIndex={activeTabIndex ? activeTabIndex : 0} onTabChange={handleTabChange} scrollable              >
+      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable              >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}
