@@ -100,6 +100,7 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
+    console.log(node);
     setSelectedNodes((prevSelectedNodes) => [
       {
         ...node,
