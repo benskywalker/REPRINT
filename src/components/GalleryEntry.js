@@ -7,12 +7,12 @@ const GalleryEntry = ({ image, name }) => {
 
     return (
         <Card>
-        <img src={image} alt={name} className = 'gallery-image'/>
-        <div className="gallery-text">
-            <div className="gallery-title">{name}</div>
-            <div className="gallery-subtitle">{religion}</div>
-            <div className="gallery-bio">{bio}</div>
-        </div>
+            <img src={image} alt={name} className = 'gallery-image'/>
+            <div className="gallery-text">
+                <div className="gallery-title">{name}</div>
+                <div className="gallery-subtitle">{religion}</div>
+                <div className="gallery-bio">{bio}</div>
+            </div>
         </Card>
     );
 };
