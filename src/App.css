@@ -40,7 +40,6 @@
     height: calc(100% - 40px); /* Adjusted height to account for header, padding, etc. */
     /* background-color: #fff; */
     flex-grow: 1;
-    overflow: auto;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
     /* color:#000000; */
@@ -48,8 +47,19 @@
 
 }
 
+.sidecar .p-tabview .p-tabview-panels .p-tabview-panel {
+  height: 110%; /* Adjusted height to account for header, padding, etc. */
+  /* background-color: green; */
+  flex-grow: 1;
+  overflow: auto;
+
+  /* color:#000000; */
+
+
+}
+
 .tab-content-container {
-  height: calc(100% - 40px); /* Adjusted to ensure it calculates properly */
+  height: 100%; /* Adjusted to ensure it calculates properly */
   overflow: auto; /* Enable vertical scrolling if content overflows */
   padding: 1rem; /* Optional padding */
 }

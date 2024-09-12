@@ -25,7 +25,7 @@ const handleRowClick = (rowData) => {
       const newTab = {
         key: newTabKey,
         header: `Letter ${rowData.id}`,
-        content: <Letter id={rowData.id} />
+        content: <Letter id={rowData.id} className="tab-content-container" />
       };
       const newTabs = [...prevTabs, newTab];
       setActiveIndex(newTabs.length - 1); // Set the new tab as active
