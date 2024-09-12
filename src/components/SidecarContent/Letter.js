@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { Image } from 'primereact/image';
-import { Splitter, SplitterPanel } from 'primereact/splitter';
-import './Letter.css'; // Make sure to import the CSS file
-import Logo from '../images/logo.png'; // Import the logo image
+import React, { useState } from "react";
+import { Splitter, SplitterPanel } from "primereact/splitter";
+import "./Letter.css"; // Make sure to import the CSS file
+import MyDocument from "./pdf";
+import ReactDOM from "react-dom";
+import { PDFViewer } from "@react-pdf/renderer";
 
 const Letter = ({ id }) => {
   const [isClosed, setIsClosed] = useState(false);
@@ -16,16 +17,15 @@ const Letter = ({ id }) => {
   };
 
   return (
-    <Splitter className='letterSplitter' onResizeEnd={handleResizeEnd}>
-      <SplitterPanel className={`flex align-items-center justify-content-center letterSplitterPanel ${isClosed ? 'closed' : ''}`} minSize={0}>
-        <p>Letter {id}</p>
-        <Image src={Logo} alt='Logo' />
-      </SplitterPanel>
-      <SplitterPanel className={`flex align-items-center  justify-content-center letterSplitterPanel ${isClosed ? 'closed' : ''}`} style={{ flexDirection: 'column' }} minSize={0}>
-        <p>Transcription {id}</p>
-        <Image src={Logo} alt='Logo' className='letterImage'/>
-      </SplitterPanel>
-    </Splitter>
+    <div>
+      <Splitter onResizeEnd={handleResizeEnd}>
+        <SplitterPanel>{/* Your other components */}</SplitterPanel>
+        <SplitterPanel>{/* Your other components */}</SplitterPanel>
+      </Splitter>
+      <PDFViewer>
+        <MyDocument />
+      </PDFViewer>
+    </div>
   );
 };
 
