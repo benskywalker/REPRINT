@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 
 import { Dropdown } from "primereact/dropdown";
 import { InputText } from "primereact/inputtext";
@@ -33,10 +32,7 @@ const operatorCommands = [
     { label: "Less Than or Equal to", value: "<=" },
 ];
 
-const response = await axios.get("http://localhost:4000/base_query")
-console.log(response.data);
-
-export const QueryClause = ({ setQuery, index }) => {
+export const QueryClause = ({ setQuery, index, suggestions }) => {
     const [column, setColumn] = useState(null);
     const [operator, setOperator] = useState(null);
     const [value, setValue] = useState("");
@@ -88,6 +84,16 @@ export const QueryClause = ({ setQuery, index }) => {
         setValue(e.target.value);
     };
 
+    const searchSuggestions = (e) => {
+        console.log(e);
+        const query = e.query;
+        let filteredSuggestions = suggestions.filter((suggestion) => {
+            return suggestion.toLowerCase().startsWith(query.toLowerCase());
+        });
+
+        return filteredSuggestions;
+    };
+
 
     return (
         <div>
@@ -103,9 +109,11 @@ export const QueryClause = ({ setQuery, index }) => {
                 options={operatorCommands} 
                 onChange={onOperatorChange}
             />
-            <InputText 
+            <AutoComplete 
                 placeholder="Value" 
-                value={value}
+                value={value} 
+                suggestions={suggestions} 
+                completeMethod={searchSuggestions} 
                 onChange={onValueChange}
             />
         </div>

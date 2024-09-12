@@ -9,6 +9,21 @@ import { QueryClause } from "./QueryClause";
 
 import "./QueryTool.css";
 
+const response = await axios.get("http://localhost:4000/base_query");
+const data = response.data;
+let suggestions = [];
+data.person.map((person) => {
+  let fullName = person.firstName + " " + person.lastName;
+  if(person.middleName) {
+    fullName = person.firstName + " " + person.middleName + " " + person.lastName;
+  }
+
+  suggestions.push(person.personStdName || fullName);
+});
+
+console.log(suggestions);
+
+
 const QueryTool = () => {
   const [query, setQuery] = useState([]);
   const [selectedClause, setSelectedClause] = useState("");
@@ -61,7 +76,7 @@ const QueryTool = () => {
       <Button label = "Add Clause" onClick={onAddClause}/>
       {clauses.map((clause, index) => (
         <div key={clause.id} onContextMenu={(e) =>{onRightClick(e, index)}}>
-          <QueryClause setQuery={setQueries} index={index}/>
+          <QueryClause setQuery={setQueries} index={index} suggestions={suggestions}/>
         </div>
       ))}
       <Button label="Submit" onClick={onSubmit}/>
