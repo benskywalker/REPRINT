@@ -73,10 +73,10 @@
 
 .filterToolContainer {
   position: relative;
-  width: 800px;
-  max-height: 400px;
-  top: 0;
-  right: 0;
+  justify-content: right;
   z-index: 1000;
   overflow: hidden !important;
+  min-width: 400px !important;
+  max-width: 400px !important;
+  max-height: 300px !important;
 }

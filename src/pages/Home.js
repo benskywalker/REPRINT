@@ -304,43 +304,45 @@ const Home = ({ searchQuery }) => {
                 <ClipLoader color="#36d7b7" loading={loading} size={150} />
               </div>
             ) : (
-              <div className={styles.graphContainer}>
-                <SigmaGraph
-                  graph={graph}
-                  onNodeHover={handleNodeHover}
-                  className={styles.sigma}
-                  data={filteredData}
-                  onNodeClick={handleNodeClick}
-                  searchQuery={searchQuery}
-                  handleNodeunHover={handleNodeOut}
-                  handleGraphUpdate={handleGraphUpdate}
-                  showEdges={showEdges}
-                />
-                <div className={styles.sliderContainer}>
-                  <Slider
-                    value={timeRange}
-                    onChange={handleTimeRangeChange}
-                    onChangeCommitted={handleTimeRangeCommit}
-                    valueLabelDisplay="auto"
-                    min={minDate}
-                    max={maxDate}
-                    step={1}
-                    className={styles.slider}
-                    marks={[
-                      { value: minDate, label: minDate },
-                      { value: maxDate, label: maxDate },
-                    ]}
+              <>
+                <div className={styles.graphContainer}>
+                  <div className={styles.filterToolContainer}>
+                    <FilterTool
+                      graph={graph}
+                      setGraph={setGraph}
+                      originalGraph={originalGraph}
+                    />
+                  </div>
+                  <SigmaGraph
+                    graph={graph}
+                    onNodeHover={handleNodeHover}
+                    className={styles.sigma}
+                    data={filteredData}
+                    onNodeClick={handleNodeClick}
+                    searchQuery={searchQuery}
+                    handleNodeunHover={handleNodeOut}
+                    handleGraphUpdate={handleGraphUpdate}
+                    showEdges={showEdges}
                   />
+                  <div className={styles.sliderContainer}>
+                    <Slider
+                      value={timeRange}
+                      onChange={handleTimeRangeChange}
+                      onChangeCommitted={handleTimeRangeCommit}
+                      valueLabelDisplay="auto"
+                      min={minDate}
+                      max={maxDate}
+                      step={1}
+                      className={styles.slider}
+                      marks={[
+                        { value: minDate, label: minDate },
+                        { value: maxDate, label: maxDate },
+                      ]}
+                    />
+                  </div>
                 </div>
-              </div>
+              </>
             )}
-            <div className={`${styles.filterToolContainer}`}>
-              <FilterTool
-                graph={graph}
-                setGraph={setGraph}
-                originalGraph={originalGraph}
-              />
-            </div>
           </SplitterPanel>
         </Splitter>
       </div>

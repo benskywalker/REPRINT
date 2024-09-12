@@ -78,7 +78,7 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
   };
 
   return (
-    <div className="container">
+    <div>
       <AutoComplete
         value={selectedTerms} // Bind to selectedTerms so chips remain visible
         suggestions={filteredSuggestions}
