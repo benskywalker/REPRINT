@@ -71,12 +71,18 @@
   overflow-y: auto;
 }
 
-.filterToolContainer {
+.graphContainer {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   position: relative;
-  justify-content: right;
-  z-index: 1000;
-  overflow: hidden !important;
-  min-width: 400px !important;
-  max-width: 400px !important;
-  max-height: 300px !important;
+}
+
+.filterToolContainer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+  position: relative;
+  top: 0;
+  right: 0;
 }

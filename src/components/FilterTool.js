@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { AutoComplete } from "primereact/autocomplete";
-import "./FilterTool.css";
 
 const FilterTool = ({ graph, setGraph, originalGraph }) => {
   const [suggestions, setSuggestions] = useState([]);
@@ -78,16 +77,14 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
   };
 
   return (
-    <div>
-      <AutoComplete
-        value={selectedTerms} // Bind to selectedTerms so chips remain visible
-        suggestions={filteredSuggestions}
-        completeMethod={searchSuggestions}
-        multiple
-        onChange={handleChange}
-        placeholder="Search..."
-      />
-    </div>
+    <AutoComplete
+      value={selectedTerms} // Bind to selectedTerms so chips remain visible
+      suggestions={filteredSuggestions}
+      completeMethod={searchSuggestions}
+      multiple
+      onChange={handleChange}
+      placeholder="Search..."
+    />
   );
 };
 
