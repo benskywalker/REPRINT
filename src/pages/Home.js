@@ -107,7 +107,6 @@ const Home = ({ searchQuery }) => {
 
   const handleNodeClick = (node) => {
     console.log("Node clicked:", node);
-    setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
     setSelectedNodes((prevSelectedNodes) => [
       {
         ...node,
