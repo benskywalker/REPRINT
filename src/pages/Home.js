@@ -364,10 +364,6 @@ const Home = ({ searchQuery }) => {
           <NodeDetails
             nodeData={dialog.nodeData}
             handleNodeClick={handleNodeClick}
-          />
-          <NodeDetails
-            nodeData={dialog.nodeData}
-            handleNodeClick={handleNodeClick}
             activeTabIndex={dialog.activeTabIndex}
             setActiveTabIndex={(index) => {
               const updatedDialogs = dialogs.map((dlg) =>
