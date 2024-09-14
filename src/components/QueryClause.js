@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 
 import { Dropdown } from "primereact/dropdown";
-import { InputText } from "primereact/inputtext";
 import { AutoComplete } from "primereact/autocomplete";
+import { Card } from "primereact/card";
 
 const columnCommands = [
     { label: "First Name", value: "firstName" },
@@ -32,10 +32,11 @@ const operatorCommands = [
     { label: "Less Than or Equal to", value: "<=" },
 ];
 
-export const QueryClause = ({ setQuery, index, suggestions }) => {
+export const QueryClause = ({ setQuery, index, suggestions, onRightClick }) => {
     const [column, setColumn] = useState(null);
     const [operator, setOperator] = useState(null);
     const [value, setValue] = useState("");
+    const [filteredSuggestions, setFilteredSuggestions] = useState([]);
 
     const getQuery = () => {
         const columnValue = [];
@@ -85,38 +86,51 @@ export const QueryClause = ({ setQuery, index, suggestions }) => {
     };
 
     const searchSuggestions = (e) => {
-        console.log(e);
         const query = e.query;
         let filteredSuggestions = suggestions.filter((suggestion) => {
-            return suggestion.toLowerCase().startsWith(query.toLowerCase());
+            return suggestion.toLowerCase().includes(query.toLowerCase());
         });
-
-        return filteredSuggestions;
+        setFilteredSuggestions(filteredSuggestions);
     };
 
 
     return (
-        <div>
-            <Dropdown 
-                placeholder="Column" 
-                value={column} 
-                options={columnCommands} 
-                onChange={onColumnChange}
-            />
-            <Dropdown 
-                placeholder="Operator" 
-                value={operator} 
-                options={operatorCommands} 
-                onChange={onOperatorChange}
-            />
-            <AutoComplete 
-                placeholder="Value" 
-                value={value} 
-                suggestions={suggestions} 
-                completeMethod={searchSuggestions} 
-                onChange={onValueChange}
-            />
-        </div>
+        <Card 
+            className="query-card"
+            onContextMenu={(e) => onRightClick(e, index)}
+        >
+            <div className="query-input">
+                <Dropdown 
+                    className="query-drop"
+                    placeholder="Column" 
+                    value={column} 
+                    options={columnCommands} 
+                    onChange={onColumnChange}
+                />
+                <p>What type of information do you need?</p>
+            </div>
+            <div className="query-input">
+                <Dropdown 
+                    className="query-drop"
+                    placeholder="Operator" 
+                    value={operator} 
+                    options={operatorCommands} 
+                    onChange={onOperatorChange}
+                />
+                <p>Do you need an exact match?</p>
+            </div>
+            <div className="query-input">
+                <AutoComplete 
+                    className="query-drop"
+                    placeholder="Value" 
+                    value={value} 
+                    suggestions={filteredSuggestions} 
+                    completeMethod={searchSuggestions} 
+                    onChange={onValueChange}
+                />
+                <p>What are you comparing it to?</p>
+            </div>
+        </Card>
     );
 }
 

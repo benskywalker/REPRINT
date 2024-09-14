@@ -8,14 +8,6 @@
   overflow: auto;
 }
 
-.autocomplete .p-autocomplete-multiple-container {
-  min-width: 500px !important;
-  max-width: 500px !important;
-  margin-bottom: 10px;
-  overflow: auto !important;
-  max-height: 300px !important;
-}
-
 .button {
   height: 35px;
   margin-bottom: 10px;
@@ -49,4 +41,70 @@
 
 .p-card-title {
   font-size: 2.5em;
+}
+
+.query-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+}
+
+.query-card {
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  margin: 10px;
+  width: 90%;
+  height: 225px;
+}
+
+.query-drop {
+  width: 70%;
+  margin-right: 5px;
+}
+
+.p-card-title {
+  font-size: 1.5em;
+  margin-bottom: 10px;
+}
+
+.query-input {
+  width: 100%;
+  display: flex;
+  margin-bottom: 10px;
+}
+
+.query-input p {
+  margin-left: auto;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  margin-top: 10px;
+  position: fixed;
+  right:10px;
+}
+
+.add-button {
+  margin-bottom: 10px;
+}
+
+.p-card-content {
+  flex-direction: column;
+  flex-wrap: wrap;
+}
+
+.p-card-body {
+  width: 100%;
+}
+
+.p-autocomplete-input {
+  width: 100%;
 }

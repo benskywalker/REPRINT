@@ -18,16 +18,48 @@ data.person.map((person) => {
     fullName = person.firstName + " " + person.middleName + " " + person.lastName;
   }
 
-  suggestions.push(person.personStdName || fullName);
+  return suggestions.push(person.personStdName || fullName);
 });
 
-console.log(suggestions);
+data.keyword.map((keyword) => {
+  return suggestions.push(keyword);
+});
 
+data.occupation.map((occupation) => {
+  return suggestions.push(occupation);
+});
+
+data.organizationtype.map((organization) => {
+  return suggestions.push(organization.organizationName);
+});
+
+data.place.map((place) => {
+  return suggestions.push(place.placeNameStd);
+});
+
+data.religion.map((religion) => {
+  return suggestions.push(religion.religionDesc);
+});
+
+data.relationshiptype.map((relationship) => {
+  return suggestions.push(relationship.relationshipDesc);
+  
+});
+
+data.repositorie.map((repository) => {
+  return suggestions.push(repository.repoDesc);
+
+});
+
+data.role.map((role) => {
+  return suggestions.push(role.roleDesc);
+  
+});
 
 const QueryTool = () => {
   const [query, setQuery] = useState([]);
   const [selectedClause, setSelectedClause] = useState("");
-  const [clauses, setClauses] = useState([]);
+  const [clauses, setClauses] = useState([uuidv4()]);
   const cm = useRef(null);
 
   const cmItems = [
@@ -73,13 +105,22 @@ const QueryTool = () => {
   return(
     <div className="query-tool">
       <ContextMenu model={cmItems} ref={cm}/>
-      <Button label = "Add Clause" onClick={onAddClause}/>
-      {clauses.map((clause, index) => (
-        <div key={clause.id} onContextMenu={(e) =>{onRightClick(e, index)}}>
-          <QueryClause setQuery={setQueries} index={index} suggestions={suggestions}/>
-        </div>
-      ))}
-      <Button label="Submit" onClick={onSubmit}/>
+      <div className="buttons">
+        <Button className="add-button" label = "Add Clause" onClick={onAddClause}/>
+        <Button className="submit-button" label="Submit" onClick={onSubmit}/>
+      </div>
+      <div className="query-items">
+        {clauses.map((clause, index) => (
+            <QueryClause
+              className="query-clause" 
+              key={clause.id} 
+              setQuery={setQueries} 
+              index={index} 
+              suggestions={suggestions} 
+              onRightClick={onRightClick}
+            />
+        ))}
+      </div>
     </div>
   );
 }
