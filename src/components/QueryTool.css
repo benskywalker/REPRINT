@@ -39,7 +39,7 @@
   margin-bottom: 5px; /* Add some space between list items */
 }
 
-.p-card-title {
+.query-card .p-card-title {
   font-size: 2.5em;
 }
 
@@ -96,15 +96,15 @@
   margin-bottom: 10px;
 }
 
-.p-card-content {
+.query-card .p-card-content {
   flex-direction: column;
   flex-wrap: wrap;
 }
 
-.p-card-body {
+.query-card .p-card-body {
   width: 100%;
 }
 
-.p-autocomplete-input {
+.query-card .p-autocomplete-input {
   width: 100%;
 }
