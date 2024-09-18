@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 
 import { Dialog } from "primereact/dialog";
+import { TabMenu } from "primereact/tabmenu";
 
 import NodeDetails from "../components/NodeDetails";
 import Filter from "../components/Filter";
 import GalleryEntry from "../components/GalleryEntry";
+import GalleryDoc from "../components/GalleryDoc";
 
 import "../components/Filter.css";
 import "./Gallery.css";
 
 const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [dialogs, setDialogs] = useState([]);
   const [filters, setFilters] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
+
+  const tabmenuItems = [
+    {label: 'People', icon: 'pi pi-users'},
+    {label: 'Documents', icon: 'pi pi-file'}
+  ];
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -33,6 +42,11 @@ const Gallery = ({ searchQuery }) => {
           code: name, // Use full name as code for filtering
         }));
         setFilterOptions(filterOptions);
+
+        const documentRes = await fetch("http://localhost:4000/documents");
+        const documentData = await documentRes.json();
+        setDocuments(documentData);
+        console.log(documentData);
       } catch (error) {
         console.error("Error fetching people:", error);
       }
@@ -99,6 +113,7 @@ const Gallery = ({ searchQuery }) => {
   return (
     <div>
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
+      <TabMenu model = {tabmenuItems} activeIndex={selectedTab} onTabChange={(e) => setSelectedTab(e.index)}/>
       <div className="gallery">
         {filterPeople.map((person) => (
           <div
