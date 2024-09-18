@@ -45,8 +45,15 @@ const Gallery = ({ searchQuery }) => {
 
         const documentRes = await fetch("http://localhost:4000/documents");
         const documentData = await documentRes.json();
-        setDocuments(documentData);
-        console.log(documentData);
+        const docIds = [];
+        const uniqueDocs = documentData.filter((doc) => {
+          if (!docIds.includes(doc.document)) {
+            docIds.push(doc.document);
+            return true;
+          }
+          return false;
+        });
+        setDocuments(uniqueDocs);
       } catch (error) {
         console.error("Error fetching people:", error);
       }
@@ -76,58 +83,109 @@ const Gallery = ({ searchQuery }) => {
     setFilters(filters);
   };
 
-  const filteredPeople = people.filter((person) =>
-    `${person.firstName} ${person.lastName}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
-  let filterPeople = [];
+  const capitializeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   let flist = filters;
   if (flist === null) {
     flist = [];
   }
 
-  flist.map((filter) => {
-    filteredPeople
-      .filter(
-        (person) => `${person.firstName} ${person.lastName}` === filter.code
-      )
-      .forEach((person, index) => {
-        if (!filterPeople.some((p) => p.personID === person.personID)) {
-          const key = `${filter.code}-${index}`;
-          filterPeople.push({ ...person, key });
+  const Gal = () => {
+    switch (selectedTab) {
+      case 0:
+        const filteredPeople = people.filter((person) =>
+          `${person.firstName} ${person.lastName}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        );
+      
+        let filterPeople = [];
+      
+        flist.map((filter) => {
+          filteredPeople
+            .filter(
+              (person) => `${person.firstName} ${person.lastName}` === filter.code
+            )
+            .forEach((person, index) => {
+              if (!filterPeople.some((p) => p.personID === person.personID)) {
+                const key = `${filter.code}-${index}`;
+                filterPeople.push({ ...person, key });
+              }
+            });
+        });
+      
+        if (flist.length === 0) {
+          filterPeople = filteredPeople;
         }
-      });
-  });
+        return (
+          <div className="gallery">
+            {filterPeople.map((person) => (
+              <div
+                key={person.personID}
+                className="gallery-item"
+                onClick={() => handleButtonClick(person)}
+              >
+              <GalleryEntry
+                image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
+                name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
+              />
+              </div>
+            ))}
+        </div>
+        )
+      case 1:
+        const filteredDocuments = documents.filter((document) =>
+          `${document.receiver} ${document.sender}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+          );
+        
+        let filterDocuments = [];
 
-  if (flist.length === 0) {
-    filterPeople = filteredPeople;
-  }
+        flist.map((filter) => {
+          console.log(filter.code);
+          filteredDocuments
+            .filter(
+              (document) => `${document.receiver} ${document.sender}`.includes(filter.code.toLowerCase()))
+            .forEach((document, index) => {
+              if (!filterDocuments.some((d) => d.document === document.document)) {
+                const key = `${filter.code}-${index}`;
+                filterDocuments.push({ ...document, key });
+              }
+            });
+        });
 
-  const capitializeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+        if (flist.length === 0) {
+          filterDocuments = filteredDocuments;
+        }
+  
+        return (
+          <div className="gallery">
+            {filterDocuments.map((document) => (
+              <div
+                key={document.document}
+                className="gallery-item"
+                onClick={() => console.log(document)}
+              >
+              <GalleryDoc
+                doc = {document}
+              />
+              </div>
+            ))}
+        </div>
+        )
+      default:
+        break;
+    }
   }
 
   return (
     <div>
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
       <TabMenu model = {tabmenuItems} activeIndex={selectedTab} onTabChange={(e) => setSelectedTab(e.index)}/>
-      <div className="gallery">
-        {filterPeople.map((person) => (
-          <div
-            key={person.personID}
-            className="gallery-item"
-            onClick={() => handleButtonClick(person)}
-          >
-            <GalleryEntry
-              image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
-              name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
-            />
-          </div>
-        ))}
-      </div>
+      <Gal />
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
