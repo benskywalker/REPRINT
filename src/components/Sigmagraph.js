@@ -20,7 +20,6 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph = { nodes: [], edges: [] }
       return;
     }
 
-    console.log('Graph data updated:', graph);
 
     // Handle showEdges change
     const sigmaInstance = sigmaRef.current.sigma;
@@ -30,12 +29,10 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph = { nodes: [], edges: [] }
       graphInstance.edges().forEach(edge => {
         graphInstance.edges(edge.id).hidden = false;
       });
-      console.log('Showing all edges');
     } else {
       graphInstance.edges().forEach(edge => {
         graphInstance.edges(edge.id).hidden = true;
       });
-      console.log('Hiding all edges');
     }
 
     sigmaInstance.refresh();
@@ -83,16 +80,13 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph = { nodes: [], edges: [] }
       const sigmaInstance = sigmaRef.current.sigma;
       const graphInstance = sigmaInstance.graph;
 
-      console.log('showEdges value:', showEdgesRef.current);
 
       if (showEdgesRef.current) {
-        console.log('Showing all edges');
         // Show all edges
         graphInstance.edges().forEach(edge => {
           graphInstance.edges(edge.id).hidden = false;
         });
       } else {
-        console.log('Hiding all edges');
         // Hide all edges
         graphInstance.edges().forEach(edge => {
           graphInstance.edges(edge.id).hidden = true;

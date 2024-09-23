@@ -22,7 +22,6 @@ const Home = ({ searchQuery }) => {
   const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNodes, setSelectedNodes] = useState([]);
-  const [document, setDocument] = useState(null);
   const [timeRange, setTimeRange] = useState([1600, 1700]); // Initialize with min and max dates
   const [dialogs, setDialogs] = useState([]);
   const [hoveredNodeData, setHoveredNodeData] = useState(null);
@@ -34,7 +33,7 @@ const Home = ({ searchQuery }) => {
   const [showEdges, setShowEdges] = useState(true);
 
   const getGraphData = async () => {
-    const graphData = await fetchGraphData('http://localhost:4000/relations', 1600, 1700);
+    const graphData = await fetchGraphData('http://localhost:4000/graph', 2000, 0);
     console.log(graphData);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
@@ -42,10 +41,10 @@ const Home = ({ searchQuery }) => {
     setMaxDate(graphData.maxDate);
     setTimeRange([graphData.minDate, graphData.maxDate]); // Set initial time range
     setOriginalGraph(graphData.graph || { nodes: [], edges: [] });
+    setLoading(false);
   };
 
   useEffect(() => {
-    console.log('Fetching graph data on mount');
     getGraphData();
   }, []);
 
@@ -64,32 +63,7 @@ const Home = ({ searchQuery }) => {
     setGraph(graph || { nodes: [], edges: [] });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch('http://localhost:4000/sender_receiver');
-        const data = await response.json();
-        setFilteredData(data);
-        setLoading(false);
-        setDocument({ date: { start: '2023-01-01', end: '2023-12-31' } });
-      } catch (error) {
-        console.error('Error fetching data: ', error);
-        setLoading(false);
-      }
-    };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (document && document.data) {
-      const filtered = document.data.filter((item) => {
-        const itemDate = new Date(item.date).getTime();
-        return itemDate >= timeRange[0] && itemDate <= timeRange[1];
-      });
-      setFilteredData(filtered);
-    }
-  }, [timeRange, document]);
 
   const handleNodeHover = (nodeData) => {
     setHoveredNodeData(nodeData);
@@ -100,7 +74,6 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
-    console.log('Node clicked:', node);
     setSelectedNodes((prevSelectedNodes) => [...prevSelectedNodes, node]);
   };
 
@@ -121,6 +94,7 @@ const Home = ({ searchQuery }) => {
 
     // Loop through the edges and nodes and update the graph
     const newEdges = originalGraph.edges.filter((edge) => {
+      
       // Dates can be YYYY, YYYY-MM, YYYY-MM-DD
       const parseDate = (dateStr) => {
         if (typeof dateStr === 'number') {
@@ -143,8 +117,19 @@ const Home = ({ searchQuery }) => {
         return null;
       };
 
+      if(edge.type === 'document') {
       const edgeDate = parseDate(edge.date);
       return edgeDate >= new Date(newValue[0], 0) && edgeDate <= new Date(newValue[1], 11, 31);
+      }else if(edge.type === 'organization') {
+        const formationDate = parseDate(edge.formationDate);
+        const dissolutionDate = parseDate(edge.dissolutionDate);
+        return formationDate >= new Date(newValue[0], 0) && dissolutionDate <= new Date(newValue[1], 11, 31);
+      }else if(edge.type === 'relationship') {
+        return true;
+      }else if(edge.type === 'religion') {
+        return true;
+      }
+
     });
 
     const newNodes = originalGraph.nodes.filter((node) => {
@@ -235,7 +220,6 @@ const Home = ({ searchQuery }) => {
                   graph={graph}
                   onNodeHover={handleNodeHover}
                   className={styles.sigma}
-                  data={filteredData}
                   onNodeClick={handleNodeClick}
                   searchQuery={searchQuery}
                   handleNodeunHover={handleNodeOut}
