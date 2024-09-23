@@ -1,168 +1,128 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import axios from "axios";
-import { AutoComplete } from "primereact/autocomplete";
+import { v4 as uuidv4 } from 'uuid';
+
 import { Button } from "primereact/button";
+import { ContextMenu } from "primereact/contextmenu";
+
+import { QueryClause } from "./QueryClause";
+
 import "./QueryTool.css";
-import { Card } from "primereact/card";
+
+const response = await axios.get("http://localhost:4000/base_query");
+const data = response.data;
+let suggestions = [];
+data.person.map((person) => {
+  let fullName = person.firstName + " " + person.lastName;
+  if(person.middleName) {
+    fullName = person.firstName + " " + person.middleName + " " + person.lastName;
+  }
+
+  return suggestions.push(person.personStdName || fullName);
+});
+
+data.keyword.map((keyword) => {
+  return suggestions.push(keyword);
+});
+
+data.occupation.map((occupation) => {
+  return suggestions.push(occupation);
+});
+
+data.organizationtype.map((organization) => {
+  return suggestions.push(organization.organizationName);
+});
+
+data.place.map((place) => {
+  return suggestions.push(place.placeNameStd);
+});
+
+data.religion.map((religion) => {
+  return suggestions.push(religion.religionDesc);
+});
+
+data.relationshiptype.map((relationship) => {
+  return suggestions.push(relationship.relationshipDesc);
+  
+});
+
+data.repositorie.map((repository) => {
+  return suggestions.push(repository.repoDesc);
+
+});
+
+data.role.map((role) => {
+  return suggestions.push(role.roleDesc);
+  
+});
 
 const QueryTool = () => {
-  const [data, setData] = useState({
-    person: [],
-    keyword: [],
-    organizationtype: [],
-    occupation: [],
-    place: [],
-    relationshiptype: [],
-    religion: [],
-    repositorie: [],
-    role: [],
-  });
+  const [query, setQuery] = useState([]);
+  const [selectedClause, setSelectedClause] = useState("");
+  const [clauses, setClauses] = useState([uuidv4()]);
+  const cm = useRef(null);
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filteredData, setFilteredData] = useState({});
-  const [selectedTerms, setSelectedTerms] = useState([]);
-  const [suggestions, setSuggestions] = useState([]);
-  const [submittedTerms, setSubmittedTerms] = useState({});
+  const cmItems = [
+    { label: "Remove", icon: "pi pi-times", command: (e) => {removeClause()}}
+  ];
+  
 
-  const apiEndpoint = "http://localhost:4000/base_query";
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(apiEndpoint);
-        setData(response.data);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-    fetchData();
-  }, [apiEndpoint]);
-
-  useEffect(() => {
-    const filterData = () => {
-      const term = searchTerm.toLowerCase ? searchTerm.toLowerCase() : "";
-      const filtered = {
-        person: data.person.filter((p) =>
-          `${p.firstName} ${p.lastName}`.toLowerCase().includes(term)
-        ),
-        keyword: data.keyword.filter((k) =>
-          k.keyword.toLowerCase().includes(term)
-        ),
-        organizationtype: data.organizationtype.filter((o) =>
-          o.organizationName.toLowerCase().includes(term)
-        ),
-        occupation: data.occupation.filter((o) =>
-          (o.occupationDesc || "").toLowerCase().includes(term)
-        ),
-        place: data.place.filter((p) =>
-          p.placeNameStd.toLowerCase().includes(term)
-        ),
-        relationshiptype: data.relationshiptype.filter((r) =>
-          r.relationshipDesc.toLowerCase().includes(term)
-        ),
-        religion: data.religion.filter((r) =>
-          r.religionDesc.toLowerCase().includes(term)
-        ),
-        repositorie: data.repositorie.filter((r) =>
-          r.repoDesc.toLowerCase().includes(term)
-        ),
-        role: data.role.filter((r) => r.roleDesc.toLowerCase().includes(term)),
-      };
-      setFilteredData(filtered);
-    };
-    filterData();
-  }, [searchTerm, data]);
-
-  const searchSuggestions = (event) => {
-    const query = event.query.toLowerCase();
-    const allData = [
-      ...data.person.map((p) => `${p.firstName} ${p.lastName}`),
-      ...data.keyword.map((k) => k.keyword),
-      ...data.organizationtype.map((o) => o.organizationName),
-      ...data.occupation.map((o) => o.occupationDesc || ""),
-      ...data.place.map((p) => p.placeNameStd),
-      ...data.relationshiptype.map((r) => r.relationshipDesc),
-      ...data.religion.map((r) => r.religionDesc),
-      ...data.repositorie.map((r) => r.repoDesc),
-      ...data.role.map((r) => r.roleDesc),
-    ];
-    setSuggestions(
-      allData.filter((item) => item.toLowerCase().includes(query))
-    );
+  const onAddClause = () => {
+    const id = uuidv4();
+    setClauses([...clauses, {id: id}]);
   };
 
-  const handleSubmit = () => {
-    const categorizedTerms = {
-      person: [],
-      keyword: [],
-      organizationtype: [],
-      occupation: [],
-      place: [],
-      relationshiptype: [],
-      religion: [],
-      repositorie: [],
-      role: [],
-    };
+  const onRightClick = (e, index) => {
+    if(cm.current) {
+      setSelectedClause(index);
+      cm.current.show(e);
+    }
+  }
 
-    selectedTerms.forEach((term) => {
-      if (data.person.some((p) => `${p.firstName} ${p.lastName}` === term)) {
-        categorizedTerms.person.push(term);
-      } else if (data.keyword.some((k) => k.keyword === term)) {
-        categorizedTerms.keyword.push(term);
-      } else if (
-        data.organizationtype.some((o) => o.organizationName === term)
-      ) {
-        categorizedTerms.organizationtype.push(term);
-      } else if (data.occupation.some((o) => o.occupationDesc === term)) {
-        categorizedTerms.occupation.push(term);
-      } else if (data.place.some((p) => p.placeNameStd === term)) {
-        categorizedTerms.place.push(term);
-      } else if (
-        data.relationshiptype.some((r) => r.relationshipDesc === term)
-      ) {
-        categorizedTerms.relationshiptype.push(term);
-      } else if (data.religion.some((r) => r.religionDesc === term)) {
-        categorizedTerms.religion.push(term);
-      } else if (data.repositorie.some((r) => r.repoDesc === term)) {
-        categorizedTerms.repositorie.push(term);
-      } else if (data.role.some((r) => r.roleDesc === term)) {
-        categorizedTerms.role.push(term);
-      }
-    });
+  const removeClause = () => {
+    const newClause = clauses.filter((clause, index) => index !== selectedClause);
+    setClauses(newClause);
+  }
 
-    setSubmittedTerms(categorizedTerms);
-  };
+  const setQueries = (q, index) => {
+    setQuery(prevQuery => {
+      const newQuery = [...prevQuery];
+      newQuery[index] = q;
+      return newQuery;
+    })
+  }
 
-  return (
-    <div className="container">
-      <AutoComplete
-        className="autocomplete"
-        // Inline style to override PrimeReact CSS
-        value={searchTerm}
-        suggestions={suggestions}
-        multiple
-        completeMethod={searchSuggestions}
-        onChange={(e) => {
-          setSearchTerm(e.value);
-          setSelectedTerms(e.value);
-        }}
-        placeholder="Search..."
-      />
-      <Button label="Submit" className="button" onClick={handleSubmit} />
-      <Card title="Selected Results" className="results">
-        {Object.keys(submittedTerms).map((category) => (
-          <>
-            <h4>{category.charAt(0).toUpperCase() + category.slice(1)}</h4>
-            <ul>
-              {submittedTerms[category].map((term, index) => (
-                <li key={index}>{term}</li>
-              ))}
-            </ul>
-          </>
+  const onSubmit = () => {
+    const queries = [];
+    query.map((q) => {
+      q.map((clause) => {
+        queries.push(clause);
+      })
+    })
+    console.log(queries);
+  }
+
+  return(
+    <div className="query-tool">
+      <ContextMenu model={cmItems} ref={cm}/>
+      <div className="buttons">
+        <Button className="add-button" label = "Add Clause" onClick={onAddClause}/>
+        <Button className="submit-button" label="Submit" onClick={onSubmit}/>
+      </div>
+      <div className="query-items">
+        {clauses.map((clause, index) => (
+            <QueryClause
+              className="query-clause" 
+              key={clause.id} 
+              setQuery={setQueries} 
+              index={index} 
+              suggestions={suggestions} 
+              onRightClick={onRightClick}
+            />
         ))}
-      </Card>
+      </div>
     </div>
   );
-};
+}
 
 export default QueryTool;

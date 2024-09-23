@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import 'primeicons/primeicons.css'; // Ensure PrimeIcons are imported
 import { TabView, TabPanel } from 'primereact/tabview';
@@ -8,7 +9,12 @@ import OpenData from './SidecarContent/OpenData';
 import Biography from './SidecarContent/Biography';
 import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 
-const NodeDetails = ({ nodeData, handleNodeClick }) => {
+const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex}) => {
+
+  const handleTabChange = (e) => {
+    setActiveIndex(e.index);
+    if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
+  };
 
 const handleRowClick = (rowData) => {
   const newTabKey = `Letter-${rowData.id}`;
@@ -19,7 +25,7 @@ const handleRowClick = (rowData) => {
       const newTab = {
         key: newTabKey,
         header: `Letter ${rowData.id}`,
-        content: <Letter id={rowData.id} />
+        content: <Letter id={rowData.id} className="tab-content-container" />
       };
       const newTabs = [...prevTabs, newTab];
       setActiveIndex(newTabs.length - 1); // Set the new tab as active
@@ -37,7 +43,7 @@ const handleRowClick = (rowData) => {
     { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container"/> },
     { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick}  className="tab-content-container"/> },
     { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick}  className="tab-content-container" /> },
-    { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} /> }
+    { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} className="tab-content-container" /> }
   ]);
 
   const handleTabClose = (key) => {
@@ -71,7 +77,7 @@ setActiveIndex(tabs.length - 1);
 
   return (
     <div className="sidecar">
-      <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)} scrollable              >
+      <TabView activeIndex={activeTabIndex ? activeTabIndex : 0} onTabChange={handleTabChange} scrollable              >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}

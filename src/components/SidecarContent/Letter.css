@@ -2,6 +2,7 @@
     height: 100%; /* Ensure the Splitter takes full height */
     display: flex;
     flex: 1;
+    /* background-color: red; */
   }
   
   .letterSplitterPanel {
@@ -11,6 +12,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    background-color: blue;
 }
 
 .letterSplitterPanel img {

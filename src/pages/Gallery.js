@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from "react";
 
 import { Dialog } from "primereact/dialog";
+import { TabMenu } from "primereact/tabmenu";
 
 import NodeDetails from "../components/NodeDetails";
 import Filter from "../components/Filter";
 import GalleryEntry from "../components/GalleryEntry";
+import GalleryDoc from "../components/GalleryDoc";
 
 import "../components/Filter.css";
 import "./Gallery.css";
 
 const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
+  const [documents, setDocuments] = useState([]);
+  const [selectedTab, setSelectedTab] = useState(0);
   const [dialogs, setDialogs] = useState([]);
   const [filters, setFilters] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
+
+  const tabmenuItems = [
+    {label: 'People', icon: 'pi pi-users'},
+    {label: 'Documents', icon: 'pi pi-file'}
+  ];
 
   useEffect(() => {
     const fetchPeople = async () => {
@@ -33,6 +42,18 @@ const Gallery = ({ searchQuery }) => {
           code: name, // Use full name as code for filtering
         }));
         setFilterOptions(filterOptions);
+
+        const documentRes = await fetch("http://localhost:4000/documents");
+        const documentData = await documentRes.json();
+        const docIds = [];
+        const uniqueDocs = documentData.filter((doc) => {
+          if (!docIds.includes(doc.document)) {
+            docIds.push(doc.document);
+            return true;
+          }
+          return false;
+        });
+        setDocuments(uniqueDocs);
       } catch (error) {
         console.error("Error fetching people:", error);
       }
@@ -62,57 +83,109 @@ const Gallery = ({ searchQuery }) => {
     setFilters(filters);
   };
 
-  const filteredPeople = people.filter((person) =>
-    `${person.firstName} ${person.lastName}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
-  let filterPeople = [];
+  const capitializeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
 
   let flist = filters;
   if (flist === null) {
     flist = [];
   }
 
-  flist.map((filter) => {
-    filteredPeople
-      .filter(
-        (person) => `${person.firstName} ${person.lastName}` === filter.code
-      )
-      .forEach((person, index) => {
-        if (!filterPeople.some((p) => p.personID === person.personID)) {
-          const key = `${filter.code}-${index}`;
-          filterPeople.push({ ...person, key });
+  const Gal = () => {
+    switch (selectedTab) {
+      case 0:
+        const filteredPeople = people.filter((person) =>
+          `${person.firstName} ${person.lastName}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+        );
+      
+        let filterPeople = [];
+      
+        flist.map((filter) => {
+          filteredPeople
+            .filter(
+              (person) => `${person.firstName} ${person.lastName}` === filter.code
+            )
+            .forEach((person, index) => {
+              if (!filterPeople.some((p) => p.personID === person.personID)) {
+                const key = `${filter.code}-${index}`;
+                filterPeople.push({ ...person, key });
+              }
+            });
+        });
+      
+        if (flist.length === 0) {
+          filterPeople = filteredPeople;
         }
-      });
-  });
+        return (
+          <div className="gallery">
+            {filterPeople.map((person) => (
+              <div
+                key={person.personID}
+                className="gallery-item"
+                onClick={() => handleButtonClick(person)}
+              >
+              <GalleryEntry
+                image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
+                name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
+              />
+              </div>
+            ))}
+        </div>
+        )
+      case 1:
+        const filteredDocuments = documents.filter((document) =>
+          `${document.receiver} ${document.sender}`
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase())
+          );
+        
+        let filterDocuments = [];
 
-  if (flist.length === 0) {
-    filterPeople = filteredPeople;
-  }
+        flist.map((filter) => {
+          console.log(filter.code);
+          filteredDocuments
+            .filter(
+              (document) => `${document.receiver} ${document.sender}`.includes(filter.code.toLowerCase()))
+            .forEach((document, index) => {
+              if (!filterDocuments.some((d) => d.document === document.document)) {
+                const key = `${filter.code}-${index}`;
+                filterDocuments.push({ ...document, key });
+              }
+            });
+        });
 
-  const capitializeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1);
+        if (flist.length === 0) {
+          filterDocuments = filteredDocuments;
+        }
+  
+        return (
+          <div className="gallery">
+            {filterDocuments.map((document) => (
+              <div
+                key={document.document}
+                className="gallery-item"
+                onClick={() => console.log(document)}
+              >
+              <GalleryDoc
+                doc = {document}
+              />
+              </div>
+            ))}
+        </div>
+        )
+      default:
+        break;
+    }
   }
 
   return (
     <div>
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
-      <div className="gallery">
-        {filterPeople.map((person) => (
-          <div
-            key={person.personID}
-            className="gallery-item"
-            onClick={() => handleButtonClick(person)}
-          >
-            <GalleryEntry
-              image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
-              name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
-            />
-          </div>
-        ))}
-      </div>
+      <TabMenu model = {tabmenuItems} activeIndex={selectedTab} onTabChange={(e) => setSelectedTab(e.index)}/>
+      <Gal />
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
