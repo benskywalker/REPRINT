@@ -18,6 +18,8 @@ const Gallery = ({ searchQuery }) => {
   const [dialogs, setDialogs] = useState([]);
   const [filters, setFilters] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
+  const [PeopleFilterOptions, setPeopleFilterOptions] = useState([]);
+  const [DocFilterOptions, setDocFilterOptions] = useState([]);
 
   const tabmenuItems = [
     {label: 'People', icon: 'pi pi-users'},
@@ -41,19 +43,22 @@ const Gallery = ({ searchQuery }) => {
           name: name,
           code: name, // Use full name as code for filtering
         }));
-        setFilterOptions(filterOptions);
+        setPeopleFilterOptions(filterOptions);
 
         const documentRes = await fetch("http://localhost:4000/documents");
         const documentData = await documentRes.json();
-        const docIds = [];
-        const uniqueDocs = documentData.filter((doc) => {
-          if (!docIds.includes(doc.document)) {
-            docIds.push(doc.document);
-            return true;
-          }
-          return false;
-        });
-        setDocuments(uniqueDocs);
+        setDocuments(documentData);
+        const uniqueDates = Array.from(
+          new Set(
+            documentData.map((document) => document.sortingDate.slice(0,4))
+          )
+        );
+        const filterOptions2 = uniqueDates.map((date, index) => ({
+          name: date,
+          code: date, // Use full name as code for filtering
+        }));
+        const DocFilterOptions = filterOptions.concat(filterOptions2);
+        setDocFilterOptions(DocFilterOptions);
       } catch (error) {
         console.error("Error fetching people:", error);
       }
@@ -95,6 +100,7 @@ const Gallery = ({ searchQuery }) => {
   const Gal = () => {
     switch (selectedTab) {
       case 0:
+        setFilterOptions(PeopleFilterOptions);
         const filteredPeople = people.filter((person) =>
           `${person.firstName} ${person.lastName}`
             .toLowerCase()
@@ -106,7 +112,7 @@ const Gallery = ({ searchQuery }) => {
         flist.map((filter) => {
           filteredPeople
             .filter(
-              (person) => `${person.firstName} ${person.lastName}` === filter.code
+              (person) => `${person.firstName} ${person.lastName}`.toLowerCase() === filter.code.toLowerCase()
             )
             .forEach((person, index) => {
               if (!filterPeople.some((p) => p.personID === person.personID)) {
@@ -136,8 +142,9 @@ const Gallery = ({ searchQuery }) => {
         </div>
         )
       case 1:
+        setFilterOptions(DocFilterOptions);
         const filteredDocuments = documents.filter((document) =>
-          `${document.receiver} ${document.sender}`
+          `${document.receivers} ${document.senders} ${document.sortingDate}`.toLowerCase()
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
           );
@@ -145,15 +152,13 @@ const Gallery = ({ searchQuery }) => {
         let filterDocuments = [];
 
         flist.map((filter) => {
-          console.log(filter.code);
           filteredDocuments
             .filter(
-              (document) => `${document.receiver} ${document.sender}`.includes(filter.code.toLowerCase()))
+              (document) => `${document.receivers} ${document.senders} ${document.sortingDate}`.toLowerCase().includes(filter.code.toLowerCase()))
             .forEach((document, index) => {
-              if (!filterDocuments.some((d) => d.document === document.document)) {
+              console.log(document);
                 const key = `${filter.code}-${index}`;
                 filterDocuments.push({ ...document, key });
-              }
             });
         });
 

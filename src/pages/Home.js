@@ -33,7 +33,11 @@ const Home = ({ searchQuery }) => {
   const [showEdges, setShowEdges] = useState(true);
 
   const getGraphData = async () => {
-    const graphData = await fetchGraphData('http://localhost:4000/graph', 2000, 0);
+    const graphData = await fetchGraphData(
+      "http://localhost:4000/graph",
+      2000,
+      0
+    );
     console.log(graphData);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
@@ -64,8 +68,6 @@ const Home = ({ searchQuery }) => {
   const handleGraphUpdate = (graph) => {
     setGraph(graph || { nodes: [], edges: [] });
   };
-
-
 
   const handleNodeHover = (nodeData) => {
     setHoveredNodeData(nodeData);
@@ -105,7 +107,6 @@ const Home = ({ searchQuery }) => {
 
     // Loop through the edges and nodes and update the graph
     const newEdges = originalGraph.edges.filter((edge) => {
-      
       // Dates can be YYYY, YYYY-MM, YYYY-MM-DD
       const parseDate = (dateStr) => {
         if (typeof dateStr === "number") {
@@ -128,19 +129,24 @@ const Home = ({ searchQuery }) => {
         return null;
       };
 
-      if(edge.type === 'document') {
-      const edgeDate = parseDate(edge.date);
-      return edgeDate >= new Date(newValue[0], 0) && edgeDate <= new Date(newValue[1], 11, 31);
-      }else if(edge.type === 'organization') {
+      if (edge.type === "document") {
+        const edgeDate = parseDate(edge.date);
+        return (
+          edgeDate >= new Date(newValue[0], 0) &&
+          edgeDate <= new Date(newValue[1], 11, 31)
+        );
+      } else if (edge.type === "organization") {
         const formationDate = parseDate(edge.formationDate);
         const dissolutionDate = parseDate(edge.dissolutionDate);
-        return formationDate >= new Date(newValue[0], 0) && dissolutionDate <= new Date(newValue[1], 11, 31);
-      }else if(edge.type === 'relationship') {
+        return (
+          formationDate >= new Date(newValue[0], 0) &&
+          dissolutionDate <= new Date(newValue[1], 11, 31)
+        );
+      } else if (edge.type === "relationship") {
         return true;
-      }else if(edge.type === 'religion') {
+      } else if (edge.type === "religion") {
         return true;
       }
-
     });
 
     const newNodes = originalGraph.nodes.filter((node) => {
