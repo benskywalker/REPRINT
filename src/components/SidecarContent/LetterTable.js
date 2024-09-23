@@ -20,7 +20,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
     const dt = useRef(null);
 
     useEffect(() => {
-        if (nodeData && nodeData.data && nodeData.data.documents) {
+        if (nodeData && nodeData.data && nodeData.data.documents ) {
             setDocuments(nodeData.data.documents);
         }
     }, [nodeData]);
@@ -53,6 +53,7 @@ const renderHeader = () => {
 
     const getFilteredData = () => {
         // Retrieve the filtered data from the DataTable
+        console.log(dt.current ? dt.current.filteredValue || documents : documents);
         return dt.current ? dt.current.filteredValue || documents : documents;
     };
 
@@ -60,15 +61,19 @@ const renderHeader = () => {
         const doc = new jsPDF();
         const tableColumn = ["Sender", "Receiver", "Document ID", "Date"];
         const tableRows = [];
-
+        
         getFilteredData().forEach(doc => {
-            const docData = [
-                doc.senderFullName,
-                doc.receiverFullName,
-                doc.documentID,
-                doc.date || 'Date not Found'
-            ];
-            tableRows.push(docData);
+            if (doc && doc.document && doc.document) {
+                const docData = [
+                    doc.document.senderFullName || null,
+                    doc.document.receiverFullName || null,
+                    doc.document.documentID || null,
+                    doc.document.date || null
+                ];
+                tableRows.push(docData);
+            } else {
+                tableRows.push([null, null, null, null]);
+            }
         });
 
         doc.autoTable(tableColumn, tableRows, { startY: 20 });
@@ -77,9 +82,22 @@ const renderHeader = () => {
     };
 
     const downloadExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(getFilteredData());
+        // Filter the data to only include specific fields
+        const filteredData = getFilteredData().map(doc => ({
+            Sender: doc.document?.senderFullName || 'Sender not found',
+            Receiver: doc.document?.receiverFullName || 'Receiver not found',
+            DocumentID: doc.document?.documentID || 'ID not found',
+            Date: doc.document?.date || 'Date not found'
+        }));
+    
+        // Create a worksheet with the filtered data
+        const worksheet = XLSX.utils.json_to_sheet(filteredData);
+    
+        // Create a new workbook and append the worksheet
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
+    
+        // Write the file to the user's system
         XLSX.writeFile(workbook, 'table.xlsx');
     };
 
@@ -94,26 +112,39 @@ const renderHeader = () => {
                         new TableCell({ children: [new Paragraph('Date')] }),
                     ],
                 }),
-                ...getFilteredData().map(doc => new TableRow({
-                    children: [
-                        new TableCell({ children: [new Paragraph(doc.senderFullName || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.receiverFullName || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.documentID || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.date || 'Date not Found')] }),
-                    ],
-                })),
+                ...getFilteredData().map(doc => {
+                    // Log the content of doc.document
+                    if (doc && doc.document && doc.document.documentID) {
+                        console.log(doc.document.documentID); // Print doc.document for debugging
+                    } else {
+                        console.log('doc or doc.document is undefined');
+                    }
+    
+                    return new TableRow({
+                        children: doc && doc.document ? [
+                            new TableCell({ children: [new Paragraph(doc.document.senderFullName || 'Sender not found')] }),
+                            new TableCell({ children: [new Paragraph(doc.document.receiverFullName || 'Receiver not found')] }),
+                            new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
+                            new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
+                        ] : [
+                            new TableCell({ children: [new Paragraph('')] }),
+                            new TableCell({ children: [new Paragraph('')] }),
+                            new TableCell({ children: [new Paragraph('')] }),
+                            new TableCell({ children: [new Paragraph('')] }),
+                        ]
+                    });
+                }),
             ],
         });
-
+    
         const doc = new Document({
             sections: [{ children: [table] }],
         });
-
+    
         Packer.toBlob(doc).then(blob => {
             saveAs(blob, 'table.docx');
         });
     };
-
     const header = renderHeader();
 
     
@@ -152,14 +183,14 @@ const renderHeader = () => {
                     filterPlaceholder="Search by receiver"
                 ></Column>
                 <Column
-                    field="documentID"
+                    field="document.documentID"
                     header="Document ID"
                     sortable
                     filter
                     filterPlaceholder="Search by document ID"
                 ></Column>
                 <Column
-                    field="date"
+                    field="document.date"
                     header="Date"
                     sortable
                     filter
