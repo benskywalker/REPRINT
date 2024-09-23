@@ -8,9 +8,11 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
 
   useEffect(() => {
     // Populate suggestions based on the current graph nodes
-    const allNodeLabels = originalGraph.nodes.map(
-      (node) => node.data.fullName || node.label
-    );
+
+    console.log("originalGraph", originalGraph);
+    const allNodeLabels = originalGraph.nodes
+      .map((node) => node.label)
+      .filter((label) => label !== undefined); // Check for undefined labels
     setSuggestions(allNodeLabels);
   }, [originalGraph]);
 
@@ -33,8 +35,8 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
     }
 
     // Filter nodes that match selected terms
-    const filteredNodes = originalGraph.nodes.filter((node) =>
-      selectedNodes.includes(node.data.fullName || node.label)
+    const filteredNodes = originalGraph.nodes.filter(
+      (node) => node.label !== undefined && selectedNodes.includes(node.label) // Check for undefined labels
     );
 
     // Find all nodes directly connected to the filtered nodes
