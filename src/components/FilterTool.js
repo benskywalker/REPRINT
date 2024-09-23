@@ -9,16 +9,14 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
   useEffect(() => {
     // Populate suggestions based on the current graph nodes
 
-    console.log("originalGraph", originalGraph);
     const allNodeLabels = originalGraph.nodes
-      .map((node) => node.label)
+      .map((node) => node.data?.person?.fullName || node.label)
       .filter((label) => label !== undefined); // Check for undefined labels
     setSuggestions(allNodeLabels);
   }, [originalGraph]);
 
   const searchSuggestions = (event) => {
     const query = event.query.toLowerCase();
-
     // Filter suggestions based on the query, but exclude selected terms
     const filtered = suggestions.filter(
       (item) =>
@@ -36,7 +34,10 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
 
     // Filter nodes that match selected terms
     const filteredNodes = originalGraph.nodes.filter(
-      (node) => node.label !== undefined && selectedNodes.includes(node.label) // Check for undefined labels
+      (node) =>
+        (node.data?.person?.fullName !== undefined &&
+          selectedNodes.includes(node.data.person.fullName)) ||
+        (node.label !== undefined && selectedNodes.includes(node.label)) // Check for undefined labels
     );
 
     // Find all nodes directly connected to the filtered nodes
@@ -67,6 +68,7 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
           immediateConnections.has(edge.source))
     );
 
+    console.log(allFilteredNodes);
     setGraph({ nodes: allFilteredNodes, edges: filteredEdges });
   };
 
