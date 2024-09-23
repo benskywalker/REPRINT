@@ -68,7 +68,6 @@ const FilterTool = ({ graph, setGraph, originalGraph }) => {
           immediateConnections.has(edge.source))
     );
 
-    console.log(allFilteredNodes);
     setGraph({ nodes: allFilteredNodes, edges: filteredEdges });
   };
 
