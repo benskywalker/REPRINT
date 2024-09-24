@@ -135,7 +135,7 @@ const Gallery = ({ searchQuery }) => {
               >
               <GalleryEntry
                 image={"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSaHfpIhAPZHSbZstaGEgFBIjZZ-Y-K533dag&s"}
-                name={capitializeFirstLetter(person.firstName) + " " + capitializeFirstLetter(person.lastName)}
+                person={person}
               />
               </div>
             ))}

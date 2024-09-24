@@ -1,8 +1,15 @@
 import React from "react";
 import { Card } from "primereact/card";
 
-const GalleryEntry = ({ image, name }) => {
-    const religion = "Religion";
+const GalleryEntry = ({ image, person }) => {
+    const name = person.firstName.charAt(0).toUpperCase() + person.firstName.slice(1) + " " + person.lastName.charAt(0).toUpperCase() + person.lastName.slice(1);
+    let religion = person.religion;
+    if (religion === null || religion === "" || religion === undefined) {
+        religion = "No religion available";
+    } else {
+        religion = religion.charAt(0).toUpperCase() + religion.slice(1);
+    }
+
     const bio = "lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.";
 
     return (
