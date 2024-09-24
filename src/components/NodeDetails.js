@@ -13,6 +13,7 @@ const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIn
   useEffect(() => {
     console.log(nodeData);
   }, [nodeData]);
+
   const handleTabChange = (e) => {
     setActiveIndex(e.index);
     if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
@@ -81,7 +82,7 @@ setActiveIndex(tabs.length - 1);
     <div className="sidecar">
       {nodeData?.data?.person?.fullName ? (
 
-      <TabView activeIndex={activeTabIndex ? activeTabIndex : 0} onTabChange={handleTabChange} scrollable              >
+      <TabView activeIndex={activeIndex ? activeIndex : 0} onTabChange={handleTabChange} scrollable              >
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}
