@@ -173,7 +173,7 @@ const Home = ({ searchQuery }) => {
         alignItems: "center",
       }}
     >
-      <span>{node.data.fullName}</span>
+      <span>{node.data.person.fullName}</span>
       <Button
         icon="pi pi-external-link"
         className="p-button-rounded p-button-text"
@@ -330,7 +330,7 @@ const Home = ({ searchQuery }) => {
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
-          header={dialog.nodeData.data.fullName}
+          header={dialog.nodeData.data.person.fullName}
           maximizable
           modal={false}
           visible={true}
