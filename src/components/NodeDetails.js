@@ -10,7 +10,9 @@ import Biography from './SidecarContent/Biography';
 import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 
 const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex}) => {
-
+  useEffect(() => {
+    console.log(nodeData);
+  }, [nodeData]);
   const handleTabChange = (e) => {
     setActiveIndex(e.index);
     if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
@@ -77,6 +79,8 @@ setActiveIndex(tabs.length - 1);
 
   return (
     <div className="sidecar">
+      {nodeData?.data?.person?.fullName ? (
+
       <TabView activeIndex={activeTabIndex ? activeTabIndex : 0} onTabChange={handleTabChange} scrollable              >
         {tabs.map((tab, index) => (
           <TabPanel
@@ -107,6 +111,9 @@ setActiveIndex(tabs.length - 1);
           </TabPanel>
         ))}
       </TabView>
+    ) : (
+        <p>Hello World</p>
+      )}
     </div>
   );
 };
