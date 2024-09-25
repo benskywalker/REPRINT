@@ -19,61 +19,60 @@ export default function LetterTable({ nodeData, onRowClick }) {
     const [globalFilter, setGlobalFilter] = useState(null); 
     const dt = useRef(null);
 
+    // Fetch data when the component is mounted
     useEffect(() => {
-        if (nodeData && nodeData.data && nodeData.data.documents ) {
+        if (nodeData && nodeData.data && nodeData.data.documents) {
             setDocuments(nodeData.data.documents);
         }
     }, [nodeData]);
-const renderHeader = () => {
-    const leftContents = (
-        <span className="p-input-icon-left">
-            <IconField iconPosition="left">
-                <InputIcon className="pi pi-search"> </InputIcon>
-                <InputText 
-                    type="search"
-                    onInput={(e) => setGlobalFilter(e.target.value)}
-                    placeholder="Global Search"
-                />
-            </IconField>
-        </span>
-    );
 
-    const rightContents = (
-        <>
-            <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger"   style={{ width: '150px' ,marginRight:'8px'}} />
-            <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success"   style={{ width: '150px' ,marginRight:'8px'}} />
-            <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary"   style={{ width: '150px', marginRight:'8px' }} />
-        </>
-    );
+    // Function to render header with global search and export buttons
+    const renderHeader = () => {
+        const leftContents = (
+            <span className="p-input-icon-left">
+                <IconField iconPosition="left">
+                    <InputIcon className="pi pi-search"> </InputIcon>
+                    <InputText 
+                        type="search"
+                        onInput={(e) => setGlobalFilter(e.target.value)}
+                        placeholder="Global Search"
+                    />
+                </IconField>
+            </span>
+        );
 
-    return (
-        <Toolbar left={leftContents} right={rightContents} />
-    );
-};
+        const rightContents = (
+            <>
+                <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger" style={{ width: '150px' ,marginRight:'8px'}} />
+                <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success" style={{ width: '150px' ,marginRight:'8px'}} />
+                <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary" style={{ width: '150px', marginRight:'8px' }} />
+            </>
+        );
 
+        return (
+            <Toolbar left={leftContents} right={rightContents} />
+        );
+    };
+
+    // Function to retrieve filtered data from the table
     const getFilteredData = () => {
-        // Retrieve the filtered data from the DataTable
-        console.log(dt.current ? dt.current.filteredValue || documents : documents);
         return dt.current ? dt.current.filteredValue || documents : documents;
     };
 
+    // Download table data as PDF
     const downloadPDF = () => {
         const doc = new jsPDF();
         const tableColumn = ["Sender", "Receiver", "Document ID", "Date"];
         const tableRows = [];
         
         getFilteredData().forEach(doc => {
-            if (doc && doc.document && doc.document) {
-                const docData = [
-                    doc.document.senderFullName || null,
-                    doc.document.receiverFullName || null,
-                    doc.document.documentID || null,
-                    doc.document.date || null
-                ];
-                tableRows.push(docData);
-            } else {
-                tableRows.push([null, null, null, null]);
-            }
+            const docData = [
+                doc.document?.senderFullName || null,
+                doc.document?.receiverFullName || null,
+                doc.document?.documentID || null,
+                doc.document?.date || null
+            ];
+            tableRows.push(docData);
         });
 
         doc.autoTable(tableColumn, tableRows, { startY: 20 });
@@ -81,8 +80,8 @@ const renderHeader = () => {
         doc.save('table.pdf');
     };
 
+    // Download table data as Excel
     const downloadExcel = () => {
-        // Filter the data to only include specific fields
         const filteredData = getFilteredData().map(doc => ({
             Sender: doc.document?.senderFullName || 'Sender not found',
             Receiver: doc.document?.receiverFullName || 'Receiver not found',
@@ -90,17 +89,13 @@ const renderHeader = () => {
             Date: doc.document?.date || 'Date not found'
         }));
     
-        // Create a worksheet with the filtered data
         const worksheet = XLSX.utils.json_to_sheet(filteredData);
-    
-        // Create a new workbook and append the worksheet
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
-    
-        // Write the file to the user's system
         XLSX.writeFile(workbook, 'table.xlsx');
     };
 
+    // Download table data as Word
     const downloadWord = () => {
         const table = new Table({
             rows: [
@@ -112,28 +107,19 @@ const renderHeader = () => {
                         new TableCell({ children: [new Paragraph('Date')] }),
                     ],
                 }),
-                ...getFilteredData().map(doc => {
-                    // Log the content of doc.document
-                    if (doc && doc.document && doc.document.documentID) {
-                        console.log(doc.document.documentID); // Print doc.document for debugging
-                    } else {
-                        console.log('doc or doc.document is undefined');
-                    }
-    
-                    return new TableRow({
-                        children: doc && doc.document ? [
-                            new TableCell({ children: [new Paragraph(doc.document.senderFullName || 'Sender not found')] }),
-                            new TableCell({ children: [new Paragraph(doc.document.receiverFullName || 'Receiver not found')] }),
-                            new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
-                            new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
-                        ] : [
-                            new TableCell({ children: [new Paragraph('')] }),
-                            new TableCell({ children: [new Paragraph('')] }),
-                            new TableCell({ children: [new Paragraph('')] }),
-                            new TableCell({ children: [new Paragraph('')] }),
-                        ]
-                    });
-                }),
+                ...getFilteredData().map(doc => new TableRow({
+                    children: doc.document ? [
+                        new TableCell({ children: [new Paragraph(doc.document.senderFullName || 'Sender not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.receiverFullName || 'Receiver not found')] }),
+                        new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
+                    ] : [
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
+                    ],
+                })),
             ],
         });
     
@@ -145,9 +131,10 @@ const renderHeader = () => {
             saveAs(blob, 'table.docx');
         });
     };
+
     const header = renderHeader();
 
-    
+    // Function to handle row click
     const handleRowClick = (e) => {
         if (typeof onRowClick === 'function') {
             onRowClick(e.data);
@@ -155,6 +142,7 @@ const renderHeader = () => {
             console.error('onRowClick is not a function');
         }
     };
+
     return (
         <div>
             <DataTable
@@ -166,6 +154,8 @@ const renderHeader = () => {
                 globalFilter={globalFilter}
                 header={header}
                 onRowClick={handleRowClick}
+                stateStorage="session" // Saves state to sessionStorage
+                stateKey="letters-table-state" // Unique key for this table's state
                 className="custom-datatable"
             >
                 <Column
