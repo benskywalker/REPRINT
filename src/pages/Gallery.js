@@ -39,11 +39,21 @@ const Gallery = ({ searchQuery }) => {
             data.map((person) => `${capitializeFirstLetter(person.firstName)} ${capitializeFirstLetter(person.lastName)}`)
           )
         );
-        const filterOptions = uniqueNames.map((name, index) => ({
+        const filterNames = uniqueNames.map((name, index) => ({
           name: name,
           code: name, // Use full name as code for filtering
         }));
-        setPeopleFilterOptions(filterOptions);
+        const uniqueReligions = Array.from(
+          new Set(
+            data.map((person) => person.religion)
+          )
+        );
+        const filterReligions = uniqueReligions.map((religion, index) => ({
+          name: religion,
+          code: religion, // Use full name as code for filtering
+        }));
+        const peopleFilterOptions = filterNames.concat(filterReligions);
+        setPeopleFilterOptions(peopleFilterOptions);
 
         const documentRes = await fetch("http://localhost:4000/documents");
         const documentData = await documentRes.json();
@@ -53,11 +63,11 @@ const Gallery = ({ searchQuery }) => {
             documentData.map((document) => document.sortingDate.slice(0,4))
           )
         );
-        const filterOptions2 = uniqueDates.map((date, index) => ({
+        const filterDates = uniqueDates.map((date, index) => ({
           name: date,
           code: date, // Use full name as code for filtering
         }));
-        const DocFilterOptions = filterOptions.concat(filterOptions2);
+        const DocFilterOptions = filterNames.concat(filterDates);
         setDocFilterOptions(DocFilterOptions);
       } catch (error) {
         console.error("Error fetching people:", error);
@@ -102,7 +112,7 @@ const Gallery = ({ searchQuery }) => {
       case 0:
         setFilterOptions(PeopleFilterOptions);
         const filteredPeople = people.filter((person) =>
-          `${person.firstName} ${person.lastName}`
+          `${person.firstName} ${person.lastName} ${person.religion}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         );
@@ -112,7 +122,7 @@ const Gallery = ({ searchQuery }) => {
         flist.map((filter) => {
           filteredPeople
             .filter(
-              (person) => `${person.firstName} ${person.lastName}`.toLowerCase() === filter.code.toLowerCase()
+              (person) => `${person.firstName} ${person.lastName} ${person.religion}`.toLowerCase().includes(filter.code.toLowerCase())
             )
             .forEach((person, index) => {
               if (!filterPeople.some((p) => p.personID === person.personID)) {
