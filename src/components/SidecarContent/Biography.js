@@ -7,12 +7,12 @@ const Biography = ({ nodeData }) => {
   //   console.log('Biography nodeData', nodeData);
   // }, [nodeData]);
 
-  return nodeData.data.biography ? (
+  return nodeData.data.person.biography ? (
     <div>
-      <p>{nodeData.data.biography}</p>
+      <p>{nodeData.data.person.biography}</p>
     </div>
   ) : (
-    <p>No biography is available for {nodeData.data.fullName} yet.</p>
+    <p>No biography is available for {nodeData.data.person.fullName} yet.</p>
   );
 };
 

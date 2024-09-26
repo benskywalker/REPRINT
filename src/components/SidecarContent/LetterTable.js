@@ -14,59 +14,23 @@ import { IconField } from 'primereact/iconfield';
 import './LettersTable.css';
 
 export default function LetterTable({ nodeData, onRowClick }) {
-    const [data, setData] = useState([]);
     const [documents, setDocuments] = useState([]);
     const [globalFilter, setGlobalFilter] = useState(null); 
+    const [filters, setFilters] = useState(null); // Add filter state
     const dt = useRef(null);
 
-    useEffect(() => {
-        if (nodeData && nodeData.data && nodeData.data.documents) {
-            setDocuments(nodeData.data.documents);
-        }
-    }, [nodeData]);
-const renderHeader = () => {
-    const leftContents = (
-        <span className="p-input-icon-left">
-            <IconField iconPosition="left">
-                <InputIcon className="pi pi-search"> </InputIcon>
-                <InputText 
-                    type="search"
-                    onInput={(e) => setGlobalFilter(e.target.value)}
-                    placeholder="Global Search"
-                />
-            </IconField>
-        </span>
-    );
-
-    const rightContents = (
-        <>
-            <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger"   style={{ width: '150px' ,marginRight:'8px'}} />
-            <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success"   style={{ width: '150px' ,marginRight:'8px'}} />
-            <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary"   style={{ width: '150px', marginRight:'8px' }} />
-        </>
-    );
-
-    return (
-        <Toolbar left={leftContents} right={rightContents} />
-    );
-};
-
-    const getFilteredData = () => {
-        // Retrieve the filtered data from the DataTable
-        return dt.current ? dt.current.filteredValue || documents : documents;
-    };
-
+    // Download table data as PDF
     const downloadPDF = () => {
         const doc = new jsPDF();
         const tableColumn = ["Sender", "Receiver", "Document ID", "Date"];
         const tableRows = [];
-
+        
         getFilteredData().forEach(doc => {
             const docData = [
-                doc.senderFullName,
-                doc.receiverFullName,
-                doc.documentID,
-                doc.date || 'Date not Found'
+                doc.document?.senderFullName || null,
+                doc.document?.receiverFullName || null,
+                doc.document?.documentID || null,
+                doc.document?.date || null
             ];
             tableRows.push(docData);
         });
@@ -76,13 +40,22 @@ const renderHeader = () => {
         doc.save('table.pdf');
     };
 
+    // Download table data as Excel
     const downloadExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(getFilteredData());
+        const filteredData = getFilteredData().map(doc => ({
+            Sender: doc.document?.senderFullName || 'Sender not found',
+            Receiver: doc.document?.receiverFullName || 'Receiver not found',
+            DocumentID: doc.document?.documentID || 'ID not found',
+            Date: doc.document?.date || 'Date not found'
+        }));
+    
+        const worksheet = XLSX.utils.json_to_sheet(filteredData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
         XLSX.writeFile(workbook, 'table.xlsx');
     };
 
+    // Download table data as Word
     const downloadWord = () => {
         const table = new Table({
             rows: [
@@ -95,28 +68,101 @@ const renderHeader = () => {
                     ],
                 }),
                 ...getFilteredData().map(doc => new TableRow({
-                    children: [
-                        new TableCell({ children: [new Paragraph(doc.senderFullName || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.receiverFullName || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.documentID || '')] }),
-                        new TableCell({ children: [new Paragraph(doc.date || 'Date not Found')] }),
+                    children: doc.document ? [
+                        new TableCell({ children: [new Paragraph(doc.document.senderFullName || 'Sender not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.receiverFullName || 'Receiver not found')] }),
+                        new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
+                    ] : [
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
+                        new TableCell({ children: [new Paragraph('')] }),
                     ],
                 })),
             ],
         });
-
+    
         const doc = new Document({
             sections: [{ children: [table] }],
         });
-
+    
         Packer.toBlob(doc).then(blob => {
             saveAs(blob, 'table.docx');
         });
     };
+    // Fetch data when the component is mounted
+    useEffect(() => {
+        if (nodeData && nodeData.data && nodeData.data.documents) {
+            setDocuments(nodeData.data.documents);
+        }
+    }, [nodeData]);
 
+    // Load filters from session storage when component mounts
+   // Load filters and global filter from session storage when component mounts
+   useEffect(() => {
+    const savedFilters = sessionStorage.getItem('letters-table-filters');
+    if (savedFilters) {
+        setFilters(JSON.parse(savedFilters));
+    }
+    
+    const savedGlobalFilter = sessionStorage.getItem('letters-table-globalFilter');
+    if (savedGlobalFilter) {
+        setGlobalFilter(savedGlobalFilter);
+    }
+}, []);
+
+// Save filters to session storage whenever they are updated
+const onFilter = (e) => {
+    setFilters(e.filters); // Update state
+    sessionStorage.setItem('letters-table-filters', JSON.stringify(e.filters)); // Save to sessionStorage
+};
+
+// Save global filter value to session storage when it changes
+const onGlobalFilterChange = (e) => {
+    const value = e.target.value;
+
+        setGlobalFilter(value); // Apply the filter
+        sessionStorage.setItem('letters-table-globalFilter', value); // Save the filter to sessionStorage
+};
+
+// Function to render header with global search and export buttons
+const renderHeader = () => {
+    const leftContents = (
+        <span className="p-input-icon-left">
+            <IconField iconPosition="left">
+                <InputIcon className="pi pi-search"> </InputIcon>
+                <InputText 
+                    type="search"
+                    value={globalFilter} // Ensure global filter input shows the correct value
+                    onChange={onGlobalFilterChange} // Update on change
+                    placeholder="Global Search"
+                />
+            </IconField>
+        </span>
+    );
+
+    const rightContents = (
+        <>
+            <Button label="Download PDF" icon="pi pi-file-pdf" onClick={downloadPDF} className="p-button-danger" style={{ width: '150px' ,marginRight:'8px'}} />
+            <Button label="Download Excel" icon="pi pi-file-excel" onClick={downloadExcel} className="p-button-success" style={{ width: '150px' ,marginRight:'8px'}} />
+            <Button label="Download Word" icon="pi pi-file-word" onClick={downloadWord} className="p-button-primary" style={{ width: '150px', marginRight:'8px' }} />
+        </>
+    );
+
+    return (
+        <Toolbar left={leftContents} right={rightContents} />
+    );
+};
     const header = renderHeader();
 
-    
+    // Function to retrieve filtered data from the table
+    const getFilteredData = () => {
+        return dt.current ? dt.current.filteredValue || documents : documents;
+    };
+
+
+    // Function to handle row click
     const handleRowClick = (e) => {
         if (typeof onRowClick === 'function') {
             onRowClick(e.data);
@@ -124,6 +170,7 @@ const renderHeader = () => {
             console.error('onRowClick is not a function');
         }
     };
+
     return (
         <div>
             <DataTable
@@ -133,9 +180,13 @@ const renderHeader = () => {
                 rows={10}
                 responsiveLayout="scroll"
                 globalFilter={globalFilter}
+                filters={filters} // Set filters from state
                 header={header}
                 onRowClick={handleRowClick}
+                stateStorage="session" // Saves state to sessionStorage
+                stateKey="letters-table-state" // Unique key for this table's state
                 className="custom-datatable"
+                onFilter={onFilter} // Set the onFilter callback
             >
                 <Column
                     field="senderFullName"
@@ -152,14 +203,14 @@ const renderHeader = () => {
                     filterPlaceholder="Search by receiver"
                 ></Column>
                 <Column
-                    field="documentID"
+                    field="document.documentID"
                     header="Document ID"
                     sortable
                     filter
                     filterPlaceholder="Search by document ID"
                 ></Column>
                 <Column
-                    field="date"
+                    field="document.date"
                     header="Date"
                     sortable
                     filter

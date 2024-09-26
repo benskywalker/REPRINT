@@ -58,7 +58,6 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleCloseDialog = (id) => {
-    console.log("Closing dialog:", id);
     setDialogs((prevDialogs) =>
       prevDialogs.filter((dialog) => dialog.id !== id)
     );
@@ -173,8 +172,8 @@ const Home = ({ searchQuery }) => {
         alignItems: "center",
       }}
     >
-      <span>{node.data.fullName}</span>
-      <Button
+    <span>{node?.data?.person?.fullName || node.label}</span>
+    <Button
         icon="pi pi-external-link"
         className="p-button-rounded p-button-text"
         onClick={(event) => {
@@ -330,7 +329,7 @@ const Home = ({ searchQuery }) => {
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
-          header={dialog.nodeData.data.fullName}
+          header={dialog.nodeData.data?.person?.fullName || dialog?.nodeData?.label} // Add optional chaining here
           maximizable
           modal={false}
           visible={true}

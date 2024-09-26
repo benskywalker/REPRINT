@@ -14,7 +14,7 @@ const Relationships = ({nodeData, handleNodeClick}) => {
     const items = Array.from({ length: numberOfTimes }, (v, i) => i);
   
 
-    return nodeData.data.relations ? (
+    return nodeData.data.person.relations ? (
       <div className='sidecarBody'>
       <div className="sidecarTitle">
       </div>    
@@ -30,7 +30,7 @@ const Relationships = ({nodeData, handleNodeClick}) => {
 
     </div>
     ) : (
-      <p>No relations is available for {nodeData.data.fullName} yet.</p>
+      <p>No relations is available for {nodeData.data.person.fullName} yet.</p>
     );
 
   };

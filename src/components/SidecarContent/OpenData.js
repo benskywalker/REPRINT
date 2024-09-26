@@ -1,5 +1,5 @@
 const OpenData = (nodeData) => {
-  const { LODLOC, LODVIAF, LODwikiData } = nodeData.nodeData.data;
+  const { LODLOC, LODVIAF, LODwikiData } = nodeData.nodeData.data.person;
 
   const openDataLinks = [
     { label: "LODLOC", url: LODLOC, customName: "link123" },
@@ -19,7 +19,7 @@ const OpenData = (nodeData) => {
           </div>
         ))
       ) : (
-        <p>No open data found for {nodeData.nodeData.data.fullName} yet.</p>
+        <p>No open data found for {nodeData.nodeData.data.person.fullName} yet.</p>
       )}
     </div>
   );
