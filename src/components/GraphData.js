@@ -91,39 +91,71 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     });
 
     // Process edges
-    data.edges.forEach((edge) => {
-      if (edge.from !== edge.to) {
-        const edgeId = `edge-${edge.from}-${edge.to}`;
-        if (!edgeIds.has(edgeId)) {
-          const newEdge = {
-            id: edgeId,
-            source: edge.from,
-            target: edge.to,
-            color: getEdgeColor(edge.type), // Use the updated color palette for edges
-            size: 2.5, // Slightly thicker for visibility
-            hidden: false,
-            type: 'curvedArrow', // Curved edges for a more organic look
-            opacity: 0.85, // Slight transparency for a polished look
-            date: edge.document?.date, // Add date from document to edge
-            ...edge,
-          };
+data.edges.forEach((edge) => {
+  if (edge.from !== edge.to) {
+    const edgeId = `edge-${edge.from}-${edge.to}`;
+    
+    if (!edgeIds.has(edgeId)) {
+      const newEdge = {
+        id: edgeId,
+        source: edge.from,
+        target: edge.to,
+        color: getEdgeColor(edge.type), // Use the updated color palette for edges
+        size: 2.5, // Slightly thicker for visibility
+        hidden: false,
+        type: 'curvedArrow', // Curved edges for a more organic look
+        opacity: 0.85, // Slight transparency for a polished look
+        date: edge.document?.date, // Add date from document to edge
+        roleType: edge.roleID, // Add the role ID to keep track of the role
+        ...edge,
+      };
 
-          // Update the minDate and maxDate based on the document date
-          if (newEdge.date) {
-            const date = new Date(newEdge.date);
-            if (date.getFullYear() < minDate) {
-              minDate = date.getFullYear();
-            }
-            if (date.getFullYear() > maxDate) {
-              maxDate = date.getFullYear();
-            }
-          }
+      // Custom handling for different role types
+      switch (edge.roleID) {
+        case 1: // Sender
+          newEdge.label = 'Sender';
+          newEdge.color = getEdgeColor('sender');
+          break;
+        case 2: // Receiver
+          newEdge.label = 'Receiver';
+          newEdge.color = getEdgeColor('receiver');
+          break;
+        case 3: // Mentioned
+          newEdge.label = 'Mentioned';
+          newEdge.color = getEdgeColor('mentioned');
+          break;
+        case 4: // Author
+          newEdge.label = 'Author';
+          newEdge.color = getEdgeColor('author');
+          break;
+        case 5: // Waypoint
+          newEdge.label = 'Waypoint';
+          newEdge.color = getEdgeColor('waypoint');
+          break;
+        default:
+          newEdge.label = 'Unknown';
+          break;
+      }
 
-          edges.push(newEdge);
-          edgeIds.add(edgeId);
+      
+
+      // Update the minDate and maxDate based on the document date
+      if (newEdge.date) {
+        const date = new Date(newEdge.date);
+        if (date.getFullYear() < minDate) {
+          minDate = date.getFullYear();
+        }
+        if (date.getFullYear() > maxDate) {
+          maxDate = date.getFullYear();
         }
       }
-    });
+
+      edges.push(newEdge);
+      edgeIds.add(edgeId);
+    }
+  }
+});
+
 
     nodes.forEach((node) => {
       node.data.documents = edges.filter((edge) => edge.source === node.id || edge.target === node.id);
