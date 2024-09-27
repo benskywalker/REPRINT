@@ -197,11 +197,6 @@ const Home = ({ searchQuery }) => {
 
   const toggleAccordion = (nodeId) => {
     const nodeToToggle = selectedNodes.find(node => node.idNode === nodeId);
-    if (nodeToToggle) {
-        console.log("Toggling accordion for:", nodeId, "Current state:", nodeToToggle);
-    } else {
-        console.log("No node found with idNode:", nodeId);
-    }
     setSelectedNodes((prevSelectedNodes) =>
       prevSelectedNodes.map((node) =>
         node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
@@ -211,7 +206,6 @@ const Home = ({ searchQuery }) => {
 
   const renderAccordion = (rowData, index) => {
     const id = rowData.idNode;
-    console.log("Rendering accordion for:", selectedNodes);
     const activeTabIndex =
       selectedNodes.find((node) => node.idNode === id)
         ?.activeTabIndex || 0;

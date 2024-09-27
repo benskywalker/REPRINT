@@ -15,9 +15,14 @@ import './LettersTable.css';
 
 export default function LetterTable({ nodeData, onRowClick }) {
     const [documents, setDocuments] = useState([]);
-    const [globalFilter, setGlobalFilter] = useState(null); 
+    const [globalFilter, setGlobalFilter] = useState(''); 
     const [filters, setFilters] = useState(null); // Add filter state
     const dt = useRef(null);
+
+    // Function to retrieve filtered data from the table
+    const getFilteredData = () => {
+        return dt.current ? dt.current.filteredValue || documents : documents;
+    };
 
     // Download table data as PDF
     const downloadPDF = () => {
@@ -155,12 +160,6 @@ const renderHeader = () => {
     );
 };
     const header = renderHeader();
-
-    // Function to retrieve filtered data from the table
-    const getFilteredData = () => {
-        return dt.current ? dt.current.filteredValue || documents : documents;
-    };
-
 
     // Function to handle row click
     const handleRowClick = (e) => {
