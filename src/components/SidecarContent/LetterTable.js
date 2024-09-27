@@ -17,11 +17,12 @@ export default function LetterTable({ nodeData, onRowClick }) {
     const [documents, setDocuments] = useState([]);
     const [globalFilter, setGlobalFilter] = useState(''); 
     const [filters, setFilters] = useState(null); // Add filter state
+    const [filteredData, setFilteredData] = useState([]); // Add filtered data state
     const dt = useRef(null);
 
     // Function to retrieve filtered data from the table
     const getFilteredData = () => {
-        return dt.current ? dt.current.filteredValue || documents : documents;
+        return filteredData;
     };
 
     // Download table data as PDF
@@ -186,6 +187,7 @@ const renderHeader = () => {
                 stateKey="letters-table-state" // Unique key for this table's state
                 className="custom-datatable"
                 onFilter={onFilter} // Set the onFilter callback
+                onValueChange={filteredData => setFilteredData(filteredData)} // Update filtered data state
             >
                 <Column
                     field="senderFullName"

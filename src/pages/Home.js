@@ -279,7 +279,7 @@ const Home = ({ searchQuery }) => {
               <Column
                 body={(rowData, index) => renderAccordion(rowData, index)}
                 header={
-                  hoveredNodeData ? hoveredNodeData.data.fullName : "Sidecars"
+                 "Sidecars"
                 }
               />
             </DataTable>
