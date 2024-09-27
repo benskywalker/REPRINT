@@ -14,10 +14,7 @@ const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIn
     console.log(nodeData);
   }, [nodeData]);
 
-  const handleTabChange = (e) => {
-    setActiveIndex(e.index);
-    if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
-  };
+
 
 const handleRowClick = (rowData) => {
   const newTabKey = `Letter-${rowData.id}`;
@@ -48,6 +45,14 @@ const handleRowClick = (rowData) => {
     { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick}  className="tab-content-container" /> },
     { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} className="tab-content-container" /> }
   ]);
+  const handleTabChange = (e) => {
+    setActiveIndex(e.index);
+    if (setActiveTabIndex) setActiveTabIndex(e.index); // Update parent component's activeTabIndex
+  };
+
+  useEffect(() => {
+    if (activeTabIndex) setActiveIndex(activeTabIndex);
+  }, [activeIndex]);
 
   const handleTabClose = (key) => {
     setTabs((prevTabs) => {

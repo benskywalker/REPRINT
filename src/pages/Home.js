@@ -83,6 +83,7 @@ const Home = ({ searchQuery }) => {
         ...node,
         isOpen: false,
         activeTabIndex: 0, // Set the initial active tab index to 0
+        idNode: uuidv4(),
       },
       ...prevSelectedNodes,
     ]);
@@ -195,22 +196,30 @@ const Home = ({ searchQuery }) => {
   );
 
   const toggleAccordion = (nodeId) => {
+    const nodeToToggle = selectedNodes.find(node => node.idNode === nodeId);
+    if (nodeToToggle) {
+        console.log("Toggling accordion for:", nodeId, "Current state:", nodeToToggle);
+    } else {
+        console.log("No node found with idNode:", nodeId);
+    }
     setSelectedNodes((prevSelectedNodes) =>
       prevSelectedNodes.map((node) =>
-        node.data.id === nodeId ? { ...node, isOpen: !node.isOpen } : node
+        node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
       )
     );
   };
 
   const renderAccordion = (rowData, index) => {
+    const id = rowData.idNode;
+    console.log("Rendering accordion for:", selectedNodes);
     const activeTabIndex =
-      selectedNodes.find((node) => node.data.id === rowData.data.id)
+      selectedNodes.find((node) => node.idNode === id)
         ?.activeTabIndex || 0;
 
     const setActiveTabIndex = (newIndex) => {
       setSelectedNodes((prevSelectedNodes) =>
         prevSelectedNodes.map((node) =>
-          node.data.id === rowData.data.id
+          node.idNode === id
             ? { ...node, activeTabIndex: newIndex }
             : node
         )
@@ -219,19 +228,19 @@ const Home = ({ searchQuery }) => {
 
     return (
       <Accordion
-        key={rowData.data.id}
+        key={id}
         activeIndex={
-          selectedNodes.find((node) => node.data.id === rowData.data.id)?.isOpen
+          selectedNodes.find((node) => node.idNode === id)?.isOpen
             ? 0
             : null
         }
-        onTabChange={() => toggleAccordion(rowData.data.id)}
+        onTabChange={() => toggleAccordion(id)}
         style={{ width: "100%", flexGrow: 1 }}
       >
         <AccordionTab header={renderHeader(rowData, index)}>
           <div style={{ overflow: "auto", height: "100%", maxHeight: "45vh" }}>
             <NodeDetails
-              key={rowData.data.id}
+              key={id}
               nodeData={rowData}
               activeTabIndex={activeTabIndex}
               setActiveTabIndex={setActiveTabIndex}
