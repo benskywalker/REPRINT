@@ -17,15 +17,16 @@ const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIn
 
 
 const handleRowClick = (rowData) => {
-  const newTabKey = `Letter-${rowData.id}`;
+  console.log(rowData);
+  const newTabKey = `Letter-${rowData.document.documentID}`;
   setTabs((prevTabs) => {
     const existingTab = prevTabs.find(tab => tab.key === newTabKey);
 
     if (!existingTab) {
       const newTab = {
         key: newTabKey,
-        header: `Letter ${rowData.id}`,
-        content: <Letter id={rowData.id} className="tab-content-container" />
+        header: `Letter ${rowData.document.documentID}`,
+        content: <Letter id={rowData.document.documentID} className="tab-content-container" />
       };
       const newTabs = [...prevTabs, newTab];
       setActiveIndex(newTabs.length - 1); // Set the new tab as active

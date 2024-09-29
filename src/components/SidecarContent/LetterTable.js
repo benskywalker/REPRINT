@@ -99,6 +99,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
     };
     // Fetch data when the component is mounted
     useEffect(() => {
+        console.log(nodeData);
         if (nodeData && nodeData.data && nodeData.data.documents) {
             setDocuments(nodeData.data.documents);
         }
@@ -107,6 +108,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
     // Load filters from session storage when component mounts
    // Load filters and global filter from session storage when component mounts
    useEffect(() => {
+
     const savedFilters = sessionStorage.getItem('letters-table-filters');
     if (savedFilters) {
         setFilters(JSON.parse(savedFilters));

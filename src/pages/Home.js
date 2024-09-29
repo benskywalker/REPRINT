@@ -275,6 +275,7 @@ const Home = ({ searchQuery }) => {
               reorderableRows
               onRowReorder={onRowReorder}
               key={selectedNodes.length}
+              emptyMessage="Select a node to view its details"
             >
               <Column
                 body={(rowData, index) => renderAccordion(rowData, index)}
