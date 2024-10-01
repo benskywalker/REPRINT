@@ -14,78 +14,89 @@ import "./QueryTool.css";
 
 const response = await axios.get("http://localhost:4000/base_query");
 const data = response.data;
+
 const suggestions = [];
-const personSuggestions = [];
+
+let firstName = data.person.map((name) => name.firstName);
+let lastName = data.person.map((name) => name.lastName);
+let middleName = data.person.map((name) => name.middleName);
+
+firstName = [...new Set(firstName)];
+lastName = [...new Set(lastName)];
+middleName = [...new Set(middleName)];
+
+firstName.map((name) => {
+  return suggestions.push({value: name, field: "First Name"});
+});
+
+lastName.map((name) => {
+  return suggestions.push({value: name, field: "Last Name"});
+});
+
+middleName.map((name) => {
+  if(name !== null)
+    return suggestions.push({value: name, field: "Middle Name"});
+});
+
 data.person.map((person) => {
   let fullName = person.firstName + " " + person.lastName;
   if(person.middleName) {
     fullName = person.firstName + " " + person.middleName + " " + person.lastName;
   }
-  personSuggestions.push(person.personStdName || fullName)
-  return suggestions.push(person.personStdName || fullName);
+  return suggestions.push({value: person.personStdName || fullName, field: "Person"});
 });
 
-const keywordSuggestions = [];
 data.keyword.map((keyword) => {
-  keywordSuggestions.push(keyword.keyword);
-  return suggestions.push(keyword.keyword);
+  return suggestions.push({value: keyword.keyword, field: "Keyword"});
 });
 
-const occupationSuggestions = [];
 data.occupation.map((occupation) => {
-  occupationSuggestions.push(occupation.occupationDesc);
-  return suggestions.push(occupation.occupationDesc);
+  return suggestions.push({value: occupation.occupationDesc, field: "Occupation"});
 });
 
-const organizationSuggestions = [];
 data.organizationtype.map((organization) => {
-  organizationSuggestions.push(organization.organizationDesc);
-  return suggestions.push(organization.organizationDesc);
+  return suggestions.push({value: organization.organizationDesc, field: "Organization"});
 });
 
-const placeItems=[];
-const placeSuggestions = [];
 data.place.map((place) => {
-  placeItems.push({ label: place.placeNameStd, value: place.placeNameStd });
-  placeSuggestions.push(place.placeNameStd);
-  return suggestions.push(place.placeNameStd);
+  return suggestions.push({value: place.placeNameStd, field: "Place"});
 });
 
-const religionSuggestions = [];
 data.religion.map((religion) => {
-  religionSuggestions.push(religion.religionDesc);
-  return suggestions.push(religion.religionDesc);
+  return suggestions.push({value:religion.religionDesc, field: "Religion"});
 });
 
-const relationshipSuggestions = [];
 data.relationshiptype.map((relationship) => {
-  relationshipSuggestions.push(relationship.relationshipDesc);
-  return suggestions.push(relationship.relationshipDesc);
+  return suggestions.push({value: relationship.relationshipDesc, field: "Relationship"});
 });
 
-const repositorySuggestions = [];
 data.repositorie.map((repository) => {
-  repositorySuggestions.push(repository.repoName);
-  return suggestions.push(repository.repoDesc);
+  return suggestions.push({value:repository.repoDesc, field: "Repository"});
 });
 
 const roleSuggestions = [];
 data.role.map((role) => {
-  roleSuggestions.push(role.roleDesc);
-  return suggestions.push(role.roleDesc);
+  return roleSuggestions.push({label: role.roleDesc, code: role.roleDesc});
 });
-
-const mentionSuggestions = personSuggestions.concat(placeSuggestions);
-
+console.log(suggestions);
 const fields = [
-  { label: "Person", code: "person", suggestions: personSuggestions },
-  { label: "Place", code: "place", suggestions: placeSuggestions },
-  { label: "Religion", code: "religion", suggestions: religionSuggestions },
-  { label: "Occupation", code: "occupation", suggestions: occupationSuggestions },
-  { label: "Organization", code: "organization", suggestions: organizationSuggestions },
-  { label: "Mention", code: "mention", suggestions: mentionSuggestions },
-  { label: "Keyword", code: "keyword", suggestions: keywordSuggestions },
-  { label: "Repository", code: "repository", suggestions: repositorySuggestions },
+  "First Name",
+  "Last Name",
+  "Middle Name",
+  "Person",
+  "Place",
+  "Keyword",
+  "Occupation",
+  "Organization",
+  "Religion",
+  "Relationship",
+  "Repository"
+]
+
+const tables = [
+  "Person",
+  "Place",
+  "Document"
 ]
 
 const minDate = new Date();
@@ -103,7 +114,8 @@ const QueryTool = () => {
   const [filteredSuggestions, setFilteredSuggestions] = useState([]);
   const [selectedField, setSelectedField] = useState();
   const [selectedRole, setSelectedRole] = useState();
-  const [roleItems, setRoleItems] = useState([]);
+  const [roleItems, setRoleItems] = useState(roleSuggestions);
+  const [table, setTable] = useState();
   const [startDate, setStartDate] = useState(minDate);
   const [endDate, setEndDate] = useState(maxDate);
   const cm = useRef(null);
@@ -115,55 +127,41 @@ const QueryTool = () => {
   const addQuery = (q, index) => {
     const newQuery = query;
     newQuery[index] = q;
+    console.log(newQuery);
     setQuery(newQuery);
   }
 
-  useEffect(() => {
-    if(selectedField !== undefined) {
-      if(selectedField.label === "Person") {
-        const items = [
-          { label: "First Name", value: "firstName" },
-          { label: "Middle Name", value: "middleName" },
-          { label: "Last Name", value: "lastName"},
-          { label: "Full Name", value: "fullName"},
-          { label: "Author", value: "author"},
-          { label: "Recipient", value: "recipient"}
-        ];
-
-        setRoleItems(items);
-      } else if(selectedField.label === "Place") {
-        const items = [
-          { label: "Sent", value: "sent" },
-          { label: "Received", value: "received" },
-          { label: "Mentioned", value: "mentioned" }
-        ];
-        setRoleItems(items);
-      }
-      const createQuery = () => {
+    const createQuery = () => {
+      if(selectedRole !== undefined) {
         const q = {
-            field: selectedField.code,
+            table: table,
+            field: selectedField,
             value: value,
-            role: selectedRole
+            role: selectedRole.code
         };
-        const newQuery = query;
-        newQuery[0] = q;
-        setQuery(newQuery);
+        addQuery(q, 0);
+      } else {
+        const q = {
+            table: table,
+            field: selectedField,
+            value: value
+        };
+        addQuery(q, 0);
+      }
     };
-
-    createQuery();
-}}, [selectedField, value, selectedRole, query]);
   
   const searchSuggestions = (e) => {
     const query = e.query;
-    let sug = suggestions;
-    if(selectedField !== undefined) {
-      sug = selectedField.suggestions;
-    }
-    const filteredSuggestions = sug.filter((suggestion) => {
-      return suggestion.toLowerCase().includes(query.toLowerCase());
+    const filteredSuggestions = suggestions.filter((suggestion) => {
+      const value = suggestion.value.toLowerCase();
+      if(selectedField && suggestion.field != selectedField)
+        return false;
+      return value.includes(query.toLowerCase());
     });
-    
-    setFilteredSuggestions(filteredSuggestions);
+    const newSuggestions = filteredSuggestions.map((suggestion) => {
+      return suggestion.value;
+    });
+    setFilteredSuggestions(newSuggestions);
   };
 
   const onAddClause = () => {
@@ -189,7 +187,30 @@ const QueryTool = () => {
   }
 
   const onSearch = () => {
+    createQuery();
     console.log(query);
+  }
+
+  const setAutoComplete = (e) => {
+    setValue(e.value);
+    setField(e.value);
+  }
+
+  const setField = (value) => {
+    const field = suggestions.find((suggestion) => suggestion.value === value);
+    if(field) {
+      setSelectedField(field.field);
+    } else {
+      setSelectedField(null);
+    }
+  }
+
+  const setFieldDropdown = (e) => {
+    const auto = suggestions.find((suggestion) => suggestion.value === value);
+    if(auto && auto.field !== e.value) {
+      setValue(null);
+    }
+    setSelectedField(e.value); 
   }
 
   return (
@@ -202,6 +223,15 @@ const QueryTool = () => {
       <h2>Advanced Search</h2>
       <h3>Construct your Search:</h3>
       <div className="query-clauses">
+        <Dropdown
+          className="query-drop"
+          placeholder="Table"
+          options = {tables}
+          value = {table}
+          onChange = {(e) => setTable(e.value)}
+          optionLabel = "label"
+          showClear
+        />
         {/* Base clause that can't be removed*/}
         <div className="base-clause">
           <div className="term">
@@ -209,12 +239,11 @@ const QueryTool = () => {
             <AutoComplete 
               className="query-drop"
               placeholder="Term(s)"
-              multiple
               dropdown
               value={value} 
               suggestions={filteredSuggestions} 
               completeMethod={searchSuggestions} 
-              onChange={(e) => setValue(e.value)}
+              onChange={setAutoComplete}
             />
           </div>
           <div className="fields">
@@ -224,12 +253,12 @@ const QueryTool = () => {
               placeholder="Field"
               options={fields}
               value={selectedField}
-              onChange={(e) => setSelectedField(e.value)}
+              onChange={setFieldDropdown}
               optionLabel="label"
               showClear
             />
           </div>
-          { (selectedField !== undefined && (selectedField.code === "person" || selectedField.code === "place")) && 
+          { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
             <div className="place">
               <div className="inputTitle">Role</div>
               <Dropdown
@@ -251,6 +280,8 @@ const QueryTool = () => {
               index = {index}
               suggestions={suggestions}
               fields={fields}
+              roleItems={roleItems}
+              table = {table}
             />
             <Button className="remove-button" label="Remove" onClick={() => removeButton(index)} />
           </div>);

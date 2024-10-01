@@ -3,68 +3,75 @@ import React, {useEffect, useState} from "react";
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 
-export const QueryClause = ({ setQuery, index, suggestions, fields }) => {
+export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table }) => {
     const [value, setValue] = useState("");
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
     const [selectedField, setSelectedField] = useState();
     const [selectedRole, setSelectedRole] = useState();
     const [selectedBool, setSelectedBool] = useState();
-    const [roleItems, setRoleItems] = useState([]);
 
     const boolItems = [
-        { label: "AND", value: "AND" },
-        { label: "OR", value: "OR" }
+        "And",
+        "Or",
     ];
 
     useEffect(() => {
-        if(selectedField !== undefined) {
-          if(selectedField.label === "Person") {
-            const items = [
-              { label: "First Name", value: "firstName" },
-              { label: "Middle Name", value: "middleName" },
-              { label: "Last Name", value: "lastName"},
-              { label: "Full Name", value: "fullName"},
-              { label: "Author", value: "author"},
-              { label: "Recipient", value: "recipient"}
-            ];
-    
-            setRoleItems(items);
-          } else if(selectedField.label === "Place") {
-            const items = [
-              { label: "Sent", value: "sent" },
-              { label: "Received", value: "received" },
-              { label: "Mentioned", value: "mentioned" }
-            ];
-            setRoleItems(items);
+      if(selectedField !== undefined) {
+        if(selectedRole !== undefined) {
+          const query = {
+            bool: selectedBool,
+            field: selectedField,
+            role: selectedRole.code,
+            value: value
+          };
+          setQuery(query, index + 1);
+          } else {
+            const query = {
+              bool: selectedBool,
+              field: selectedField,
+              value: value
+            };
+            console.log(query);
+            setQuery(query, index + 1);
           }
         }
-        const createQuery = () => {
-            if(selectedField !== undefined) {
-                const query = {
-                    bool: selectedBool,
-                    field: selectedField.code,
-                    value: value,
-                    role: selectedRole
-                };
-                setQuery(query, index + 1);
-            }
-        };
+      }, [value, selectedField, selectedRole, selectedBool, setQuery, index]);
 
-        createQuery();
-    }, [selectedField, selectedBool, value, selectedRole, setQuery, index]);
-
-    const searchSuggestions = (e) => {
+      const searchSuggestions = (e) => {
         const query = e.query;
-        let sug = suggestions;
-        if(selectedField !== undefined) {
-            sug = selectedField.suggestions;
-        }
-        const filteredSuggestions = sug.filter((suggestion) => {
-        return suggestion.toLowerCase().includes(query.toLowerCase());
+        const filteredSuggestions = suggestions.filter((suggestion) => {
+          const value = suggestion.value.toLowerCase();
+          if(selectedField && suggestion.field != selectedField)
+            return false;
+          return value.includes(query.toLowerCase());
         });
+        const newSuggestions = filteredSuggestions.map((suggestion) => {
+          return suggestion.value;
+        });
+        setFilteredSuggestions(newSuggestions);
+      };
+
+      const setAutoComplete = (e) => {
+        setValue(e.value);
+        setField(e.value);
+      }
     
-        setFilteredSuggestions(filteredSuggestions);
-    };
+      const setField = (value) => {
+        const field = suggestions.find((suggestion) => suggestion.value === value);
+        if(field) {
+          setSelectedField(field.field);
+        } else {
+          setSelectedField(null);
+        }
+      }
+    
+      const setFieldDropdown = (e) => {
+        const auto = suggestions.find((suggestion) => suggestion.value === value);
+        if(auto && auto.field !== e.value) {
+          setValue(null);
+        }
+        setSelectedField(e.value); 
+      }
 
     return (
         <div className="query-clause">
@@ -83,13 +90,12 @@ export const QueryClause = ({ setQuery, index, suggestions, fields }) => {
             <AutoComplete 
               className="query-drop"
               placeholder="Term(s)"
-              multiple
               dropdown
               forceSelection={false}
               value={value} 
               suggestions={filteredSuggestions} 
               completeMethod={searchSuggestions} 
-              onChange={(e) => setValue(e.value)}
+              onChange={setAutoComplete}
             />
           </div>
           <div className="fields">
@@ -99,12 +105,12 @@ export const QueryClause = ({ setQuery, index, suggestions, fields }) => {
               placeholder="Field"
               options={fields}
               value={selectedField}
-              onChange={(e) => setSelectedField(e.value)}
+              onChange={setFieldDropdown}
               optionLabel="label"
               showClear
             />
           </div>
-          { (selectedField !== undefined && (selectedField.code === "person" || selectedField.code === "place")) && 
+          { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
             <div className="place">
               <div className="inputTitle">Role</div>
               <Dropdown
