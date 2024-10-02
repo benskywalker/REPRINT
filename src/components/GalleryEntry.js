@@ -10,7 +10,7 @@ const GalleryEntry = ({ image, person }) => {
         religion = religion.charAt(0).toUpperCase() + religion.slice(1);
     }
 
-    let bio = person.bio;
+    let bio = person.biography;
     if (bio === null || bio === "" || bio === undefined) {
         bio = "No bio available";
     }

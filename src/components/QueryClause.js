@@ -2,135 +2,128 @@ import React, {useEffect, useState} from "react";
 
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
-import { Card } from "primereact/card";
 
-const columnCommands = [
-    { label: "First Name", value: "firstName" },
-    { label: "Last Name", value: "lastName" },
-    { label: "Middle Name", value: "middleName" },
-    { label: "Full Name", value: "fullName" },
-    { label: "Biography", value: "biography" },
-    { label: "Gender", value: "gender" },
-    { label: "Start Date", value: "sd" },
-    { label: "End Date", value: "ed" },
-    { label: "Standard Name", value: "sn"},
-    { label: "Collection", value: "collection" },
-    { label: "Abstract", value: "abstract" },
-    { label: "Research Notes", value: "researchNotes" },
-    { label: "Language", value: "language_id" },
-    { label: "Date", value: "date" },
-];
-
-const operatorCommands = [
-    { label: "Like", value: "like" },
-    { label: "Not Like", value: "not like" },
-    { label: "Equal to", value: "=" },
-    { label: "Not Equal to", value: "!=" },
-    { label: "Greater Than", value: ">" },
-    { label: "Less Than", value: "<" },
-    { label: "Greater Than or Equal to", value: ">=" },
-    { label: "Less Than or Equal to", value: "<=" },
-];
-
-export const QueryClause = ({ setQuery, index, suggestions, onRightClick }) => {
-    const [column, setColumn] = useState(null);
-    const [operator, setOperator] = useState(null);
+export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table }) => {
     const [value, setValue] = useState("");
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
+    const [selectedField, setSelectedField] = useState();
+    const [selectedRole, setSelectedRole] = useState();
+    const [selectedBool, setSelectedBool] = useState();
 
-    const getQuery = () => {
-        const columnValue = [];
-        switch(column) {
-            case "sn":
-                columnValue.push("personStdName");
-                break;
-            case "sd":
-                columnValue.push("birthDate");
-                columnValue.push("formationDate");
-                break;
-            case "ed":
-                columnValue.push("deathDate");
-                columnValue.push("dissolutionDate");
-                break;
-            default:
-                columnValue.push(column);
-                break;
-        }
-
-        let queries = [];
-        columnValue.map((column) => {
-            queries.push({
-                column: column,
-                operator: operator,
-                value: value
-            })
-        })
-
-        setQuery(queries, index);
-    };
+    const boolItems = [
+        "And",
+        "Or",
+    ];
 
     useEffect(() => {
-        getQuery();
-    }, [column, operator, value]);
+      if(selectedField !== undefined) {
+        if(selectedRole !== undefined) {
+          const query = {
+            bool: selectedBool,
+            field: selectedField,
+            role: selectedRole.code,
+            value: value
+          };
+          setQuery(query, index + 1);
+          } else {
+            const query = {
+              bool: selectedBool,
+              field: selectedField,
+              value: value
+            };
+            console.log(query);
+            setQuery(query, index + 1);
+          }
+        }
+      }, [value, selectedField, selectedRole, selectedBool, setQuery, index]);
 
-    const onColumnChange = (e) => {
-        setColumn(e.value);
-    };
-
-    const onOperatorChange = (e) => {
-        setOperator(e.value);
-    };
-
-    const onValueChange = (e) => {
-        setValue(e.target.value);
-    };
-
-    const searchSuggestions = (e) => {
+      const searchSuggestions = (e) => {
         const query = e.query;
-        let filteredSuggestions = suggestions.filter((suggestion) => {
-            return suggestion.toLowerCase().includes(query.toLowerCase());
+        const filteredSuggestions = suggestions.filter((suggestion) => {
+          const value = suggestion.value.toLowerCase();
+          if(selectedField && suggestion.field != selectedField)
+            return false;
+          return value.includes(query.toLowerCase());
         });
-        setFilteredSuggestions(filteredSuggestions);
-    };
+        const newSuggestions = filteredSuggestions.map((suggestion) => {
+          return suggestion.value;
+        });
+        setFilteredSuggestions(newSuggestions);
+      };
 
+      const setAutoComplete = (e) => {
+        setValue(e.value);
+        setField(e.value);
+      }
+    
+      const setField = (value) => {
+        const field = suggestions.find((suggestion) => suggestion.value === value);
+        if(field) {
+          setSelectedField(field.field);
+        } else {
+          setSelectedField(null);
+        }
+      }
+    
+      const setFieldDropdown = (e) => {
+        const auto = suggestions.find((suggestion) => suggestion.value === value);
+        if(auto && auto.field !== e.value) {
+          setValue(null);
+        }
+        setSelectedField(e.value); 
+      }
 
     return (
-        <Card 
-            className="query-card"
-            onContextMenu={(e) => onRightClick(e, index)}
-        >
-            <div className="query-input">
-                <Dropdown 
+        <div className="query-clause">
+            <div className="bool">
+                <Dropdown
                     className="query-drop"
-                    placeholder="Column" 
-                    value={column} 
-                    options={columnCommands} 
-                    onChange={onColumnChange}
+                    placeholder="Boolean"
+                    options={boolItems}
+                    value={selectedBool}
+                    onChange={(e) => setSelectedBool(e.value)}
+                    showClear
                 />
-                <p>What type of information do you need?</p>
             </div>
-            <div className="query-input">
-                <Dropdown 
-                    className="query-drop"
-                    placeholder="Operator" 
-                    value={operator} 
-                    options={operatorCommands} 
-                    onChange={onOperatorChange}
-                />
-                <p>Do you need an exact match?</p>
+        <div className="term">
+            <div className="inputTitle">Term(s)</div> 
+            <AutoComplete 
+              className="query-drop"
+              placeholder="Term(s)"
+              dropdown
+              forceSelection={false}
+              value={value} 
+              suggestions={filteredSuggestions} 
+              completeMethod={searchSuggestions} 
+              onChange={setAutoComplete}
+            />
+          </div>
+          <div className="fields">
+            <div className = "inputTitle">Field</div>
+            <Dropdown
+              className="query-drop"
+              placeholder="Field"
+              options={fields}
+              value={selectedField}
+              onChange={setFieldDropdown}
+              optionLabel="label"
+              showClear
+            />
+          </div>
+          { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
+            <div className="place">
+              <div className="inputTitle">Role</div>
+              <Dropdown
+                className="query-drop"
+                placeholder="Role"
+                options={roleItems}
+                value={selectedRole}
+                onChange={(e) => setSelectedRole(e.value)}
+                showClear
+              />
             </div>
-            <div className="query-input">
-                <AutoComplete 
-                    className="query-drop"
-                    placeholder="Value" 
-                    value={value} 
-                    suggestions={filteredSuggestions} 
-                    completeMethod={searchSuggestions} 
-                    onChange={onValueChange}
-                />
-                <p>What are you comparing it to?</p>
-            </div>
-        </Card>
+          }
+        </div>
     );
 }
 

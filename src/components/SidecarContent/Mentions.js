@@ -13,7 +13,7 @@ import { InputIcon } from 'primereact/inputicon';
 import { IconField } from 'primereact/iconfield';
 import './LettersTable.css';
 
-export default function LetterTable({ nodeData, onRowClick }) {
+export default function Mentions({ nodeData, onRowClick }) {
     const [documents, setDocuments] = useState([]);
     const [globalFilter, setGlobalFilter] = useState(''); 
     const [filters, setFilters] = useState(null); // Add filter state
