@@ -13,6 +13,7 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
     const boolItems = [
         "And",
         "Or",
+        "And Not",
     ];
 
     useEffect(() => {
@@ -74,8 +75,9 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
       }
 
     return (
-        <div className="query-clause">
+        <div className="query-inputs">
             <div className="bool">
+              <div className="inputTitle">Boolean:</div>
                 <Dropdown
                     className="query-drop"
                     placeholder="Boolean"
@@ -85,8 +87,20 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
                     showClear
                 />
             </div>
-        <div className="term">
-            <div className="inputTitle">Term(s)</div> 
+          <div className="fields">
+            <div className = "inputTitle">Where:</div>
+            <Dropdown
+              className="query-drop"
+              placeholder="Field"
+              options={fields}
+              value={selectedField}
+              onChange={setFieldDropdown}
+              optionLabel="label"
+              showClear
+            />
+          </div>
+          <div className="term">
+            <div className="inputTitle">is:</div> 
             <AutoComplete 
               className="query-drop"
               placeholder="Term(s)"
@@ -96,18 +110,6 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
               suggestions={filteredSuggestions} 
               completeMethod={searchSuggestions} 
               onChange={setAutoComplete}
-            />
-          </div>
-          <div className="fields">
-            <div className = "inputTitle">Field</div>
-            <Dropdown
-              className="query-drop"
-              placeholder="Field"
-              options={fields}
-              value={selectedField}
-              onChange={setFieldDropdown}
-              optionLabel="label"
-              showClear
             />
           </div>
           { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
