@@ -1,4 +1,3 @@
-// server/index.js or server.js
 const express = require('express');
 const path = require('path');
 
@@ -6,10 +5,16 @@ const app = express();
 const PORT = process.env.PORT || 3999;
 
 // Serve static files from the React app
-app.use(express.static(path.join(__dirname, 'client/build')));
+app.use(express.static(path.join(__dirname, 'build')));
 
+// Define a route to handle /REPRINT
+app.get('/REPRINT', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+// Catch-all handler to serve the React app for any other routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(PORT, () => {

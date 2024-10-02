@@ -82,6 +82,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
         borderWidth: 3, // Thicker borders for clarity
         data: node, // Attach full node data
         highlighted: false, // Option to highlight nodes on hover later
+        documents: node.documents // Attach documents to nodes
       };
 
       if (!nodeIds.has(newNode.id)) {
