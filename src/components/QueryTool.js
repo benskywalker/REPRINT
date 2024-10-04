@@ -79,6 +79,7 @@ data.role.map((role) => {
   return roleSuggestions.push({label: role.roleDesc, code: role.roleDesc});
 });
 console.log(suggestions);
+
 const fields = [
   "First Name",
   "Last Name",
@@ -220,34 +221,24 @@ const QueryTool = () => {
         <Button className="search-button" label="Search" onClick={onSearch}/>
       </div>
       <ContextMenu model={cmItems} ref={cm} />
-      <h2>Advanced Search</h2>
       <h3>Construct your Search:</h3>
       <div className="query-clauses">
-        <Dropdown
-          className="query-drop"
-          placeholder="Table"
-          options = {tables}
-          value = {table}
-          onChange = {(e) => setTable(e.value)}
-          optionLabel = "label"
-          showClear
-        />
+        <div className = "table">
+          <div className = "inputTitle">Search for:</div>
+          <Dropdown
+            className="query-drop"
+            placeholder="Table"
+            options = {tables}
+            value = {table}
+            onChange = {(e) => setTable(e.value)}
+            optionLabel = "label"
+            showClear
+          />
+        </div>
         {/* Base clause that can't be removed*/}
         <div className="base-clause">
-          <div className="term">
-            <div className="inputTitle">Term(s)</div> 
-            <AutoComplete 
-              className="query-drop"
-              placeholder="Term(s)"
-              dropdown
-              value={value} 
-              suggestions={filteredSuggestions} 
-              completeMethod={searchSuggestions} 
-              onChange={setAutoComplete}
-            />
-          </div>
           <div className="fields">
-            <div className = "inputTitle">Field</div>
+            <div className = "inputTitle">Where:</div>
             <Dropdown
               className="query-drop"
               placeholder="Field"
@@ -258,9 +249,21 @@ const QueryTool = () => {
               showClear
             />
           </div>
+          <div className="term">
+            <div className="inputTitle">is:</div> 
+            <AutoComplete 
+              className="query-drop"
+              placeholder="Term(s)"
+              dropdown
+              value={value} 
+              suggestions={filteredSuggestions} 
+              completeMethod={searchSuggestions} 
+              onChange={setAutoComplete}
+            />
+          </div>
           { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
             <div className="place">
-              <div className="inputTitle">Role</div>
+              <div className="inputTitle">is the</div>
               <Dropdown
                 className="query-drop"
                 placeholder="Role"
@@ -288,24 +291,28 @@ const QueryTool = () => {
         })}
       </div>
       <div className="search-dates">
-          <div className="inputTitle">Start date</div>
-          <Calendar 
-            className="query-drop" 
-            placeholder="Start date" 
-            value={startDate}
-            onChange={(e) => setStartDate(e.value)}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
+          <div className="start-date">
+            <div className="inputTitle">Start date</div>
+            <Calendar 
+              className="query-drop" 
+              placeholder="Start date" 
+              value={startDate}
+              onChange={(e) => setStartDate(e.value)}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+          </div>
+          <div className="end-date">
           <div className="inputTitle">End date</div>
-          <Calendar 
-            className="query-drop" 
-            placeholder="End date" 
-            value={endDate}
-            onChange={(e) => setEndDate(e.value)}
-            minDate={minDate}
-            maxDate={maxDate}
-          />
+            <Calendar 
+              className="query-drop" 
+              placeholder="End date" 
+              value={endDate}
+              onChange={(e) => setEndDate(e.value)}
+              minDate={minDate}
+              maxDate={maxDate}
+            />
+          </div>
       </div>
     </div>
   )
