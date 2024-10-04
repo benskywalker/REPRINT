@@ -48,6 +48,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
       document: 'rgb(113, 139, 255)',    
       organization: 'rgb(166, 0, 255)', 
       religion: 'rgb(2, 78, 255)',     
+      relationship: 'rgb(255, 0, 0)',
     };
   
     return edgeColors[type]  
