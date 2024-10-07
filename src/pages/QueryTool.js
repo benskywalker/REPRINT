@@ -7,11 +7,13 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { InputText } from 'primereact/inputtext';
 import { Slider } from "primereact/slider";
 import { OverlayPanel } from "primereact/overlaypanel"; // Import OverlayPanel
+import { ToggleButton } from "primereact/togglebutton";
 
 const QueryTool2 = ()=> {
     const [selectedCountry, setSelectedCountry] = useState(null);
     const [value, setValue] = useState([20,80]);
     const op = useRef(null);     //OverlayPanel reference
+    const [checked, setChecked] = useState(true);
 
     const countries = [
         { name: 'United States', code: 'US' },
@@ -41,61 +43,70 @@ const QueryTool2 = ()=> {
             </div>
         );
     };
-
     
     return (
         <div className="query-tool-container">
             <div className="title-container">
                 <h1>Query Tool</h1>
             </div>
+                {/* Help Icon with click event, positioned at the bottom right */}
+            <i className="pi pi-question-circle help-icon" onClick={(e) => op.current.toggle(e)}></i>
+
+            {/* OverlayPanel Component */}
+            <OverlayPanel ref={op} appendTo={document.body} className="custom-overlay-panel">
+                <div>
+                    <p>Query tool 101 guide here</p>
+                </div>
+            </OverlayPanel>
             <div className="query-container">
                 <TabView className="query-tool">
-                    <TabPanel header="Query" leftIcon="pi pi-search mr-2">
+                    <TabPanel header="Query" leftIcon="pi pi-search mr-2" className="query-tab-panel">
                         <div className="query-section">
                             <h3>Search for:</h3>
-                            <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Select a Country" 
+                            <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
                             filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
                         </div>
                         <div className="query-section">
                             <h3>And where:</h3>
                             <div className="query-input">
-                                <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Select a Country" 
+                                <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
                                 filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
-                                <SplitButton label="Save" icon="pi pi-plus" />
+                                <SplitButton label="In" />
                                 <FloatLabel>
-                                    <InputText id="username"/>
-                                    <label htmlFor="username">Username</label>
+                                    <InputText tooltip="Tips on what values to put"/>
+                                    <label htmlFor="username">Value</label>
+                                
                                 </FloatLabel>
-                                <SplitButton label="Save" icon="pi pi-plus" />
-
+                                <SplitButton severity="success" label="Add" icon="pi pi-plus" />
                             </div>
-                        
                         </div>
+                        
                         <div className="query-section">
-                            <h3>And where:</h3>
+                            <h3>Order by:</h3>
+                            <div className="query-input">
+                                <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
+                                filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
+                                <ToggleButton onLabel="Ascending" offLabel="Descending" onIcon="pi pi-arrow-up" offIcon="pi pi-arrow-down" tooltip="Message about order"
+                                    checked={checked} onChange={(e) => setChecked(e.value)} />                            
+                            </div>
+                        </div>
+                        {/* <div className="query-section">
+                            <h3>Order by:</h3>
                             <div className="query-input">
                                 <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Select a Country" 
                                 filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
-
-                                <SplitButton label="Save" icon="pi pi-plus" />
-
+                                    <ToggleButton onLabel="Ascending" offLabel="Descending" onIcon="pi pi-arrow-up" offIcon="pi pi-arrow-down" tooltip="Message about order"
+                                    checked={checked} onChange={(e) => setChecked(e.value)} />                               
                             </div>
-                        
+                        </div> */}
+                        <div className="query-section mb-0">
+                            <h3>In Range:</h3>
+                            <div className="slider-container">
+                                <Slider value={value} onChange={(e) => setValue(e.value)} className="slider" range={true} style={{ width: '50%' }} />
+                            </div>
                         </div>
-                        <div className="slider-container">
-                            <Slider value={value} onChange={(e) => setValue(e.value)} className="slider" range={true} style={{ width: '50%' }} tooltip="Message to display" />
-                          {/* Help Icon with click event */}
-                          <i className="pi pi-question-circle help-icon" onClick={(e) => op.current.toggle(e)}></i>
-                            
-                            {/* OverlayPanel Component */}
-                            <OverlayPanel ref={op} appendTo={document.body} className="custom-overlay-panel">
-                                <div>
-                                    <p>This is the help panel where you can provide additional information about how to use the slider.</p>
-                                </div>
-                            </OverlayPanel>
-                        </div>
-                        
-                        
+                    
+
                     </TabPanel>
                     <TabPanel header="Network" leftIcon="pi pi-user mr-2">
                         <p className="m-0">

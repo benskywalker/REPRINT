@@ -13,11 +13,24 @@
     justify-content: center;
     align-items: center;
     height: 100%; /* Optional: Ensure it takes full height */
+    
 }
 
 .query-tool{
-    width: 50%;
+    width: 50;
 }
+
+.query-tool .p-tabview-panels .p-tabview-panel {
+    height: 100%; /* Adjusted height to account for header, padding, etc. */
+    /* background-color: green; */
+    flex-grow: 1;
+    overflow: auto;
+    max-height: 65vh;
+
+    /* background-color:#ff0000; */
+  
+  
+  }
 
 .query-section{
     background-color: #302F2F;
@@ -48,26 +61,14 @@
     justify-content: center; /* This centers the slider */
     width: 100%;
     padding: 10px;
-    position: relative; /* Allows absolute positioning for the help icon */
-}
-
-.slider {
-    width: 50%; /* Adjust as needed to make the slider smaller */
+    background-color: #302F2F;
+    position: relative; /* Allows for absolute positioning of the help icon */
 }
 
 .help-icon {
     position: absolute;
-    right: 0; /* Ensures the icon stays at the far right */
+    bottom: 10px; /* Adjust as needed */
+    right: 10px; /* Adjust as needed */
     font-size: 2.5rem;
-}
-
-.p-overlaypanel {
-    transform: translateY(-150%); /* Moves the panel upwards */
-    margin-top: -10px; /* Adjusts spacing above the icon */
-}
-
-.p-overlaypanel .p-overlaypanel-content::after {
-    transform: rotate(180deg); /* Inverts the arrow direction */
-    top: auto; /* Adjust if necessary */
-    left: auto; /* Adjust if necessary */
+    cursor: pointer; /* Change the cursor to indicate it's clickable */
 }
