@@ -33,8 +33,8 @@ export default function Mentions({ nodeData, onRowClick }) {
         
         getFilteredData().forEach(doc => {
             const docData = [
-                doc.document?.senderFullName || null,
-                doc.document?.receiverFullName || null,
+                doc.document?.sender || null,
+                doc.document?.receiver || null,
                 doc.document?.documentID || null,
                 doc.document?.date || null
             ];
@@ -49,8 +49,8 @@ export default function Mentions({ nodeData, onRowClick }) {
     // Download table data as Excel
     const downloadExcel = () => {
         const filteredData = getFilteredData().map(doc => ({
-            Sender: doc.document?.senderFullName || 'Sender not found',
-            Receiver: doc.document?.receiverFullName || 'Receiver not found',
+            Sender: doc.document?.sender || 'Sender not found',
+            Receiver: doc.document?.receiver || 'Receiver not found',
             DocumentID: doc.document?.documentID || 'ID not found',
             Date: doc.document?.date || 'Date not found'
         }));
@@ -75,8 +75,8 @@ export default function Mentions({ nodeData, onRowClick }) {
                 }),
                 ...getFilteredData().map(doc => new TableRow({
                     children: doc.document ? [
-                        new TableCell({ children: [new Paragraph(doc.document.senderFullName || 'Sender not found')] }),
-                        new TableCell({ children: [new Paragraph(doc.document.receiverFullName || 'Receiver not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.sender || 'Sender not found')] }),
+                        new TableCell({ children: [new Paragraph(doc.document.receiver || 'Receiver not found')] }),
                         new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
                         new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
                     ] : [
@@ -100,8 +100,9 @@ export default function Mentions({ nodeData, onRowClick }) {
     // Fetch data when the component is mounted
     useEffect(() => {
         console.log(nodeData);
-        if (nodeData && nodeData.data && nodeData.data.documents) {
-            setDocuments(nodeData.data.documents);
+        if (nodeData && nodeData.documents) {
+            setDocuments(nodeData.documents);
+            setFilteredData(nodeData.documents);
         }
     }, [nodeData]);
 
@@ -192,14 +193,14 @@ const renderHeader = () => {
                 onValueChange={filteredData => setFilteredData(filteredData)} // Update filtered data state
             >
                 <Column
-                    field="senderFullName"
+                    field="document.sender"
                     header="Sender"
                     sortable
                     filter
                     filterPlaceholder="Search by sender"
                 ></Column>
                 <Column
-                    field="receiverFullName"
+                    field="document.receiver"
                     header="Receiver"
                     sortable
                     filter
@@ -218,7 +219,7 @@ const renderHeader = () => {
                     sortable
                     filter
                     filterPlaceholder="Search by date"
-                    body={(rowData) => (rowData.date ? rowData.date : 'Date not Found')}
+                    body={(rowData) => (rowData.document.date ? rowData.document.date : 'Date not Found')}
                 ></Column>
             </DataTable>
         </div>
