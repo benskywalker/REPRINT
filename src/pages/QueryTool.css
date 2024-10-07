@@ -1,0 +1,73 @@
+.query-tool-container {
+    display: flex;
+    flex-direction: column;
+    height: 90vh;
+}
+
+.title-container{
+    background-color: #302F2F;
+}
+
+.query-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Optional: Ensure it takes full height */
+}
+
+.query-tool{
+    width: 50%;
+}
+
+.query-section{
+    background-color: #302F2F;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding: 15px;
+    margin-bottom: 15px;
+}
+
+.query-input {
+    background-color: #302F2F;
+    color: white;
+    border: 1px solid #302F2F;
+    border-radius: 5px;
+    padding: 10px;
+    width: 100%;
+    height: 100%;
+    display: flex; /* Use flexbox layout */
+    align-items: center; /* Align vertically in the center */
+    gap: 10px; /* Add spacing between the elements */
+}
+
+
+.slider-container {
+    display: flex;
+    align-items: center;
+    justify-content: center; /* This centers the slider */
+    width: 100%;
+    padding: 10px;
+    position: relative; /* Allows absolute positioning for the help icon */
+}
+
+.slider {
+    width: 50%; /* Adjust as needed to make the slider smaller */
+}
+
+.help-icon {
+    position: absolute;
+    right: 0; /* Ensures the icon stays at the far right */
+    font-size: 2.5rem;
+}
+
+.p-overlaypanel {
+    transform: translateY(-150%); /* Moves the panel upwards */
+    margin-top: -10px; /* Adjusts spacing above the icon */
+}
+
+.p-overlaypanel .p-overlaypanel-content::after {
+    transform: rotate(180deg); /* Inverts the arrow direction */
+    top: auto; /* Adjust if necessary */
+    left: auto; /* Adjust if necessary */
+}

@@ -8,6 +8,7 @@ import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import "./App.css";
+import QueryTool2 from "./pages/QueryTool";
 
 const Main = ({searchQuery}) => {
 
