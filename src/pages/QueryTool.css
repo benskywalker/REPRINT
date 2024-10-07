@@ -72,3 +72,13 @@
     font-size: 2.5rem;
     cursor: pointer; /* Change the cursor to indicate it's clickable */
 }
+
+.start-date {
+    width: 100%;
+}
+
+.date {
+    width: 45%;
+    margin-right: 10px;
+    margin-left: 10px;
+}

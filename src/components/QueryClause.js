@@ -2,8 +2,9 @@ import React, {useEffect, useState} from "react";
 
 import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
+import { SplitButton } from "primereact/splitbutton";
 
-export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table }) => {
+export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table, add, remove, base }) => {
     const [value, setValue] = useState("");
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
     const [selectedField, setSelectedField] = useState();
@@ -11,10 +12,24 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
     const [selectedBool, setSelectedBool] = useState();
 
     const boolItems = [
-        "And",
-        "Or",
-        "And Not",
+        "Equals",
+        "Not Equals",
+        "Like",
+        "Not Like",
+        "Greater Than",
+        "Less Than",
+        "Greater Than or Equal",
+        "Less Than or Equal",
     ];
+
+    const splitItems = [
+        { label: "Add and", icon: "pi pi-plus", command: (e) => add(true) },
+        { label: "Add or", icon: "pi pi-plus", command: (e) => add(false) }
+    ];
+
+    if(!base) {
+        splitItems.push({ label: "Remove", icon: "pi pi-times", command: (e) => remove(index) });
+    }
 
     useEffect(() => {
       if(selectedField !== undefined) {
@@ -25,18 +40,25 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
             role: selectedRole.code,
             value: value
           };
-          setQuery(query, index + 1);
+          if(base) {
+            setQuery(query, index);
+          } else {
+            setQuery(query, index + 1);
+          }
           } else {
             const query = {
               bool: selectedBool,
               field: selectedField,
               value: value
             };
-            console.log(query);
-            setQuery(query, index + 1);
+            if(base) {
+              setQuery(query, index);
+            } else {
+              setQuery(query, index + 1);
+            }
           }
         }
-      }, [value, selectedField, selectedRole, selectedBool, setQuery, index]);
+      }, [value, selectedField, selectedRole, selectedBool, setQuery, index, base]);
 
       const searchSuggestions = (e) => {
         const query = e.query;
@@ -76,19 +98,7 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
 
     return (
         <div className="query-inputs">
-            <div className="bool">
-              <div className="inputTitle">Boolean:</div>
-                <Dropdown
-                    className="query-drop"
-                    placeholder="Boolean"
-                    options={boolItems}
-                    value={selectedBool}
-                    onChange={(e) => setSelectedBool(e.value)}
-                    showClear
-                />
-            </div>
           <div className="fields">
-            <div className = "inputTitle">Where:</div>
             <Dropdown
               className="query-drop"
               placeholder="Field"
@@ -99,8 +109,17 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
               showClear
             />
           </div>
+          <div className="bool">
+                <Dropdown
+                    className="query-drop"
+                    placeholder="Operator"
+                    options={boolItems}
+                    value={selectedBool}
+                    onChange={(e) => setSelectedBool(e.value)}
+                    showClear
+                />
+            </div>
           <div className="term">
-            <div className="inputTitle">is:</div> 
             <AutoComplete 
               className="query-drop"
               placeholder="Term(s)"
@@ -114,7 +133,6 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
           </div>
           { (table === "Document" && (selectedField === "Person" || selectedField === "Place" || selectedField === "First Name" || selectedField === "Middle Name" || selectedField === "Last Name")) && 
             <div className="place">
-              <div className="inputTitle">Role</div>
               <Dropdown
                 className="query-drop"
                 placeholder="Role"
@@ -125,6 +143,15 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
               />
             </div>
           }
+          <div className="split-button">
+            <SplitButton
+              label="Add"
+              severity="success"
+              icon="pi pi-plus"
+              onClick={(e) => add(true)}
+              model={splitItems}
+            />
+          </div>
         </div>
     );
 }
