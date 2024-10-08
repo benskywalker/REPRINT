@@ -1,9 +1,33 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
-import './Letter.css'; // Make sure to import the CSS file
+import './Letter.css'; // Ensure this CSS is used for proper layout
 
 const Letter = ({ id }) => {
   const [isClosed, setIsClosed] = useState(false);
+  const [pdfURL, setPdfURL] = useState('');
+  const [letterExists, setLetterExists] = useState(false);
+  const [transcriptExists, setTranscriptExists] = useState(false);
+
+  useEffect(() => {
+    // Fetch the letter (or transcript) by id
+    const fetchPDF = async () => {
+      try {
+        const url = `http://localhost:4000/pdf/16211-0484A_b95f6_1.pdf`; // Corrected URL path
+        const letterResponse = await fetch(url);
+        if (letterResponse.ok) {
+          setPdfURL(url);  // No need to hardcode again, just reuse the same url
+          setLetterExists(true);
+        } else {
+          console.error('PDF not found or server returned an error.');
+        }
+      } catch (error) {
+        console.error('Error fetching PDF:', error);
+      }
+    };
+
+    fetchPDF();
+  }, []);  // No need for `[id]` if you're hardcoding the URL
+
 
   const handleResizeEnd = (e) => {
     if (e.sizes[0] === 0 || e.sizes[1] === 0) {
@@ -12,8 +36,7 @@ const Letter = ({ id }) => {
       setIsClosed(false);
     }
   };
-  const letterExists = true;  
-  const transcriptExists = false;
+
   return (
     <div className='letterSplitter'>
       {letterExists || transcriptExists ? (
@@ -24,7 +47,7 @@ const Letter = ({ id }) => {
               minSize={0}
             >
               <iframe
-                src={`https://business.ucf.edu/wp-content/uploads/sites/4/2018/09/UCF-CAMPUS-MAP.pdf`}
+                src={pdfURL}
                 width="100%"
                 height="100%"
                 title={`Letter ${id}`}
@@ -36,7 +59,7 @@ const Letter = ({ id }) => {
               minSize={0}
             >
               <iframe
-                src={`https://business.ucf.edu/wp-content/uploads/sites/4/2018/09/UCF-CAMPUS-MAP.pdf`}
+                src={pdfURL}
                 width="100%"
                 height="100%"
                 title={`Transcription ${id}`}
@@ -44,28 +67,27 @@ const Letter = ({ id }) => {
             </SplitterPanel>
           </Splitter>
         ) : (
-          // Only one of the iframes will be shown if either exists
-          <div style={{ height: '100%', width: '100%' }} className={`flex align-items-center justify-content-center`}>
-          {letterExists ? (
-            <iframe
-              src={`https://business.ucf.edu/wp-content/uploads/sites/4/2018/09/UCF-CAMPUS-MAP.pdf`}
-              width="100%"
-              height="100%"
-              style={{ flex: 1 }} // Ensures it takes all available space
-              title={`Letter ${id}`}
-            ></iframe>
-          ) : (
-            transcriptExists && (
+          <div style={{ height: '100%', width: '100%' }} className="flex align-items-center justify-content-center">
+            {letterExists ? (
               <iframe
-                src={`https://business.ucf.edu/wp-content/uploads/sites/4/2018/09/UCF-CAMPUS-MAP.pdf`}
+                src={pdfURL}
                 width="100%"
                 height="100%"
-                style={{ flex: 1 }} // Ensures it takes all available space
-                title={`Transcription ${id}`}
+                style={{ flex: 1 }}
+                title={`Letter ${id}`}
               ></iframe>
-            )
-          )}
-        </div>
+            ) : (
+              transcriptExists && (
+                <iframe
+                  src={pdfURL}
+                  width="100%"
+                  height="100%"
+                  style={{ flex: 1 }}
+                  title={`Transcription ${id}`}
+                ></iframe>
+              )
+            )}
+          </div>
         )
       ) : (
         <p>No letters available.</p>
