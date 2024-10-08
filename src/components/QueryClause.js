@@ -4,7 +4,7 @@ import { Dropdown } from "primereact/dropdown";
 import { AutoComplete } from "primereact/autocomplete";
 import { SplitButton } from "primereact/splitbutton";
 
-export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table, add, remove, base }) => {
+export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, table, add, remove, base, and }) => {
     const [value, setValue] = useState("");
     const [filteredSuggestions, setFilteredSuggestions] = useState([]);
     const [selectedField, setSelectedField] = useState();
@@ -35,6 +35,7 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
       if(selectedField !== undefined) {
         if(selectedRole !== undefined) {
           const query = {
+            and: and,
             bool: selectedBool,
             field: selectedField,
             role: selectedRole.code,
@@ -47,6 +48,7 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
           }
           } else {
             const query = {
+              and: and,
               bool: selectedBool,
               field: selectedField,
               value: value
@@ -58,7 +60,7 @@ export const QueryClause = ({ setQuery, index, suggestions, fields, roleItems, t
             }
           }
         }
-      }, [value, selectedField, selectedRole, selectedBool, setQuery, index, base]);
+      }, [value, selectedField, selectedRole, selectedBool, setQuery, index, base, and]);
 
       const searchSuggestions = (e) => {
         const query = e.query;

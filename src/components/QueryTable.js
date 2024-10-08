@@ -12,11 +12,11 @@ export const QueryTable = ( request ) => {
         const fetchData = async () => {
             try {
                 const response = await axios.post("http://localhost:4000/query", request.request);
-                // if(request.request.table === 'Person') {
-                //     setPeople(response.data);
-                // } else {
-                //     setDocuments(response.data);
-                // }
+                 if(request.request.table === 'Person') {
+                     setPeople(response.data);
+                 } else {
+                     setDocuments(response.data);
+                 }
             } catch (error) {
                 console.error(error);
             }
