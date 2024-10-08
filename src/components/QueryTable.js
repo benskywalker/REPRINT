@@ -8,35 +8,22 @@ export const QueryTable = ( request ) => {
     const [documents, setDocuments] = useState([]);
     const [loading, setLoading] = useState(true);
 
-    const fetchPeople = async () => {
-        try {
-            const response = await axios.get("http://localhost:4000/persons");
-            const data = response.data;
-            setPeople(data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching people:", error);
-        }
-    };
-
-    const fetchDocuments = async () => {
-        try {
-            const response = await axios.get("http://localhost:4000/documents");
-            const data = response.data;
-            setDocuments(data);
-            setLoading(false);
-        } catch (error) {
-            console.error("Error fetching documents:", error);
-        }
-    };
-
     useEffect(() => {
-        if(request.request.table === 'Person') {
-            fetchPeople();
-        } else if(request.request.table === 'Document') {
-            fetchDocuments();
+        const fetchData = async () => {
+            try {
+                const response = await axios.post("http://localhost:4000/query", request.request);
+                 if(request.request.table === 'Person') {
+                     setPeople(response.data);
+                 } else {
+                     setDocuments(response.data);
+                 }
+            } catch (error) {
+                console.error(error);
+            }
+            setLoading(false);
         }
-    }, [request.request.table]);
+        fetchData();
+    }, [request.request]);
 
   return (
     <div className='query-table'>

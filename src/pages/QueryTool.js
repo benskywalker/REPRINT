@@ -137,7 +137,9 @@ const QueryTool = ()=> {
     
       const removeButton = (index) => {
         const newClause = clauses.filter((clause, i) => i !== index);
+        const newQuery = query.filter((q, i) => i !== index);
         setClauses(newClause);
+        setQuery(newQuery);
       }
     
       const removeClause = () => {
@@ -203,6 +205,7 @@ const QueryTool = ()=> {
                                     add = {onAddClause}
                                     remove = {removeButton}
                                     base = {true}
+                                    and = {true}
                                 />
                             </div>
                         </div>
@@ -221,6 +224,7 @@ const QueryTool = ()=> {
                                     add = {onAddClause}
                                     remove = {removeButton}
                                     base = {false}
+                                    and = {clause.and}
                                 />
                                 </div>
                             </div>);
