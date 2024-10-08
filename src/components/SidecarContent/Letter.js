@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
 import './Letter.css'; // Ensure this CSS is used for proper layout
 
-const Letter = ({ id }) => {
+const Letter = ({ name }) => {
   const [isClosed, setIsClosed] = useState(false);
   const [pdfURL, setPdfURL] = useState('');
   const [letterExists, setLetterExists] = useState(false);
@@ -12,7 +12,7 @@ const Letter = ({ id }) => {
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
-        const url = `http://localhost:4000/pdf/16211-0484A_b95f6_1.pdf`; // Corrected URL path
+        const url = `http://localhost:4000/pdf/${name}`; // Corrected URL path
         const letterResponse = await fetch(url);
         if (letterResponse.ok) {
           setPdfURL(url);  // No need to hardcode again, just reuse the same url
