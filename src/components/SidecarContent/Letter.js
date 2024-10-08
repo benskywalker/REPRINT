@@ -50,7 +50,7 @@ const Letter = ({ name }) => {
                 src={pdfURL}
                 width="100%"
                 height="100%"
-                title={`Letter ${id}`}
+                title={`Letter ${name}`}
               ></iframe>
             </SplitterPanel>
             <SplitterPanel
@@ -62,7 +62,7 @@ const Letter = ({ name }) => {
                 src={pdfURL}
                 width="100%"
                 height="100%"
-                title={`Transcription ${id}`}
+                title={`Transcription ${name}`}
               ></iframe>
             </SplitterPanel>
           </Splitter>
@@ -74,7 +74,7 @@ const Letter = ({ name }) => {
                 width="100%"
                 height="100%"
                 style={{ flex: 1 }}
-                title={`Letter ${id}`}
+                title={`Letter ${name}`}
               ></iframe>
             ) : (
               transcriptExists && (
@@ -83,7 +83,7 @@ const Letter = ({ name }) => {
                   width="100%"
                   height="100%"
                   style={{ flex: 1 }}
-                  title={`Transcription ${id}`}
+                  title={`Transcription ${name}`}
                 ></iframe>
               )
             )}
