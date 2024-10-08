@@ -110,12 +110,12 @@ export default function Mentions({ nodeData, onRowClick }) {
    // Load filters and global filter from session storage when component mounts
    useEffect(() => {
 
-    const savedFilters = sessionStorage.getItem('letters-table-filters');
+    const savedFilters = sessionStorage.getItem('mentions-table-filters');
     if (savedFilters) {
         setFilters(JSON.parse(savedFilters));
     }
     
-    const savedGlobalFilter = sessionStorage.getItem('letters-table-globalFilter');
+    const savedGlobalFilter = sessionStorage.getItem('mentions-table-globalFilter');
     if (savedGlobalFilter) {
         setGlobalFilter(savedGlobalFilter);
     }
@@ -124,7 +124,7 @@ export default function Mentions({ nodeData, onRowClick }) {
 // Save filters to session storage whenever they are updated
 const onFilter = (e) => {
     setFilters(e.filters); // Update state
-    sessionStorage.setItem('letters-table-filters', JSON.stringify(e.filters)); // Save to sessionStorage
+    sessionStorage.setItem('mentions-table-filters', JSON.stringify(e.filters)); // Save to sessionStorage
 };
 
 // Save global filter value to session storage when it changes
@@ -132,7 +132,7 @@ const onGlobalFilterChange = (e) => {
     const value = e.target.value;
 
         setGlobalFilter(value); // Apply the filter
-        sessionStorage.setItem('letters-table-globalFilter', value); // Save the filter to sessionStorage
+        sessionStorage.setItem('mentions-table-globalFilter', value); // Save the filter to sessionStorage
 };
 
 // Function to render header with global search and export buttons
@@ -187,7 +187,7 @@ const renderHeader = () => {
                 header={header}
                 onRowClick={handleRowClick}
                 stateStorage="session" // Saves state to sessionStorage
-                stateKey="letters-table-state" // Unique key for this table's state
+                stateKey="mentions-table-state" // Unique key for this table's state
                 className="custom-datatable"
                 onFilter={onFilter} // Set the onFilter callback
                 onValueChange={filteredData => setFilteredData(filteredData)} // Update filtered data state
