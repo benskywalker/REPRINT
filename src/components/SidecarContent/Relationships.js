@@ -15,18 +15,46 @@ import './LettersTable.css';
 
 
 const Relationships = ({nodeData, handleNodeClick}) => {
+
+  const fetchNodeData = async (id) => {
+    console.log(id);
+    try {
+      const url = `http://localhost:4000/person/${id}`; // Corrected URL path
+      const dataResponse = await fetch(url);
+      if (dataResponse.ok) {
+        return await dataResponse.json();
+      } else {
+        console.error('Person not found or server returned an error.');
+      }
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
   const [relationships, setRelationships] = useState([]);
     useEffect(() => {
       if (nodeData.relations) {
         setRelationships(nodeData.relations);
         setFilteredData(nodeData.relations);
       }
-      console.log(relationships)
     }, [nodeData]);
 
-    const handleItemClick = () => {
-        handleNodeClick(nodeData);
-    };
+    const handleItemClick = async (e) => {
+      const personId = e.data.person.personID;
+      console.log(personId);
+  
+      // Wait for the node data to be fetched
+      const fetchedData = await fetchNodeData(personId);
+      const node = {
+        person: fetchedData[0],  // Replace '0' with actual index names if necessary
+        documents: fetchedData[1],
+        religion: fetchedData[2],
+        mentions: fetchedData[3],
+        relationships: fetchedData[4]
+    };      // Pass the fetched data to handleNodeClick
+      handleNodeClick(fetchedData);
+  };
 
     const [globalFilter, setGlobalFilter] = useState(''); 
       const [filters, setFilters] = useState(null); // Add filter state
