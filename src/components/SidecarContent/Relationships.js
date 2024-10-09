@@ -15,7 +15,7 @@ import './LettersTable.css';
 
 
 const Relationships = ({nodeData, handleNodeClick}) => {
-
+    const nodeId = nodeData.data.person.personID;
   const fetchNodeData = async (id) => {
     console.log(id);
     try {
@@ -41,20 +41,46 @@ const Relationships = ({nodeData, handleNodeClick}) => {
     }, [nodeData]);
 
     const handleItemClick = async (e) => {
-      const personId = e.data.person.personID;
-      console.log(personId);
-  
-      // Wait for the node data to be fetched
-      const fetchedData = await fetchNodeData(personId);
-      const node = {
-        person: fetchedData[0],  // Replace '0' with actual index names if necessary
-        documents: fetchedData[1],
-        religion: fetchedData[2],
-        mentions: fetchedData[3],
-        relationships: fetchedData[4]
-    };      // Pass the fetched data to handleNodeClick
-      handleNodeClick(fetchedData);
-  };
+        console.log(e.data);
+        var personId;
+        if (e.data.person1ID === nodeId) {
+          personId = e.data.person2ID;
+        }
+        else {
+            personId = e.data.person1ID;
+        }
+      
+        // Wait for the node data to be fetched
+        const fetchedData = await fetchNodeData(personId);
+        const documents = fetchedData.documents.map(doc => ({ document: doc }))// Transform documents
+        const person = fetchedData.person;
+        const religion = fetchedData.religion;
+        const mentions = fetchedData.mentions;
+        const relations = fetchedData.relationships;
+
+        // Organize the fetched data
+        const data = {
+          person: person,  
+          documents: documents, // Transform documents
+          religion: religion,
+          mentions: mentions,
+          relations: relationships
+        };      
+        // Safely check if firstName and lastName exist before destructuring
+        const { firstName = '', lastName = '' } = data.person || {};
+      
+        // Create the fullName if either firstName or lastName exist
+        if (firstName || lastName) {
+          data.person.fullName = `${firstName} ${lastName}`.trim();
+        } else {
+          // Handle the case where the name fields don't exist
+          data.person.fullName = "No Name Available";
+        }
+      
+        const node = { data,person, documents, religion, mentions, relations };
+        console.log(node);
+        handleNodeClick(node);
+      };
 
     const [globalFilter, setGlobalFilter] = useState(''); 
       const [filters, setFilters] = useState(null); // Add filter state
