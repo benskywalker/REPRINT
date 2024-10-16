@@ -21,7 +21,7 @@ const handleRowClick = (rowData) => {
       const newTab = {
         key: newTabKey,
         header: `Letter ${rowData.document.documentID}`,
-        content: <Letter id={rowData.document.documentID} className="tab-content-container" />
+        content: <Letter name={rowData.document.internalPDFname} id={rowData.document.documentID} className="tab-content-container" />
       };
       const newTabs = [...prevTabs, newTab];
       setActiveIndex(newTabs.length - 1); // Set the new tab as active

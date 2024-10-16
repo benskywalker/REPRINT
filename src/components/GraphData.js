@@ -96,6 +96,12 @@ const fetchGraphData = async (url, minDate, maxDate) => {
 
     // Process edges
 data.edges.forEach((edge) => {
+
+  //for testing purposes dont include religeon edges
+  // if (edge.type === 'religion' || edge.type === 'organization') {
+  //   return;
+  // }
+
   if (edge.from !== edge.to) {
     const edgeId = `edge-${edge.from}-${edge.to}`;
     
@@ -156,6 +162,10 @@ data.edges.forEach((edge) => {
 
       edges.push(newEdge);
       edgeIds.add(edgeId);
+    }else{
+      console.log('edge already exists', edge.type);
+
+      
     }
   }
 });

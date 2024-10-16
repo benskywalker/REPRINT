@@ -7,22 +7,15 @@ const Letter = ({ name }) => {
   const [pdfURL, setPdfURL] = useState('');
   const [letterExists, setLetterExists] = useState(false);
   const [transcriptExists, setTranscriptExists] = useState(false);
-  const [transcriptURL, setTranscriptURL] = useState('');
 
   useEffect(() => {
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
         const url = `http://localhost:4000/pdf/${name}`; // Corrected URL path
-        const transcriptResponse = await fetch(url.replace('.pdf', '_transcript.pdf'));
+        console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
-        if (transcriptResponse.ok) {
-          setTranscriptURL(url.replace('.pdf', '_transcript.pdf'));
-          setTranscriptExists(true);
-        } else {
-          console.error('Transcript PDF not found or server returned an error.');
-        }
-
+        console.log('letterResponse', letterResponse);
         if (letterResponse.ok) {
           setPdfURL(url);  // No need to hardcode again, just reuse the same url
           setLetterExists(true);
