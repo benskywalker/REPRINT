@@ -30,14 +30,15 @@ export const QueryTable = ( request ) => {
         { loading && <p>Loading...</p>}
         { !loading && request.request.table === 'Person' &&
         <DataTable value={people}>
-            <Column field="firstName" header="First Name"></Column>
-            <Column field="lastName" header="Last Name"></Column>
-            <Column field="middleName" header="Middle Name"></Column>
-            <Column field="religion" header="Religion"></Column>
+            <Column field="fullName" header="Name"></Column>
+            <Column field="religionDesc" header="Religion"></Column>
             <Column field="birthDate" header="Birth Date"></Column>
             <Column field="deathDate" header="Death Date"></Column>
-            <Column field="language" header="Language"></Column>
+            <Column field="languageDesc" header="Language"></Column>
             <Column field="gender" header="Gender"></Column>
+            <Column field="religionDesc" header="Religion"></Column>
+            <Column field="occupationDesc" header="Occupation"></Column>
+            <Column field="organizationDesc" header="Organization"></Column>
         </DataTable>
         }
         { !loading && request.request.table === 'Document' &&
