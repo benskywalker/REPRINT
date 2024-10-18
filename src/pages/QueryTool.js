@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import { Dropdown } from "primereact/dropdown";
 import './QueryTool.css';
@@ -12,33 +11,81 @@ import { ToggleButton } from "primereact/togglebutton";
 import axios from 'axios';
 
 const QueryTool = () => {
-    const [selectedCountry, setSelectedCountry] = useState(null);
     const [value, setValue] = useState([20, 80]);
     const op = useRef(null);     //OverlayPanel reference
     const [checked, setChecked] = useState(true);
     const [fields, setFields] = useState([]);
-    const countryOptionTemplate = (option) => {
-        return (
-            <div className="country-item">
-                <div>{option.name}</div>
-            </div>
-        );
+    const [filteredFields, setFilteredFields] = useState([]);
+    const [selectedView, setSelectedView] = useState(null); // State for selected view
+    const [selectedField, setSelectedField] = useState(null); // State for selected field
+    const [splitButtonLabel, setSplitButtonLabel] = useState("In"); // State for SplitButton label
+    const [selectedOrder, setSelectedOrder] = useState(null); // State for selected order 
+    const [sections, setSections] = useState([{ id: Date.now() }]); // State for managing query sections
+
+    const [views, setViews] = useState([
+      {label: 'Person', value: 'person_all_view'},
+      {label: 'Organization', value: 'organization_all_view'},
+      {label: 'Place', value: 'place_all_view'},
+      {label: 'Religion', value: 'religion_all_view'},
+      {label: 'Document', value: 'document_all_view'}
+    ]);
+
+    const boolItems = [
+      { label: "Equals", value: "equals" },
+      { label: "Not Equals", value: "not_equals" },
+      { label: "Like", value: "like" },
+      { label: "Not Like", value: "not_like" },
+      { label: "Greater Than", value: "greater_than" },
+      { label: "Less Than", value: "less_than" },
+      { label: "Greater Than or Equal", value: "greater_than_or_equal" },
+      { label: "Less Than or Equal", value: "less_than_or_equal" }
+    ];
+
+    const actionItems = [
+      { label: "And", value: "and" },
+      { label: "Or", value: "or" },
+      { label: "Else", value: "else" },
+      { label: "Remove", value: "remove" }
+    ];
+
+    const updateFields = (e) => {  
+        setSelectedView(e.value); // Update selected view
+        let filtered = [];
+        if(e.value === 'person_all_view'){
+          filtered = fields.filter(view => view.view === 'person_all_view');
+        }
+        else if(e.value === 'organization_all_view'){
+          filtered = fields.filter(view => view.view  === 'organization_all_view');
+        }
+        else if(e.value === 'place_all_view'){
+          filtered = fields.filter(view => view.view  === 'place_all_view');
+        }
+        else if(e.value === 'religion_all_view'){
+          filtered = fields.filter(view => view.view === 'religion_all_view');
+        }
+        else if(e.value === 'document_all_view'){
+          filtered = fields.filter(view => view.view === 'document_all_view');
+        }
+        setFilteredFields(filtered);
+        setSelectedField(null); // Reset selected field when view changes
+        setSplitButtonLabel("In"); // Reset SplitButton label when view changes
     };
-
+     
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get('http://localhost:4000/query-tool-fields');
-                setFields(response.data);
-                console.log(response.data);
+      const fetchData = async () => {
+          try {
+              const response = await axios.get('http://localhost:4000/query-tool-fields');
+              setFields(response.data);
+          } catch (error) {
+              console.log(error);
+          }
+      };
 
-            } catch (error) {
-                console.log(error);
-            }
-        };
-
-        fetchData();
-    }, []);
+      fetchData();
+  }, []);
+  useEffect(() => {
+    console.log(fields);
+}, [fields]);
 
     const countries = [
         { name: 'United States', code: 'US' },
@@ -48,15 +95,12 @@ const QueryTool = () => {
         { name: 'Germany', code: 'DE' }
     ];
 
-    const selectedCountryTemplate = (option, props) => {
-        if (option) {
-            return (
-                <div className="flex align-items-center">
-                    <img alt={option.name} src="https://primefaces.org/cdn/primereact/images/flag/flag_placeholder.png" className={`mr-2 flag flag-${option.code.toLowerCase()}`} style={{ width: '18px' }} />
-                    <div>{option.name}</div>
-                </div>
-            );
-        }
+    const addNewSection = () => {
+        setSections([...sections, { id: Date.now() }]);
+    };
+
+    const removeSection = (id) => {
+        setSections(sections.filter(section => section.id !== id));
     };
 
     return (
@@ -77,46 +121,79 @@ const QueryTool = () => {
                   <TabPanel header="Query" leftIcon="pi pi-search mr-2" className="query-tab-panel">
                       <div className="query-section">
                           <h3>Search for:</h3>
-                          <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
-                          filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
+                          <Dropdown tooltip="Message to display" 
+                          value={selectedView} // Bind selected view to Dropdown
+                          onChange={(e) => updateFields(e)} 
+                          options={views} optionLabel="label" placeholder="Parameters" 
+                          filter className="w-full md:w-14rem" />
                       </div>
-                      <div className="query-section">
-                          <h3>And where:</h3>
-                          <div className="query-input">
-                              <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
-                              filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
-                              <SplitButton label="In" />
-                              <FloatLabel>
-                                  <InputText tooltip="Tips on what values to put"/>
-                                  <label htmlFor="username">Value</label>
-                              
-                              </FloatLabel>
-                              <SplitButton severity="success" label="Add" icon="pi pi-plus" />
-                          </div>
-                      </div>
+                      {sections.map((section, index) => (
+                        <div key={section.id} className="query-section">
+                            <h3>Where:</h3>
+                            <div className="query-input">
+                                <Dropdown tooltip="Message to display"
+                                value={section.selectedField} // Bind selected field to Dropdown
+                                onChange={(e) => {
+                                    const newSections = [...sections];
+                                    newSections[index].selectedField = e.value;
+                                    setSections(newSections);
+                                }} 
+                                options={filteredFields} 
+                                optionLabel="field" placeholder="Parameters" 
+                                filter className="w-full md:w-14rem" 
+                                disabled={filteredFields?.length === 0}
+                                />
+                                <Dropdown tooltip="Message to display" 
+                                value={section.selectedParameter} // Bind selected parameter to Dropdown
+                                onChange={(e) => {
+                                    const newSections = [...sections];
+                                    newSections[index].selectedParameter = e.value;
+                                    setSections(newSections);
+                                }} 
+                                options={boolItems} 
+                                optionLabel="label" placeholder="Parameters" 
+                                className="w-full md:w-14rem" 
+                                />
+                                <FloatLabel>
+                                    <InputText tooltip="Tips on what values to put"/>
+                                    <label htmlFor="username">Value</label>
+                                
+                                </FloatLabel>
+                                <Dropdown tooltip="Select Action" 
+                                value={section.selectedAction} // Bind selected action to Dropdown
+                                onChange={(e) => {
+                                    const newSections = [...sections];
+                                    newSections[index].selectedAction = e.value;
+                                    setSections(newSections);
+                                    if (e.value === "and" || e.value === "or") {
+                                        addNewSection();
+                                    } else if (e.value === "remove") {
+                                        removeSection(section.id);
+                                    }
+                                }} 
+                                options={actionItems} 
+                                optionLabel="label" placeholder="Select Action" 
+                                className="w-full md:w-14rem" 
+                                />
+                            </div>
+                        </div>
+                      ))}
                       
                       <div className="query-section">
                           <h3>Order by:</h3>
                           <div className="query-input">
-                              <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Parameters" 
-                              filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
+                              <Dropdown tooltip="Message to display" 
+                              value={selectedOrder} 
+                              onChange={(e) => setSelectedOrder(e.value)} 
+                              options={filteredFields} 
+                              optionLabel="field" 
+                              placeholder="Parameters" 
+                              filter 
+                              className="w-full md:w-14rem" 
+                              disabled={filteredFields?.length === 0}
+                              />
                               <ToggleButton onLabel="Ascending" offLabel="Descending" onIcon="pi pi-arrow-up" offIcon="pi pi-arrow-down" tooltip="Message about order"
                                   checked={checked} onChange={(e) => setChecked(e.value)} />                            
-                          </div>
-                      </div>
-                      {/* <div className="query-section">
-                          <h3>Order by:</h3>
-                          <div className="query-input">
-                              <Dropdown tooltip="Message to display" value={selectedCountry} onChange={(e) => setSelectedCountry(e.value)} options={countries} optionLabel="name" placeholder="Select a Country" 
-                              filter valueTemplate={selectedCountryTemplate} itemTemplate={countryOptionTemplate} className="w-full md:w-14rem" />
-                                  <ToggleButton onLabel="Ascending" offLabel="Descending" onIcon="pi pi-arrow-up" offIcon="pi pi-arrow-down" tooltip="Message about order"
-                                  checked={checked} onChange={(e) => setChecked(e.value)} />                               
-                          </div>
-                      </div> */}
-                      <div className="query-section mb-0">
-                          <h3>In Range:</h3>
-                          <div className="slider-container">
-                              <Slider value={value} onChange={(e) => setValue(e.value)} className="slider" range={true} style={{ width: '50%' }} />
                           </div>
                       </div>
                   
