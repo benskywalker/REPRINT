@@ -1,10 +1,13 @@
+import React from 'react';
+import { Button } from 'primereact/button';
+
 const OpenData = (nodeData) => {
   const { LODLOC, LODVIAF, LODwikiData } = nodeData.nodeData.data.person;
 
   const openDataLinks = [
     { label: "LODLOC", url: LODLOC, customName: "link123" },
     { label: "LODVIAF", url: LODVIAF, customName: "link1234" },
-    { label: "LODwikiData", url: LODwikiData, customName: "linnkk12222" }
+    { label: "LODwikiData", url: LODwikiData, customName: "WikiData" }
   ].filter(link => link.url !== null);
 
   return (
@@ -13,9 +16,7 @@ const OpenData = (nodeData) => {
         openDataLinks.map((item, index) => (
           <div key={index} className="d-flex justify-content-start">
             <strong>{item.customName}:</strong>&nbsp;
-            <a href={item.url} target="_blank" rel="noopener noreferrer">
-              {item.url}
-            </a>
+            <Button label={item.customName} onClick={() => window.open(item.url, '_blank')} />
           </div>
         ))
       ) : (
