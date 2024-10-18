@@ -9,6 +9,9 @@ import { Slider } from "primereact/slider";
 import { OverlayPanel } from "primereact/overlaypanel"; // Import OverlayPanel
 import { ToggleButton } from "primereact/togglebutton";
 import axios from 'axios';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import { ProgressSpinner } from 'primereact/progressspinner'; // Import ProgressSpinner
 
 const QueryTool = () => {
     const [value, setValue] = useState([20, 80]);
@@ -20,7 +23,10 @@ const QueryTool = () => {
     const [selectedField, setSelectedField] = useState(null); // State for selected field
     const [splitButtonLabel, setSplitButtonLabel] = useState("In"); // State for SplitButton label
     const [selectedOrder, setSelectedOrder] = useState(null); // State for selected order 
-    const [sections, setSections] = useState([{ id: Date.now() }]); // State for managing query sections
+    const [sections, setSections] = useState([{ id: Date.now(), selectedValue: '' }]); // State for managing query sections
+    const [activeIndex, setActiveIndex] = useState(0); // State for active tab index
+    const [queryData, setQueryData] = useState([]); // State for query data
+    const [loading, setLoading] = useState(false); // State for loading
 
     const [views, setViews] = useState([
       {label: 'Person', value: 'person_all_view'},
@@ -96,12 +102,70 @@ const QueryTool = () => {
     ];
 
     const addNewSection = () => {
-        setSections([...sections, { id: Date.now() }]);
+        setSections([...sections, { id: Date.now(), selectedValue: '' }]);
     };
 
     const removeSection = (id) => {
         setSections(sections.filter(section => section.id !== id));
     };
+
+    const onTabChange = (e) => {
+        setActiveIndex(e.index);
+        console.log(`Tab changed to: ${e.index}`);
+        //get data from the server
+        const fetchData = async () => {
+          try {
+            setLoading(true); // Set loading to true before fetching data
+            // Log all the operations, fields, and values for the knex query
+console.log(sections);
+
+const knexQuery = sections.map(section => {
+  console.log(section);
+  return {
+    operation: selectedView,
+    field: section.selectedField.field,
+    value: section.selectedValue,
+    action: section.selectedAction
+  };
+});
+
+const operatorMapping = {
+  equals: '=',
+  not_equals: '!=',
+  like: 'LIKE',
+  not_like: 'NOT LIKE',
+  greater_than: '>',
+  less_than: '<',
+  greater_than_or_equal: '>=',
+  less_than_or_equal: '<='
+};
+
+const body = {
+  tables: selectedView,
+  fields: sections.map(section => section.selectedField.field),
+  operators: sections.map(section => operatorMapping[section.selectedParameter]),
+  values: sections.map(section => section.selectedValue),
+};
+
+console.log(knexQuery);
+console.log(body);
+
+const response = await axios.post('http://localhost:4000/knex-query', body);
+              setQueryData(response.data[0]);
+              console.log( queryData);
+          } catch (error) {
+              console.log(error);
+          } finally {
+              setLoading(false); // Set loading to false after fetching data
+          }
+      }
+      fetchData();
+
+    };
+
+    useEffect(() => {
+        console.log('Query Data Updated:', queryData[0]);
+    }, [queryData]);
 
     return (
       <div className="query-tool-container">
@@ -117,7 +181,7 @@ const QueryTool = () => {
               </div>
           </OverlayPanel>
           <div className="query-container">
-              <TabView className="query-tool">
+              <TabView className="query-tool" activeIndex={activeIndex} onTabChange={onTabChange}>
                   <TabPanel header="Query" leftIcon="pi pi-search mr-2" className="query-tab-panel">
                       <div className="query-section">
                           <h3>Search for:</h3>
@@ -155,9 +219,14 @@ const QueryTool = () => {
                                 className="w-full md:w-14rem" 
                                 />
                                 <FloatLabel>
-                                    <InputText tooltip="Tips on what values to put"/>
+                                    <InputText tooltip="Tips on what values to put"
+                                    value={section.selectedValue} // Bind selected value to InputText
+                                    onChange={(e) => {
+                                        const newSections = [...sections];
+                                        newSections[index].selectedValue = e.target.value;
+                                        setSections(newSections);
+                                    }} />
                                     <label htmlFor="username">Value</label>
-                                
                                 </FloatLabel>
                                 <Dropdown tooltip="Select Action" 
                                 value={section.selectedAction} // Bind selected action to Dropdown
@@ -215,17 +284,25 @@ const QueryTool = () => {
                       </p>
                   </TabPanel>
                   <TabPanel header="Table" leftIcon="pi pi-table mr-2" >
-                      <p className="m-0">
-                          At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti 
-                          quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in
-                          culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. 
-                          Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus.
-                      </p>
+                      {/* table for data returned from server */}
+                      {loading ? (
+                          <ProgressSpinner />
+                      ) : (
+                          queryData && (
+                              <DataTable value={queryData} size={'small'}  style={{ maxWidth: '80rem' }}>
+                                  <Column style={{ minWidth: '10px' }} header="Query Results" />
+                                  {filteredFields &&
+                                      filteredFields.map((fieldObj, index) => {
+                                          return <Column key={index} field={fieldObj.field} header={fieldObj.field} />;
+                                      })
+                                  }
+                              </DataTable>
+                          )
+                      )}
                   </TabPanel>
               </TabView>            
           </div>
       </div>
-
   );
 };
 

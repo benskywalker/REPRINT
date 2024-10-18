@@ -7,20 +7,31 @@ const Letter = ({ name }) => {
   const [pdfURL, setPdfURL] = useState('');
   const [letterExists, setLetterExists] = useState(false);
   const [transcriptExists, setTranscriptExists] = useState(false);
+  const [transcriptURL, setTranscriptURL] = useState('');
 
   useEffect(() => {
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
         const url = `http://localhost:4000/pdf/${name}`; // Corrected URL path
+        //remove .pdf from the name
+        const transcriptUrl = `http://localhost:4000/pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
+        const transcriptResponse = await fetch(transcriptUrl);
         console.log('letterResponse', letterResponse);
         if (letterResponse.ok) {
           setPdfURL(url);  // No need to hardcode again, just reuse the same url
           setLetterExists(true);
         } else {
-          console.error('PDF not found or server returned an error.');
+          console.log('PDF not found or server returned an error.');
+        }
+
+        if (transcriptResponse.ok) {
+          setTranscriptURL(transcriptUrl);
+          setTranscriptExists(true);
+        }else{
+          console.log('Transcript not found or server returned an error.');
         }
       } catch (error) {
         console.error('Error fetching PDF:', error);
@@ -61,7 +72,7 @@ const Letter = ({ name }) => {
               minSize={0}
             >
               <iframe
-                src={pdfURL}
+                src={transcriptURL}
                 width="100%"
                 height="100%"
                 title={`Transcription ${name}`}
@@ -81,7 +92,7 @@ const Letter = ({ name }) => {
             ) : (
               transcriptExists && (
                 <iframe
-                  src={pdfURL}
+                  src={transcriptURL}
                   width="100%"
                   height="100%"
                   style={{ flex: 1 }}
