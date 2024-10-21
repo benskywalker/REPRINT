@@ -10,6 +10,7 @@ import GalleryDoc from "../components/GalleryDoc";
 
 import "../components/Filter.css";
 import "./Gallery.css";
+import Biography from "../components/SidecarContent/Biography";
 
 const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
@@ -84,7 +85,15 @@ const Gallery = ({ searchQuery }) => {
       id: person.personID,
       nodeData: {
         data: {
-          fullName: person.firstName + " " + person.lastName,
+          person: {
+            personID: person.personID,
+            fullName: person.firstName + " " + person.lastName,
+            birthDate: person.birthDate,
+            deathDate: person.deathDate,
+            biography: person.biography,
+            religion: person.religion,
+            gender: person.gender
+          }
         },
       },
     };
