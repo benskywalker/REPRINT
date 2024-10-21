@@ -14,6 +14,8 @@ import ClipLoader from "react-spinners/ClipLoader";
 import fetchGraphData from "../components/GraphData";
 import { Slider } from "@mui/material";
 import { ToggleButton } from "primereact/togglebutton";
+import { MultiSelect } from "primereact/multiselect";
+import EdgeTypeFilter from "../components/EdgeTypeFilter"; // Import the new EdgeTypeFilter component
 
 const Home = ({ searchQuery }) => {
   const [filteredData, setFilteredData] = useState([]);
@@ -29,14 +31,20 @@ const Home = ({ searchQuery }) => {
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [showEdges, setShowEdges] = useState(true);
   const [selectedTerms, setSelectedTerms] = useState([]);
+  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([
+    "document",
+    "organization",
+    "relationship",
+    "religion",
+  ]);
 
   const getGraphData = async () => {
+    const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
     const graphData = await fetchGraphData(
-      "http://localhost:4000/graph",
+      `${baseExpressUrl}graph`,
       2000,
       0
     );
-    console.log(graphData);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
     setMinDate(graphData.minDate);
@@ -59,7 +67,6 @@ const Home = ({ searchQuery }) => {
     setDialogs((prevDialogs) =>
       prevDialogs.filter((dialog) => dialog.id !== id)
     );
-    console.log(dialogs);
   };
 
   const handleGraphUpdate = (graph) => {
@@ -75,7 +82,6 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
-    console.log("Node clicked:", node);
     setSelectedNodes((prevSelectedNodes) => [
       {
         ...node,
@@ -128,6 +134,11 @@ const Home = ({ searchQuery }) => {
         return null;
       };
 
+      // Only include edges that match the selected edge types
+      if (!selectedEdgeTypes.includes(edge.type)) {
+        return false;
+      }
+
       if (edge.type === "document") {
         const edgeDate = parseDate(edge.date);
         return (
@@ -141,9 +152,7 @@ const Home = ({ searchQuery }) => {
           formationDate >= new Date(timeRange[0], 0) &&
           dissolutionDate <= new Date(timeRange[1], 11, 31)
         );
-      } else if (edge.type === "relationship") {
-        return true;
-      } else if (edge.type === "religion") {
+      } else {
         return true;
       }
     });
@@ -155,8 +164,6 @@ const Home = ({ searchQuery }) => {
     });
 
     const filteredGraph = { nodes: newNodes, edges: newEdges };
-
-    // Apply the selected terms filter on the new filtered graph
     filterGraphWithTerms(filteredGraph, terms);
   };
 
@@ -286,6 +293,13 @@ const Home = ({ searchQuery }) => {
     applyFilters(timeRange, terms);
   };
 
+  const handleEdgeTypeChange = (newEdgeTypes) => {
+    console.log("Selected Edge Types:", newEdgeTypes);
+    setSelectedEdgeTypes(newEdgeTypes);
+    applyFilters(timeRange, selectedTerms);
+  };
+
+
   return (
     <>
       <div className={styles.content}>
@@ -347,6 +361,7 @@ const Home = ({ searchQuery }) => {
                   handleGraphUpdate={handleGraphUpdate}
                   showEdges={showEdges}
                 />
+
                 <div className={styles.sliderContainer}>
                   <Slider
                     value={timeRange}
@@ -368,6 +383,13 @@ const Home = ({ searchQuery }) => {
           </SplitterPanel>
         </Splitter>
       </div>
+
+      {/* Add the EdgeTypeFilter component in the bottom-right corner */}
+      <EdgeTypeFilter
+        selectedEdgeTypes={selectedEdgeTypes}
+        onChange={handleEdgeTypeChange}
+      />
+
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}

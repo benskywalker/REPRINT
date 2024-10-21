@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Splitter, SplitterPanel } from 'primereact/splitter';
+import ClipLoader from 'react-spinners/ClipLoader'; // Import spinner
 import './Letter.css'; // Ensure this CSS is used for proper layout
 
 const Letter = ({ name }) => {
@@ -8,14 +9,16 @@ const Letter = ({ name }) => {
   const [letterExists, setLetterExists] = useState(false);
   const [transcriptExists, setTranscriptExists] = useState(false);
   const [transcriptURL, setTranscriptURL] = useState('');
+  const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
-        const url = `http://localhost:4000/pdf/${name}`; // Corrected URL path
-        //remove .pdf from the name
-        const transcriptUrl = `http://localhost:4000/pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
+        setLoading(true); // Start loading
+        const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+        const url = `${baseExpressUrl}pdf/${name}`; // Corrected URL path
+        const transcriptUrl = `${baseExpressUrl}pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
         const transcriptResponse = await fetch(transcriptUrl);
@@ -30,16 +33,18 @@ const Letter = ({ name }) => {
         if (transcriptResponse.ok) {
           setTranscriptURL(transcriptUrl);
           setTranscriptExists(true);
-        }else{
+        } else {
           console.log('Transcript not found or server returned an error.');
         }
       } catch (error) {
         console.error('Error fetching PDF:', error);
+      } finally {
+        setLoading(false); // Stop loading when finished
       }
     };
 
     fetchPDF();
-  }, []);  // No need for `[id]` if you're hardcoding the URL
+  }, [name]);  // Ensure `[name]` is in the dependency array if you're fetching based on the `name` prop
 
 
   const handleResizeEnd = (e) => {
@@ -52,7 +57,11 @@ const Letter = ({ name }) => {
 
   return (
     <div className='letterSplitter'>
-      {letterExists || transcriptExists ? (
+      {loading ? ( // Show loading spinner while fetching
+        <div className="flex align-items-center justify-content-center" style={{ height: '100vh' }}>
+          <ClipLoader color="#36d7b7" loading={loading} size={150} />
+        </div>
+      ) : letterExists || transcriptExists ? (
         letterExists && transcriptExists ? (
           <Splitter className='letterSplitter' onResizeEnd={handleResizeEnd}>
             <SplitterPanel

@@ -19,7 +19,8 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
   const fetchNodeData = async (id) => {
     console.log(id);
     try {
-      const url = `http://localhost:4000/person/${id}`; // Corrected URL path
+      const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+      const url = `${baseExpressUrl}person/${id}`; // Corrected URL path
       const dataResponse = await fetch(url);
       if (dataResponse.ok) {
         return await dataResponse.json();
@@ -33,7 +34,8 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
 
   const fetchFullName = async (id) => {
     try {
-      const url = `http://localhost:4000/personFullName/${id}`;
+      const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+      const url = `${baseExpressUrl}personFullName/${id}`;
       const response = await fetch(url);
       if (response.ok) {
         const data = await response.json();

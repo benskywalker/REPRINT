@@ -11,7 +11,8 @@ export const QueryTable = ( request ) => {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await axios.post("http://localhost:4000/query", request.request);
+                const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+                const response = await axios.post(`baseExpressUrl${baseExpressUrl}query`, request.request);
                  if(request.request.table === 'Person') {
                      setPeople(response.data);
                  } else {

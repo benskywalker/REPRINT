@@ -98,9 +98,9 @@ const fetchGraphData = async (url, minDate, maxDate) => {
 data.edges.forEach((edge) => {
 
   //for testing purposes dont include religeon edges
-  if (edge.type === 'religion' || edge.type === 'organization' ) {
-    return;
-  }
+  // if (edge.type === 'religion' || edge.type === 'organization' ) {
+  //   return;
+  // }
 
   if (edge.from !== edge.to) {
     const edgeId = `edge-${edge.from}-${edge.to}`;
