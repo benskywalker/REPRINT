@@ -107,6 +107,9 @@ const QueryTool = () => {
     };
 
     const removeSection = (id) => {
+        if (sections.length === 1 || sections[0].id === id) {
+            return; // Prevent removing the first section
+        }
         setSections(sections.filter(section => section.id !== id));
     };
 
