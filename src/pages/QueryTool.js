@@ -2,16 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { Dropdown } from "primereact/dropdown";
 import './QueryTool.css';
 import { TabView, TabPanel } from "primereact/tabview";
-import { SplitButton } from "primereact/splitbutton";
 import { FloatLabel } from 'primereact/floatlabel';
 import { InputText } from 'primereact/inputtext';
-import { Slider } from "primereact/slider";
 import { OverlayPanel } from "primereact/overlaypanel"; // Import OverlayPanel
 import { ToggleButton } from "primereact/togglebutton";
 import axios from 'axios';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner'; // Import ProgressSpinner
+import { MultiSelect } from "primereact/multiselect";
+import QueryGraph from "../components/QueryGraph";
 
 const QueryTool = () => {
     const [value, setValue] = useState([20, 80]);
@@ -27,6 +27,7 @@ const QueryTool = () => {
     const [activeIndex, setActiveIndex] = useState(0); // State for active tab index
     const [queryData, setQueryData] = useState([]); // State for query data
     const [loading, setLoading] = useState(false); // State for loading
+    const [visibleColumns, setVisibleColumns] = useState([]);
 
     const [views, setViews] = useState([
       {label: 'Person', value: 'person_all_view'},
@@ -93,15 +94,6 @@ const QueryTool = () => {
   useEffect(() => {
     console.log(fields);
 }, [fields]);
-
-    const countries = [
-        { name: 'United States', code: 'US' },
-        { name: 'Canada', code: 'CA' },
-        { name: 'United Kingdom', code: 'UK' },
-        { name: 'Australia', code: 'AU' },
-        { name: 'Germany', code: 'DE' }
-    ];
-
     const addNewSection = () => {
         setSections([...sections, { id: Date.now(), selectedValue: '' }]);
     };
@@ -120,42 +112,42 @@ const QueryTool = () => {
         const fetchData = async () => {
           try {
             setLoading(true); // Set loading to true before fetching data
-            // Log all the operations, fields, and values for the knex query
-console.log(sections);
+                        // Log all the operations, fields, and values for the knex query
+            console.log(sections);
 
-const knexQuery = sections.map(section => {
-  console.log(section);
-  return {
-    operation: selectedView,
-    field: section.selectedField.field,
-    value: section.selectedValue,
-    action: section.selectedAction
-  };
-});
+            const knexQuery = sections.map(section => {
+            console.log(section);
+            return {
+                operation: selectedView,
+                field: section.selectedField.field,
+                value: section.selectedValue,
+                action: section.selectedAction
+            };
+            });
 
-const operatorMapping = {
-  equals: '=',
-  not_equals: '!=',
-  like: 'LIKE',
-  not_like: 'NOT LIKE',
-  greater_than: '>',
-  less_than: '<',
-  greater_than_or_equal: '>=',
-  less_than_or_equal: '<='
-};
+            const operatorMapping = {
+                equals: '=',
+                not_equals: '!=',
+                like: 'LIKE',
+                not_like: 'NOT LIKE',
+                greater_than: '>',
+                less_than: '<',
+                greater_than_or_equal: '>=',
+                less_than_or_equal: '<='
+            };
 
-const body = {
-  tables: selectedView,
-  fields: sections.map(section => section.selectedField.field),
-  operators: sections.map(section => operatorMapping[section.selectedParameter]),
-  values: sections.map(section => section.selectedValue),
-};
+            const body = {
+                tables: selectedView,
+                fields: sections.map(section => section.selectedField.field),
+                operators: sections.map(section => operatorMapping[section.selectedParameter]),
+                values: sections.map(section => section.selectedValue),
+            };
 
-console.log(knexQuery);
-console.log(body);
-const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+            console.log(knexQuery);
+            console.log(body);
+            const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
 
-const response = await axios.post(`${baseExpressUrl}knex-query`, body);
+const response = await axios.post(`${baseExpressUrl}knex-query`, body); 
               setQueryData(response.data[0]);
               console.log( queryData);
           } catch (error) {
@@ -169,8 +161,33 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
     };
 
     useEffect(() => {
-        console.log('Query Data Updated:', queryData[0]);
+        console.log('Query Data Updated:');
+        console.log(queryData);
     }, [queryData]);
+
+    useEffect(() => {
+        // Pre-populate visibleColumns with the first 4 values of filteredFields
+        if (filteredFields.length > 0) {
+            setVisibleColumns(filteredFields);
+        }
+    }, [filteredFields]);
+
+
+    const onColumnToggle = (event) => {
+        console.log("Event Value: ", event.value);
+        let selectedColumns = event.value;
+        let orderedSelectedColumns = filteredFields.filter((col) => selectedColumns.some((sCol) => sCol.field === col.field));
+        setVisibleColumns(orderedSelectedColumns);
+    };
+
+    const header = <MultiSelect 
+                    value={visibleColumns} 
+                    options={filteredFields}  
+                    optionLabel="field" 
+                    onChange={onColumnToggle} 
+                    className="w-full sm:w-20rem" 
+                />;
+
 
     return (
       <div className="query-tool-container">
@@ -273,12 +290,11 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                   
                   </TabPanel>
                   <TabPanel header="Network" leftIcon="pi pi-user mr-2">
-                      <p className="m-0">
-                          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, 
-                          eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo
-                          enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui 
-                          ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-                      </p>
+                      {loading ? (
+                        <ProgressSpinner />
+                      ) : (queryData && (
+                        <QueryGraph data = {queryData} type = {selectedView}/>
+                        ))}
                   </TabPanel>
                   <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
                       <p className="m-0">
@@ -294,11 +310,27 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                           <ProgressSpinner />
                       ) : (
                           queryData && (
-                              <DataTable value={queryData} size={'small'}  style={{ maxWidth: '80rem' }}>
-                                  <Column style={{ minWidth: '10px' }} header="Query Results" />
-                                  {filteredFields &&
-                                      filteredFields.map((fieldObj, index) => {
-                                          return <Column key={index} field={fieldObj.field} header={fieldObj.field} />;
+                              <DataTable value={queryData}
+                                         size={'small'}
+                                        style={{ maxWidth: '80rem' }}
+                                        paginator 
+                                        rows={10} 
+                                        rowsPerPageOptions={[5, 10, 25, 50]}  
+                                        paginatorTemplate="RowsPerPageDropdown FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink"
+                                        currentPageReportTemplate="{first} to {last} of {totalRecords}"
+                                        header={header} 
+                                        showGridlines
+                                        stripedRows 
+                                        scrollable scrollHeight="450px"
+                                        resizableColumns
+                                        reorderableColumns 
+                                        >
+                                  {
+                                      visibleColumns.map((fieldObj, index) => {
+                                          return <Column key={index} 
+                                                    field={fieldObj.field} 
+                                                    header={fieldObj.field}
+                                                    />;
                                       })
                                   }
                               </DataTable>
