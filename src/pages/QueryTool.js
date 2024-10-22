@@ -161,7 +161,8 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
     };
 
     useEffect(() => {
-        console.log('Query Data Updated:', queryData[0]);
+        console.log('Query Data Updated:');
+        console.log(queryData);
     }, [queryData]);
 
     useEffect(() => {
