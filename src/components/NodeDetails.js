@@ -82,9 +82,8 @@ setActiveIndex(tabs.length - 1);
 
   return (
     <div className="sidecar">
-      {nodeData?.data?.person?.fullName ? (
-
-      <TabView activeIndex={activeIndex ? activeIndex : 0} onTabChange={handleTabChange} scrollable              >
+    {nodeData?.data?.person?.fullName ? (
+      <TabView activeIndex={activeIndex ? activeIndex : 0} onTabChange={handleTabChange} scrollable>
         {tabs.map((tab, index) => (
           <TabPanel
             key={tab.key}
@@ -113,10 +112,24 @@ setActiveIndex(tabs.length - 1);
           </TabPanel>
         ))}
       </TabView>
-    ) : (
-        <p>Hello World</p>
-      )}
-    </div>
+    ) : nodeData?.data?.organization ? (
+      <div>
+        <p>Organization Details:</p>
+        <p>Dissolution Date: {nodeData.data.organization.dissolutionDate}</p>
+        <p>Formation Date: {nodeData.data.organization.formationDate}</p>
+        <p>Organization Description: {nodeData.data.organization.organizationDesc}</p>
+        <p>Organization ID: {nodeData.data.organization.organizationID}</p>
+        <p>Organization LOD: {nodeData.data.organization.organizationLOD}</p>
+      </div>    
+    ) : nodeData?.data?.religion ? (
+      <div>
+        <p>Religion Details:</p>
+        <p>Religion name: {nodeData.data.religion.religionDesc}</p>
+        <p>Religion ID: {nodeData.data.religion.religionID}</p>
+      </div>        ) : (
+      <p>No information has been created yet</p>
+    )}
+  </div>
   );
 };
 
