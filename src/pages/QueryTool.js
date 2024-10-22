@@ -11,6 +11,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner'; // Import ProgressSpinner
 import { MultiSelect } from "primereact/multiselect";
+import QueryGraph from "../components/QueryGraph";
 
 const QueryTool = () => {
     const [value, setValue] = useState([20, 80]);
@@ -89,12 +90,10 @@ const QueryTool = () => {
       };
 
       fetchData();
-    }, []);
-
-    useEffect(() => {
-        console.log(fields);
-    }, [fields]);
-
+  }, []);
+  useEffect(() => {
+    console.log(fields);
+}, [fields]);
     const addNewSection = () => {
         setSections([...sections, { id: Date.now(), selectedValue: '' }]);
     };
@@ -148,16 +147,16 @@ const QueryTool = () => {
             console.log(body);
             const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
 
-            const response = await axios.post(`${baseExpressUrl}knex-query`, body);
-            setQueryData(response.data[0]);
-                        console.log( queryData);
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setLoading(false); // Set loading to false after fetching data
-        }
-    }
-                fetchData();
+const response = await axios.post(`${baseExpressUrl}knex-query`, body); 
+              setQueryData(response.data[0]);
+              console.log( queryData);
+          } catch (error) {
+              console.log(error);
+          } finally {
+              setLoading(false); // Set loading to false after fetching data
+          }
+      }
+      fetchData();
 
     };
 
@@ -290,12 +289,11 @@ const QueryTool = () => {
                   
                   </TabPanel>
                   <TabPanel header="Network" leftIcon="pi pi-user mr-2">
-                      <p className="m-0">
-                          Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, 
-                          eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo
-                          enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui 
-                          ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-                      </p>
+                      {loading ? (
+                        <ProgressSpinner />
+                      ) : (queryData && (
+                        <QueryGraph data = {queryData} type = {selectedView}/>
+                        ))}
                   </TabPanel>
                   <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
                       <p className="m-0">
