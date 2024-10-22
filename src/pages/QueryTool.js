@@ -321,6 +321,8 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                                         showGridlines
                                         stripedRows 
                                         scrollable scrollHeight="450px"
+                                        resizableColumns
+                                        reorderableColumns 
                                         >
                                   {
                                       visibleColumns.map((fieldObj, index) => {
