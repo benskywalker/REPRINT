@@ -324,8 +324,9 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                   </TabPanel>
                   <TabPanel header="Network" leftIcon="pi pi-user mr-2">
                       {loading ? (
+                        <div className="spinner-wrapper">
                         <ProgressSpinner />
-                      ) : (queryData && (
+                    </div>                           ) : (queryData && (
                         <QueryGraph data = {queryData} type = {selectedView}/>
                         ))}
                   </TabPanel>
@@ -340,8 +341,9 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                   <TabPanel header="Table" leftIcon="pi pi-table mr-2" >
                       {/* table for data returned from server */}
                       {loading ? (
-                          <ProgressSpinner />
-                      ) : (
+                        <div className="spinner-wrapper">
+                            <ProgressSpinner />
+                        </div>                      ) : (
                           queryData && (
                               <DataTable value={queryData}
                                          size={'small'}

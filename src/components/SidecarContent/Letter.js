@@ -58,7 +58,7 @@ const Letter = ({ name }) => {
   return (
     <div className='letterSplitter'>
       {loading ? ( // Show loading spinner while fetching
-        <div className="flex align-items-center justify-content-center" style={{ height: '100vh' }}>
+        <div className="spinner-wrapper">
           <ClipLoader color="#36d7b7" loading={loading} size={150} />
         </div>
       ) : letterExists || transcriptExists ? (
