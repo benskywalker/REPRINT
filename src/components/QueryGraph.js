@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Sigma } from 'react-sigma';
 import SigmaGraph from './Sigmagraph';
+import styles from "../pages/Home.module.css";
 import axios from 'axios';
 import fetchGraphData from './GraphData';
 
@@ -10,8 +11,31 @@ const QueryGraph = ({ data, type }) => {
     const [places, setPlaces] = useState([]);
     const [documents, setDocuments] = useState([]);
     const [religion, setReligion] = useState([]);
-    const [graph, setGraph] = useState({ nodes: [], edges: [] });
+    const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
     const [loading, setLoading] = useState(true);
+    const [hoveredNodeData, setHoveredNodeData] = useState(null);
+
+  const handleNodeHover = (nodeData) => {
+    setHoveredNodeData(nodeData);
+  };
+
+  const handleNodeOut = () => {
+    setHoveredNodeData(null);
+  };
+
+  const handleNodeClick = (nodeData) => {
+    console.log(nodeData);
+    };
+
+    const handleGraphUpdate = (graph) => {
+        setOriginalGraph(graph || { nodes: [], edges: [] });
+        };
+
+        const searchQuery = (query) => {
+            console.log(query);
+            };
+
+        const showEdges = true;
 
     const getGraphData = async () => {
         const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
@@ -20,7 +44,7 @@ const QueryGraph = ({ data, type }) => {
           2000,
           0
         );
-        setGraph(graphData.originalGraph || { nodes: [], edges: [] });
+        setOriginalGraph(graphData.originalGraph || { nodes: [], edges: [] });
         setLoading(false);
       };
        
@@ -62,10 +86,146 @@ const QueryGraph = ({ data, type }) => {
 
             getGraphData();
             parseData();
-        }, [data, type, graph, people]);
+        }, [data, type]);
+
+        const createGraph = () => {
+            const nodes = [];
+            const edges = [];
+            if(type === 'person_all_view'){
+            originalGraph.nodes.forEach(node => {
+                if(people.includes(node.label)){
+                    if(!(nodes.find(n => n.id === node.id))){
+                        nodes.push(node);
+                    }
+                }
+            });
+            originalGraph.edges.forEach(edge => {
+                if(!(edges.find(e => e.id === edge.id))){
+                    const source = originalGraph.nodes.find(n => n.id === edge.source);
+                    const target = originalGraph.nodes.find(n => n.id === edge.target);
+                    if(people.includes(source.label) && people.includes(target.label)){
+                        edges.push(edge);
+                        if(!(nodes.find(n => n.id === source.id))){
+                            nodes.push(source);
+                        }
+                        if(!(nodes.find(n => n.id === target.id))){
+                            nodes.push(target);
+                        }
+                    }
+                }
+            });
+            } else if(type === 'organization_all_view'){
+            originalGraph.nodes.forEach(node => {
+                if(organizations.includes(node.label)){
+                    if(!(nodes.find(n => n.id === node.id))){
+                        nodes.push(node);
+                    }
+                }
+            });
+            originalGraph.edges.forEach(edge => {
+                if(!(edges.find(e => e.id === edge.id))){
+                    const source = originalGraph.nodes.find(n => n.id === edge.source);
+                    const target = originalGraph.nodes.find(n => n.id === edge.target);
+                    if(organizations.includes(source.label) && organizations.includes(target.label)){
+                        edges.push(edge);
+                        if(!(nodes.find(n => n.id === source.id))){
+                            nodes.push(source);
+                        }
+                        if(!(nodes.find(n => n.id === target.id))){
+                            nodes.push(target);
+                        }
+                    }
+                }
+            });
+            } else if(type === 'place_all_view'){
+            originalGraph.nodes.forEach(node => {
+                if(places.includes(node.label)){
+                    if(!(nodes.find(n => n.id === node.id))){
+                        nodes.push(node);
+                    }
+                }
+            });
+            originalGraph.edges.forEach(edge => {
+                if(!(edges.find(e => e.id === edge.id))){
+                    const source = originalGraph.nodes.find(n => n.id === edge.source);
+                    const target = originalGraph.nodes.find(n => n.id === edge.target);
+                    if(places.includes(source.label) && places.includes(target.label)){
+                        edges.push(edge);
+                        if(!(nodes.find(n => n.id === source.id))){
+                            nodes.push(source);
+                        }
+                        if(!(nodes.find(n => n.id === target.id))){
+                            nodes.push(target);
+                        }
+                    }
+                }
+            });
+            } else if(type === 'document_all_view'){
+            originalGraph.nodes.forEach(node => {
+                if(documents.includes(node.label)){
+                    if(!(nodes.find(n => n.id === node.id))){
+                        nodes.push(node);
+                    }
+                }
+            });
+            originalGraph.edges.forEach(edge => {
+                if(!(edges.find(e => e.id === edge.id))){
+                    const source = originalGraph.nodes.find(n => n.id === edge.source);
+                    const target = originalGraph.nodes.find(n => n.id === edge.target);
+                    if(documents.includes(source.label) && documents.includes(target.label)){
+                        edges.push(edge);
+                        if(!(nodes.find(n => n.id === source.id))){
+                            nodes.push(source);
+                        }
+                        if(!(nodes.find(n => n.id === target.id))){
+                            nodes.push(target);
+                        }
+                    }
+                }
+            });
+            } else if(type === 'religion_all_view'){
+            originalGraph.nodes.forEach(node => {
+                if(religion.includes(node.label)){
+                    if(!(nodes.find(n => n.id === node.id))){
+                        nodes.push(node);
+                    }
+                }
+            });
+            originalGraph.edges.forEach(edge => {
+                if(!(edges.find(e => e.id === edge.id))){
+                    const source = originalGraph.nodes.find(n => n.id === edge.source);
+                    const target = originalGraph.nodes.find(n => n.id === edge.target);
+                    if(religion.includes(source.label) && religion.includes(target.label)){
+                        edges.push(edge);
+                        if(!(nodes.find(n => n.id === source.id))){
+                            nodes.push(source);
+                        }
+                        if(!(nodes.find(n => n.id === target.id))){
+                            nodes.push(target);
+                        }
+                    }
+                }
+            });
+        }
+            return { nodes, edges };
+        }
+
+        const graph = createGraph();
+        console.log(graph);
   return (
-    <div>Hello World</div>
+    <div>
+        <SigmaGraph
+                  graph={graph}
+                  onNodeHover={handleNodeHover}
+                  className={styles.sigma}
+                  onNodeClick={handleNodeClick}
+                  searchQuery={searchQuery}
+                  handleNodeunHover={handleNodeOut}
+                  handleGraphUpdate={handleGraphUpdate}
+                  showEdges={showEdges}
+                />
+    </div>
   )
 }
 
-export default QueryGraph
+export default QueryGraph;
