@@ -12,6 +12,8 @@ import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner'; // Import ProgressSpinner
 import { MultiSelect } from "primereact/multiselect";
 import QueryGraph from "../components/QueryGraph";
+import { InputIcon } from "primereact/inputicon";
+import { IconField } from "primereact/iconfield";
 
 const QueryTool = () => {
     const [value, setValue] = useState([20, 80]);
@@ -28,6 +30,8 @@ const QueryTool = () => {
     const [queryData, setQueryData] = useState([]); // State for query data
     const [loading, setLoading] = useState(false); // State for loading
     const [visibleColumns, setVisibleColumns] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState(''); // Add global filter state
+    const [filters, setFilters] = useState(null); // Add filter state
 
     const [views, setViews] = useState([
       {label: 'Person', value: 'person_all_view'},
@@ -180,14 +184,43 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
         setVisibleColumns(orderedSelectedColumns);
     };
 
-    const header = <MultiSelect 
-                    value={visibleColumns} 
-                    options={filteredFields}  
-                    optionLabel="field" 
-                    onChange={onColumnToggle} 
-                    className="w-full sm:w-20rem" 
-                />;
+    const onFilter = (e) => {
+        setFilters(e.filters); // Update state
+        sessionStorage.setItem('query-tool-filters', JSON.stringify(e.filters)); // Save to sessionStorage
+    };
 
+    // Save global filter value to session storage when it changes
+    const onGlobalFilterChange = (e) => {
+        const value = e.target.value;
+        setGlobalFilter(value); // Apply the filter
+        sessionStorage.setItem('query-tool-globalFilter', value); // Save the filter to sessionStorage
+    };
+
+                const renderHeader = () => {
+                    return (
+                        <div className="table-header">
+                            <span className="p-input-icon-left">
+                            <IconField iconPosition="left">
+                                <InputIcon className="pi pi-search"> </InputIcon>
+                                <InputText 
+                                    type="search"
+                                    value={globalFilter} // Ensure global filter input shows the correct value
+                                    onChange={onGlobalFilterChange} // Update on change
+                                    placeholder="Global Search"
+                                />
+                            </IconField>
+                            </span>
+                            <MultiSelect 
+                            value={visibleColumns} 
+                            options={filteredFields}  
+                            optionLabel="field" 
+                            onChange={onColumnToggle} 
+                            className="w-full sm:w-20rem ml-4" 
+                            />
+                        </div>
+                    );
+                };
+                const header = renderHeader();
 
     return (
       <div className="query-tool-container">
@@ -312,7 +345,7 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                           queryData && (
                               <DataTable value={queryData}
                                          size={'small'}
-                                        style={{ maxWidth: '80rem' }}
+                                        style={{ maxWidth: '80vw' }}
                                         paginator 
                                         rows={10} 
                                         rowsPerPageOptions={[5, 10, 25, 50]}  
@@ -324,12 +357,18 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                                         scrollable scrollHeight="450px"
                                         resizableColumns
                                         reorderableColumns 
+                                        globalFilter={globalFilter} // Add global filter
+                                        filters={filters} // Add filters
+                                        onFilter={onFilter} // Add onFilter callback
                                         >
                                   {
                                       visibleColumns.map((fieldObj, index) => {
                                           return <Column key={index} 
                                                     field={fieldObj.field} 
                                                     header={fieldObj.field}
+                                                    sortable
+                                                    filter
+                                                    filterPlaceholder={`Search by ${fieldObj.field}`}
                                                     />;
                                       })
                                   }
