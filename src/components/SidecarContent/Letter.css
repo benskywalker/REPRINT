@@ -1,19 +1,18 @@
 .letterSplitter {
-    height: 100%; /* Ensure the Splitter takes full height */
-    display: flex;
-    flex: 1;
-    /* background-color: red; */
-  }
-  
-  .letterSplitterPanel {
-    overflow: hidden;
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    background-color: blue;
+  height: 100%; /* Take the full height of the parent container */
+  display: flex;
+  flex: 1;
 }
+
+.spinner-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%; /* Take the full height of the letterSplitter */
+  width: 100%; /* Ensure it spans the full width */
+  overflow: hidden;
+}
+
 
 .letterSplitterPanel img {
     width: 100%;
