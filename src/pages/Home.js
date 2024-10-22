@@ -31,20 +31,12 @@ const Home = ({ searchQuery }) => {
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [showEdges, setShowEdges] = useState(true);
   const [selectedTerms, setSelectedTerms] = useState([]);
-  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([
-    "document",
-    "organization",
-    "relationship",
-    "religion",
-  ]);
+  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([]);
 
   const getGraphData = async () => {
-    const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
-    const graphData = await fetchGraphData(
-      `${baseExpressUrl}graph`,
-      2000,
-      0
-    );
+    const baseExpressUrl =
+      process.env.BASEEXPRESSURL || "http://localhost:4000/";
+    const graphData = await fetchGraphData(`${baseExpressUrl}graph`, 2000, 0);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
     setMinDate(graphData.minDate);
@@ -52,6 +44,7 @@ const Home = ({ searchQuery }) => {
     setTimeRange([graphData.minDate, graphData.maxDate]);
     setOriginalGraph(graphData.graph || { nodes: [], edges: [] });
     setLoading(false);
+    console.log("Graph Data:", graphData);
   };
 
   useEffect(() => {
@@ -82,7 +75,7 @@ const Home = ({ searchQuery }) => {
   };
 
   const handleNodeClick = (node) => {
-    console.log(node)
+    console.log(node);
     setSelectedNodes((prevSelectedNodes) => [
       {
         ...node,
@@ -109,10 +102,10 @@ const Home = ({ searchQuery }) => {
 
   const handleTimeRangeChange = (event, newValue) => {
     setTimeRange(newValue);
-    applyFilters(newValue, selectedTerms);
+    applyFilters(newValue, selectedTerms, selectedEdgeTypes);
   };
 
-  const applyFilters = (timeRange, terms) => {
+  const applyFilters = (timeRange, terms, edgeTypes = selectedEdgeTypes) => {
     const newEdges = originalGraph.edges.filter((edge) => {
       const parseDate = (dateStr) => {
         if (typeof dateStr === "number") {
@@ -135,8 +128,13 @@ const Home = ({ searchQuery }) => {
         return null;
       };
 
+      // If no edge types are selected, show all edges
+      if (edgeTypes.length === 0) {
+        return true;
+      }
+
       // Only include edges that match the selected edge types
-      if (!selectedEdgeTypes.includes(edge.type)) {
+      if (!edgeTypes.includes(edge.type)) {
         return false;
       }
 
@@ -145,13 +143,6 @@ const Home = ({ searchQuery }) => {
         return (
           edgeDate >= new Date(timeRange[0], 0) &&
           edgeDate <= new Date(timeRange[1], 11, 31)
-        );
-      } else if (edge.type === "organization") {
-        const formationDate = parseDate(edge.formationDate);
-        const dissolutionDate = parseDate(edge.dissolutionDate);
-        return (
-          formationDate >= new Date(timeRange[0], 0) &&
-          dissolutionDate <= new Date(timeRange[1], 11, 31)
         );
       } else {
         return true;
@@ -291,15 +282,14 @@ const Home = ({ searchQuery }) => {
 
   const onFilterChange = (filteredGraph, terms) => {
     setSelectedTerms(terms);
-    applyFilters(timeRange, terms);
+    applyFilters(timeRange, terms, selectedEdgeTypes);
   };
 
   const handleEdgeTypeChange = (newEdgeTypes) => {
     console.log("Selected Edge Types:", newEdgeTypes);
     setSelectedEdgeTypes(newEdgeTypes);
-    applyFilters(timeRange, selectedTerms);
+    applyFilters(timeRange, selectedTerms, newEdgeTypes);
   };
-
 
   return (
     <>
