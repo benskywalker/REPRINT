@@ -4,7 +4,7 @@ import { Checkbox } from "primereact/checkbox";
 
 const EdgeTypeFilter = ({ onChange }) => {
   const edgeTypes = ["document", "organization", "relationship", "religion"];
-  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([]);
+  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState(["document", "organization", "relationship", "religion"]);
 
   const handleEdgeTypeChange = (e) => {
     const { value, checked } = e.target;

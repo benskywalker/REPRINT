@@ -31,7 +31,7 @@ const Home = ({ searchQuery }) => {
   const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
   const [showEdges, setShowEdges] = useState(true);
   const [selectedTerms, setSelectedTerms] = useState([]);
-  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([]);
+  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState(['document', 'organization', 'religion', 'relationship']); // Default selected edge types
 
   const getGraphData = async () => {
     const baseExpressUrl =
