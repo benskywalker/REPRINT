@@ -80,6 +80,8 @@ setActiveIndex(tabs.length - 1);
 }
 , [tabClosed]);
 
+  console.log(nodeData);
+
   return (
     <div className="sidecar">
     {nodeData?.data?.person?.fullName ? (

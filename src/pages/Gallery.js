@@ -79,8 +79,17 @@ const Gallery = ({ searchQuery }) => {
     fetchPeople();
   }, []);
 
-  const handleButtonClick = (person) => {
-    console.log(person);
+  const handleButtonClick = async (person) => {
+    const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+    const response = await fetch(`${baseExpressUrl}person/${person.personID}`);
+    const data = await response.json();
+    const documents = [];
+    data.documents.forEach(element => {
+      if(element.date == null) {
+        element.date = element.sortingDate;
+      }
+      documents.push({document: element});
+    });
     const newDialog = {
       id: person.personID,
       nodeData: {
@@ -92,11 +101,21 @@ const Gallery = ({ searchQuery }) => {
             deathDate: person.deathDate,
             biography: person.biography,
             religion: person.religion,
-            gender: person.gender
+            gender: person.gender,
+            LODLOC: data.LODLOC,
+            LODORG: data.LODORG,
+            LODwikiData: data.LODwikiData,
+            documents: documents,
+            relations: data.relations,
+            mentions: data.mentions,
           }
         },
+        documents: documents,
+        relations: data.relations,
+        mentions: data.mentions,
       },
     };
+    console.log(newDialog);
     setDialogs([...dialogs, newDialog]);
   };
 
