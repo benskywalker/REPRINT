@@ -72,7 +72,7 @@ const QueryGraph = ({ data, type }) => {
                 } else if(type === 'document_all_view'){
                     const documents = new Set();
                     for(let i = 0; i < data.length; i++){
-                        documents.add(data[i].documentTitle);
+                        documents.add(data[i].documentID);
                     }
                     setDocuments(Array.from(documents));
                 } else if(type === 'religion_all_view'){
@@ -103,7 +103,7 @@ const QueryGraph = ({ data, type }) => {
                 if(!(edges.find(e => e.id === edge.id))){
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(people.includes(source.label) && people.includes(target.label)){
+                    if(people.includes(source.label) || people.includes(target.label)){
                         edges.push(edge);
                         if(!(nodes.find(n => n.id === source.id))){
                             nodes.push(source);
@@ -126,7 +126,7 @@ const QueryGraph = ({ data, type }) => {
                 if(!(edges.find(e => e.id === edge.id))){
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(organizations.includes(source.label) && organizations.includes(target.label)){
+                    if(organizations.includes(source.label) || organizations.includes(target.label)){
                         edges.push(edge);
                         if(!(nodes.find(n => n.id === source.id))){
                             nodes.push(source);
@@ -149,7 +149,7 @@ const QueryGraph = ({ data, type }) => {
                 if(!(edges.find(e => e.id === edge.id))){
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(places.includes(source.label) && places.includes(target.label)){
+                    if(places.includes(source.label) || places.includes(target.label)){
                         edges.push(edge);
                         if(!(nodes.find(n => n.id === source.id))){
                             nodes.push(source);
@@ -161,26 +161,19 @@ const QueryGraph = ({ data, type }) => {
                 }
             });
             } else if(type === 'document_all_view'){
-            originalGraph.nodes.forEach(node => {
-                if(documents.includes(node.label)){
-                    if(!(nodes.find(n => n.id === node.id))){
-                        nodes.push(node);
-                    }
-                }
-            });
             originalGraph.edges.forEach(edge => {
+                if(edge.document && documents.find(doc => doc === edge.document.documentID)){
                 if(!(edges.find(e => e.id === edge.id))){
+                    edges.push(edge);
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(documents.includes(source.label) && documents.includes(target.label)){
-                        edges.push(edge);
-                        if(!(nodes.find(n => n.id === source.id))){
-                            nodes.push(source);
-                        }
-                        if(!(nodes.find(n => n.id === target.id))){
-                            nodes.push(target);
-                        }
+                    if(!(nodes.find(n => n.id === source.id))){
+                        nodes.push(source);
                     }
+                    if(!(nodes.find(n => n.id === target.id))){
+                        nodes.push(target);
+                    }
+                }
                 }
             });
             } else if(type === 'religion_all_view'){
@@ -195,7 +188,7 @@ const QueryGraph = ({ data, type }) => {
                 if(!(edges.find(e => e.id === edge.id))){
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(religion.includes(source.label) && religion.includes(target.label)){
+                    if(religion.includes(source.label) || religion.includes(target.label)){
                         edges.push(edge);
                         if(!(nodes.find(n => n.id === source.id))){
                             nodes.push(source);
