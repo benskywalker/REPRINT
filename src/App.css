@@ -98,7 +98,7 @@
 }
 
 
-.p-datatable-wrapper {    
+.Home-DataTable .p-datatable-wrapper {    
   /* background-color: red; */
 
   height: 100%;
@@ -108,7 +108,7 @@
   flex-grow: 1;
 }
 
-.p-datatable {
+.Home-DataTable .p-datatable {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -117,26 +117,26 @@
 }
 
 
-.p-datatable-head{
+.Home-DataTable .p-datatable-head{
   display: flex;
   flex-direction: row; /* Ensure the header is laid out in a row */
   width: 100%;
   /* background-color: red!important; */
 }
-.p-datatable-thead	> tr > th {
+.Home-DataTable .p-datatable-thead	> tr > th {
   display: flex;
   flex-direction: row; /* Ensure the header is laid out in a row */
   width: 100%;
   /* background-color: blue; */
 }
 
-.p-datatable-thead > tr {
+.Home-DataTable .p-datatable-thead > tr {
   display: flex;
   flex-direction: row; /* Ensure the `tr` is laid out in a row */
   width: 100%;
 }
 
-.p-datatable-table{      
+.Home-DataTable .p-datatable-table{      
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -144,7 +144,7 @@
   flex-grow: 1;
 }
 
-.p-datatable-tbody {
+.Home-DataTable .p-datatable-tbody {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -152,13 +152,13 @@
   flex-grow: 1;
 }
 
-.p-datatable-tbody > tr {
+.Home-DataTable .p-datatable-tbody > tr {
   display: flex;
   flex-direction: row; /* Ensure the `tr` is laid out in a row */
   width: 100%;
 }
 
-.p-datatable-tbody > tr > td {
+.Home-DataTable .p-datatable-tbody > tr > td {
   display: flex;
   flex: 1; /* Ensure each cell takes up an equal amount of space */
   align-items: center; /* Center content vertically */

@@ -325,6 +325,7 @@ const Home = ({ searchQuery }) => {
               severity={showEdges ? "success" : "danger"}
             />
             <DataTable
+              className="Home-DataTable"
               value={selectedNodes}
               reorderableRows
               onRowReorder={onRowReorder}
