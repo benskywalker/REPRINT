@@ -233,11 +233,12 @@ const Gallery = ({ searchQuery }) => {
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
-          header={dialog.nodeData.data.fullName}
+          header={dialog.nodeData.data.person.fullName}
           visible={true}
           onHide={() => handleCloseDialog(dialog.id)}
           draggable={true}
           modal={false}
+          maximizable
           style={{ width: "600px", height: "500px" }}
         >
           <NodeDetails nodeData={dialog.nodeData} />
