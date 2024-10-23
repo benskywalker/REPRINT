@@ -125,7 +125,7 @@ const QueryTool = () => {
                 operation: selectedView,
                 field: section.selectedField.field,
                 value: section.selectedValue,
-                action: section.selectedAction
+                action: section.selectedAction,
             };
             });
 
@@ -145,6 +145,7 @@ const QueryTool = () => {
                 fields: sections.map(section => section.selectedField.field),
                 operators: sections.map(section => operatorMapping[section.selectedParameter]),
                 values: sections.map(section => section.selectedValue),
+                logicalOperators: sections.map(section => section.selectedAction)
             };
 
             console.log(knexQuery);
