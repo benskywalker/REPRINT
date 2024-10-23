@@ -4,6 +4,7 @@ import SigmaGraph from './Sigmagraph';
 import styles from "../pages/Home.module.css";
 import axios from 'axios';
 import fetchGraphData from './GraphData';
+import { ProgressSpinner } from 'primereact/progressspinner';
 
 const QueryGraph = ({ data, type }) => {
     const [people, setPeople] = useState([]);
@@ -95,8 +96,9 @@ const QueryGraph = ({ data, type }) => {
             originalGraph.nodes.forEach(node => {
                 if(people.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
+                        node.color = "#FFFFFF";
                         nodes.push(node);
-                    }
+                    } 
                 }
             });
             originalGraph.edges.forEach(edge => {
@@ -118,6 +120,7 @@ const QueryGraph = ({ data, type }) => {
             originalGraph.nodes.forEach(node => {
                 if(organizations.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
+                        node.color = "#FFFFFF";
                         nodes.push(node);
                     }
                 }
@@ -141,6 +144,7 @@ const QueryGraph = ({ data, type }) => {
             originalGraph.nodes.forEach(node => {
                 if(places.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
+                        node.color = "#FFFFFF";
                         nodes.push(node);
                     }
                 }
@@ -164,6 +168,7 @@ const QueryGraph = ({ data, type }) => {
             originalGraph.edges.forEach(edge => {
                 if(edge.document && documents.find(doc => doc === edge.document.documentID)){
                 if(!(edges.find(e => e.id === edge.id))){
+                    edge.color = "#FFFFFF";
                     edges.push(edge);
                     const source = originalGraph.nodes.find(n => n.id === edge.source);
                     const target = originalGraph.nodes.find(n => n.id === edge.target);
@@ -180,6 +185,7 @@ const QueryGraph = ({ data, type }) => {
             originalGraph.nodes.forEach(node => {
                 if(religion.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
+                        nodes.color = "#FFFFFF";
                         nodes.push(node);
                     }
                 }
@@ -204,10 +210,9 @@ const QueryGraph = ({ data, type }) => {
         }
 
         const graph = createGraph();
-        console.log(graph);
   return (
-    <div>
-        <SigmaGraph
+    <div className="QueryGraph">
+        {(graph.nodes.length > 0 ? <SigmaGraph
                   graph={graph}
                   onNodeHover={handleNodeHover}
                   className={styles.sigma}
@@ -216,7 +221,10 @@ const QueryGraph = ({ data, type }) => {
                   handleNodeunHover={handleNodeOut}
                   handleGraphUpdate={handleGraphUpdate}
                   showEdges={showEdges}
-                />
+                /> :
+                <div className="spinner-wrapper">
+                    <ProgressSpinner />
+                </div>  )}
     </div>
   )
 }

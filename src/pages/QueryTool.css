@@ -17,7 +17,7 @@
 }
 
 .query-tool{
-    width: 50;
+    min-width: 80%;
 }
 
 .query-tool .p-tabview-panels .p-tabview-panel {
