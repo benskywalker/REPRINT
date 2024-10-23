@@ -87,7 +87,49 @@ const QueryTool = () => {
           try {
             const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
               const response = await axios.get(`${baseExpressUrl}query-tool-fields`);
-              setFields(response.data);
+              const freshFields = response.data;
+              console.log(freshFields)
+              const newFields = [];
+              freshFields.map(item => {
+                const field = item.field;
+                if(field.indexOf("ID") != -1 || field.indexOf("_id") != -1)
+                {
+                    return;
+                } else if(field.indexOf("StdName") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("StdName"));
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                }else if(field.indexOf("Name") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Name")) + " Name";
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                } else if(field.indexOf("Date") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Date")) + " Date";
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                } else if(field.indexOf("Desc") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Desc"));
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                }  else if(field.indexOf("Start") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Start")) + " Start";
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                } else if(field.indexOf("End") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("End")) + " End";
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                } else if(field.indexOf("Uncertain") > 0)
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Uncertain")) + " Uncertain";
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                } else 
+                {
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1);
+                    newFields.push({field: field, label: fieldLabel, view: item.view});
+                }
+              })
+              setFields(newFields);
           } catch (error) {
               console.log(error);
           }
@@ -214,7 +256,7 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                             <MultiSelect 
                             value={visibleColumns} 
                             options={filteredFields}  
-                            optionLabel="field" 
+                            optionLabel="label" 
                             onChange={onColumnToggle} 
                             className="w-full sm:w-20rem ml-4" 
                             />
@@ -259,7 +301,7 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                                     setSections(newSections);
                                 }} 
                                 options={filteredFields} 
-                                optionLabel="field" placeholder="Parameters" 
+                                optionLabel="label" placeholder="Parameters" 
                                 filter className="w-full md:w-14rem" 
                                 disabled={filteredFields?.length === 0}
                                 />
@@ -368,7 +410,7 @@ const response = await axios.post(`${baseExpressUrl}knex-query`, body);
                                       visibleColumns.map((fieldObj, index) => {
                                           return <Column key={index} 
                                                     field={fieldObj.field} 
-                                                    header={fieldObj.field}
+                                                    header={fieldObj.label}
                                                     sortable
                                                     filter
                                                     filterPlaceholder={`Search by ${fieldObj.field}`}
