@@ -8,7 +8,7 @@ const PORT = 3999;
 app.use(express.static(path.join(__dirname, 'build')));
 
 // Define a route to handle /REPRINT
-app.get('/REPRINT', (req, res) => {
+app.get('print/print_na/REPRINT', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
