@@ -31,7 +31,7 @@ const Gallery = ({ searchQuery }) => {
     const fetchPeople = async () => {
       try {
         const baseExpressUrl = process.env.BASEEXPRESSURL;
-        const response = await fetch(`${baseExpressUrl}persons`);
+        const response = await fetch(`https://chdr.cs.ucf.edu/print/print_na/persons`);
         const data = await response.json();
         setPeople(data);
 
@@ -80,8 +80,7 @@ const Gallery = ({ searchQuery }) => {
   }, []);
 
   const handleButtonClick = async (person) => {
-    const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
-    const response = await fetch(`${baseExpressUrl}person/${person.personID}`);
+    const response = await fetch(`https://chdr.cs.ucf.edu/print/print_na/person/${person.personID}`);
     const data = await response.json();
     const documents = [];
     data.documents.forEach(element => {

@@ -41,7 +41,7 @@ const QueryGraph = ({ data, type }) => {
     const getGraphData = async () => {
         const baseExpressUrl = process.env.BASEEXPRESSURL;
         const graphData = await fetchGraphData(
-          `${baseExpressUrl}graph`,
+          `https://chdr.cs.ucf.edu/print/print_na//graph`,
           2000,
           0
         );

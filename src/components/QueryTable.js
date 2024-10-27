@@ -12,7 +12,7 @@ export const QueryTable = ( request ) => {
         const fetchData = async () => {
             try {
                 const baseExpressUrl = process.env.BASEEXPRESSURL;
-                const response = await axios.post(`baseExpressUrl${baseExpressUrl}query`, request.request);
+                const response = await axios.post(`https://chdr.cs.ucf.edu/print/print_na/query`, request.request);
                  if(request.request.table === 'Person') {
                      setPeople(response.data);
                  } else {
