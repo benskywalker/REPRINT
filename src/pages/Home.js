@@ -35,7 +35,7 @@ const Home = ({ searchQuery }) => {
 
   const getGraphData = async () => {
     const baseExpressUrl =
-      process.env.BASEEXPRESSURL || "http://localhost:4000/";
+      process.env.BASEEXPRESSURL;
     const graphData = await fetchGraphData(`${baseExpressUrl}graph`, 2000, 0);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
