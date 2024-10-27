@@ -86,7 +86,7 @@ const QueryTool = () => {
       const fetchData = async () => {
           try {
             const baseExpressUrl = process.env.BASEEXPRESSURL;
-              const response = await axios.get(`https://chdr.cs.ucf.edu/print/print_na/query-tool-fields`);
+              const response = await axios.get(`http://54.208.252.153:3306/query-tool-fields`);
               const freshFields = response.data;
               console.log(freshFields)
               const newFields = [];
@@ -194,7 +194,7 @@ const QueryTool = () => {
             console.log(body);
             const baseExpressUrl = process.env.BASEEXPRESSURL;
 
-const response = await axios.post(`https://chdr.cs.ucf.edu/print/print_na/knex-query`, body); 
+const response = await axios.post(`http://54.208.252.153:3306/knex-query`, body); 
               setQueryData(response.data[0]);
               console.log( queryData);
           } catch (error) {

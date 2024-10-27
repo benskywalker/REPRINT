@@ -34,7 +34,7 @@ const Home = ({ searchQuery }) => {
   const [selectedEdgeTypes, setSelectedEdgeTypes] = useState(['document', 'organization', 'religion', 'relationship']); // Default selected edge types
 
   const getGraphData = async () => {
-    const graphData = await fetchGraphData(`https://chdr.cs.ucf.edu/print/print_na/graph`, 2000, 0);
+    const graphData = await fetchGraphData(`http://54.208.252.153:3306/graph`, 2000, 0);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
     setMinDate(graphData.minDate);

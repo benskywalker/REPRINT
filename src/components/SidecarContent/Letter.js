@@ -17,8 +17,8 @@ const Letter = ({ name }) => {
       try {
         setLoading(true); // Start loading
         const baseExpressUrl = process.env.BASEEXPRESSURL;
-        const url = `https://chdr.cs.ucf.edu/print/print_na/pdf/${name}`; // Corrected URL path
-        const transcriptUrl = `https://chdr.cs.ucf.edu/print/print_na/pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
+        const url = `http://54.208.252.153:3306/pdf/${name}`; // Corrected URL path
+        const transcriptUrl = `http://54.208.252.153:3306/pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
         const transcriptResponse = await fetch(transcriptUrl);
