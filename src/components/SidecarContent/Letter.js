@@ -16,7 +16,7 @@ const Letter = ({ name }) => {
     const fetchPDF = async () => {
       try {
         setLoading(true); // Start loading
-        const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+        const baseExpressUrl = process.env.BASEEXPRESSURL;
         const url = `${baseExpressUrl}pdf/${name}`; // Corrected URL path
         const transcriptUrl = `${baseExpressUrl}pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);

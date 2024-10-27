@@ -39,7 +39,7 @@ const QueryGraph = ({ data, type }) => {
         const showEdges = true;
 
     const getGraphData = async () => {
-        const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+        const baseExpressUrl = process.env.BASEEXPRESSURL;
         const graphData = await fetchGraphData(
           `${baseExpressUrl}graph`,
           2000,

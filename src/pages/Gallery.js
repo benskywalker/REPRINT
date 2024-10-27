@@ -30,7 +30,7 @@ const Gallery = ({ searchQuery }) => {
   useEffect(() => {
     const fetchPeople = async () => {
       try {
-        const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+        const baseExpressUrl = process.env.BASEEXPRESSURL;
         const response = await fetch(`${baseExpressUrl}persons`);
         const data = await response.json();
         setPeople(data);

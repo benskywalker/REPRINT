@@ -85,7 +85,7 @@ const QueryTool = () => {
     useEffect(() => {
       const fetchData = async () => {
           try {
-            const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+            const baseExpressUrl = process.env.BASEEXPRESSURL;
               const response = await axios.get(`${baseExpressUrl}query-tool-fields`);
               const freshFields = response.data;
               console.log(freshFields)
@@ -192,7 +192,7 @@ const QueryTool = () => {
 
             console.log(knexQuery);
             console.log(body);
-            const baseExpressUrl = process.env.BASEEXPRESSURL || "http://localhost:4000/";
+            const baseExpressUrl = process.env.BASEEXPRESSURL;
 
 const response = await axios.post(`${baseExpressUrl}knex-query`, body); 
               setQueryData(response.data[0]);
