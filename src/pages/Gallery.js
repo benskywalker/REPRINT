@@ -30,8 +30,8 @@ const Gallery = ({ searchQuery }) => {
   useEffect(() => {
     const fetchPeople = async () => {
       try {
-        const baseExpressUrl = process.env.BASEEXPRESSURL;
-        const response = await fetch(`http://54.208.252.153:3306/persons`);
+        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+        const response = await fetch(`${baseExpressUrl}persons`);
         const data = await response.json();
         setPeople(data);
 
@@ -57,7 +57,7 @@ const Gallery = ({ searchQuery }) => {
         const peopleFilterOptions = filterNames.concat(filterReligions);
         setPeopleFilterOptions(peopleFilterOptions);
 
-        const documentRes = await fetch("http://localhost:4000/documents");
+        const documentRes = await fetch(`${baseExpressUrl}documents`);
         const documentData = await documentRes.json();
         setDocuments(documentData);
         const uniqueDates = Array.from(
@@ -80,7 +80,8 @@ const Gallery = ({ searchQuery }) => {
   }, []);
 
   const handleButtonClick = async (person) => {
-    const response = await fetch(`http://54.208.252.153:3306/person/${person.personID}`);
+    const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+    const response = await fetch(`${baseExpressUrl}person/${person.personID}`);
     const data = await response.json();
     const documents = [];
     data.documents.forEach(element => {

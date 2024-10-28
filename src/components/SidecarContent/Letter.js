@@ -16,9 +16,9 @@ const Letter = ({ name }) => {
     const fetchPDF = async () => {
       try {
         setLoading(true); // Start loading
-        const baseExpressUrl = process.env.BASEEXPRESSURL;
-        const url = `http://54.208.252.153:3306/pdf/${name}`; // Corrected URL path
-        const transcriptUrl = `http://54.208.252.153:3306/pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
+        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+        const url = `${baseExpressUrl}pdf/${name}`; // Corrected URL path
+        const transcriptUrl = `${baseExpressUrl}pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
         const transcriptResponse = await fetch(transcriptUrl);

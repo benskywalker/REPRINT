@@ -85,8 +85,24 @@ const QueryTool = () => {
     useEffect(() => {
       const fetchData = async () => {
           try {
-            const baseExpressUrl = process.env.BASEEXPRESSURL;
-              const response = await axios.get(`http://54.208.252.153:3306/query-tool-fields`);
+            const convertCamelCase = (word) => {
+                if(word.toUpperCase() == word)
+                    return word;
+                let newWord = "" + word[0].toUpperCase();
+                for(let i = 1; i < word.length; i++)
+                {
+                    if(word[i] >= 'A' && word[i] <= 'Z')
+                    {
+                        newWord += " " + word[i];
+                    } else 
+                    {
+                        newWord += word[i];
+                    }
+                }
+                return newWord;
+            }
+            const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+              const response = await axios.get(`${baseExpressUrl}query-tool-fields`);
               const freshFields = response.data;
               console.log(freshFields)
               const newFields = [];
@@ -97,35 +113,59 @@ const QueryTool = () => {
                     return;
                 } else if(field.indexOf("StdName") > 0)
                 {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("StdName"));
-                    newFields.push({field: field, label: fieldLabel, view: item.view});
-                }else if(field.indexOf("Name") > 0)
-                {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Name")) + " Name";
-                    newFields.push({field: field, label: fieldLabel, view: item.view});
-                } else if(field.indexOf("Date") > 0)
-                {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Date")) + " Date";
+                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("StdName")) + " Standard Name";
                     newFields.push({field: field, label: fieldLabel, view: item.view});
                 } else if(field.indexOf("Desc") > 0)
                 {
                     const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Desc"));
                     newFields.push({field: field, label: fieldLabel, view: item.view});
-                }  else if(field.indexOf("Start") > 0)
+                } else if(field.indexOf("LOD") >= 0)
                 {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Start")) + " Start";
-                    newFields.push({field: field, label: fieldLabel, view: item.view});
-                } else if(field.indexOf("End") > 0)
+                    newFields.push({field: field, label: field, view: item.view});
+                } else if(field.indexOf("2") == 1)
                 {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("End")) + " End";
-                    newFields.push({field: field, label: fieldLabel, view: item.view});
-                } else if(field.indexOf("Uncertain") > 0)
-                {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1, field.indexOf("Uncertain")) + " Uncertain";
+                    let fieldLabel = "";
+                    switch(field[0])
+                    {
+                        case 'o':
+                            fieldLabel += "organization";
+                            break;
+                        case 'd':
+                            fieldLabel += "document";
+                            break;
+                        case 'r':
+                            fieldLabel += "religion";
+                            break;
+                        case 'p':
+                            fieldLabel += "person";
+                            break;
+                        default:
+                            break;
+                    } 
+                    fieldLabel += "To";
+                    switch(field[2])
+                    {
+                        case 'o':
+                            fieldLabel += "Organization";
+                            break;
+                        case 'd':
+                            fieldLabel += "Document";
+                            break;
+                        case 'r':
+                            fieldLabel += "Religion";
+                            break;
+                        case 'p':
+                            fieldLabel += "Person";
+                            break;
+                        default:
+                            break;
+                    } 
+                    fieldLabel += field.substring(3);
+                    fieldLabel = convertCamelCase(fieldLabel);
                     newFields.push({field: field, label: fieldLabel, view: item.view});
                 } else 
                 {
-                    const fieldLabel = field.substring(0, 1).toUpperCase() + field.substring(1);
+                    const fieldLabel = convertCamelCase(field);
                     newFields.push({field: field, label: fieldLabel, view: item.view});
                 }
               })
@@ -192,9 +232,9 @@ const QueryTool = () => {
 
             console.log(knexQuery);
             console.log(body);
-            const baseExpressUrl = process.env.BASEEXPRESSURL;
+            const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
 
-const response = await axios.post(`http://54.208.252.153:3306/knex-query`, body); 
+const response = await axios.post(`${baseExpressUrl}knex-query`, body); 
               setQueryData(response.data[0]);
               console.log( queryData);
           } catch (error) {
