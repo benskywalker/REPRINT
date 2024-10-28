@@ -26,7 +26,7 @@ const Header = ({ onUploadClick, onSearchChange }) => {
   };
 
   const toggleTheme = () => {
-    const newTheme = selectedTheme === "saga-blue" ? "soho-dark" : "saga-blue";
+    const newTheme = selectedTheme === "viva-light" ? "soho-dark" : "viva-light";
     PrimeReact.changeTheme(selectedTheme, newTheme, "theme-link");
     setSelectedTheme(newTheme);
   };
@@ -83,7 +83,7 @@ const Header = ({ onUploadClick, onSearchChange }) => {
         <hr></hr>
         <Button
         style={{ width: "25%" }}
-          icon={selectedTheme === "saga-blue" ? "pi pi-moon" : "pi pi-sun"}
+          icon={selectedTheme === "viva-light" ? "pi pi-moon" : "pi pi-sun"}
           onClick={toggleTheme}
         />
       </Sidebar>

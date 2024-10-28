@@ -4,9 +4,9 @@
     height: 90vh;
 }
 
-.title-container{
+/* .title-container{
     background-color: #302F2F;
-}
+} */
 
 .query-container {
     display: flex;
@@ -32,16 +32,16 @@
   
   }
 
-.query-section{
+/* .query-section{
     background-color: #302F2F;
     display: flex;
     flex-direction: column;
     height: 100%;
     padding: 15px;
     margin-bottom: 15px;
-}
+} */
 
-.query-input {
+/* .query-input {
     background-color: #302F2F;
     color: white;
     border: 1px solid #302F2F;
@@ -49,10 +49,10 @@
     padding: 10px;
     width: 100%;
     height: 100%;
-    display: flex; /* Use flexbox layout */
-    align-items: center; /* Align vertically in the center */
-    gap: 10px; /* Add spacing between the elements */
-}
+    display: flex; 
+    align-items: center;
+    gap: 10px; 
+} */
 
 
 .slider-container {
