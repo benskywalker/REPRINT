@@ -39,9 +39,9 @@ const QueryGraph = ({ data, type }) => {
         const showEdges = true;
 
     const getGraphData = async () => {
-        const baseExpressUrl = process.env.BASEEXPRESSURL;
+        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
         const graphData = await fetchGraphData(
-          `http://54.208.252.153:3306//graph`,
+          `${baseExpressUrl}graph`,
           2000,
           0
         );
