@@ -14,11 +14,9 @@ import ClipLoader from "react-spinners/ClipLoader";
 import fetchGraphData from "../components/GraphData";
 import { Slider } from "@mui/material";
 import { ToggleButton } from "primereact/togglebutton";
-import { MultiSelect } from "primereact/multiselect";
 import EdgeTypeFilter from "../components/EdgeTypeFilter"; // Import the new EdgeTypeFilter component
 
 const Home = ({ searchQuery }) => {
-  const [filteredData, setFilteredData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedNodes, setSelectedNodes] = useState([]);
   const [timeRange, setTimeRange] = useState([1600, 1700]);
@@ -35,7 +33,7 @@ const Home = ({ searchQuery }) => {
 
   const getGraphData = async () => {
     const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
-    const graphData = await fetchGraphData(`${baseExpressUrl}graph`, 2000, 0);
+    const graphData = await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0);
     setGraph(graphData.graph || { nodes: [], edges: [] });
     setMetrics(graphData.metrics);
     setMinDate(graphData.minDate);

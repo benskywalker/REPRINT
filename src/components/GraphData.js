@@ -1,7 +1,6 @@
 import axios from 'axios';
 import Graph from 'graphology';
 import { centrality } from 'graphology-metrics';
-import pagerank from 'graphology-pagerank';
 import modularity from 'graphology-communities-louvain';
 
 const fetchGraphData = async (url, minDate, maxDate) => {
@@ -10,7 +9,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
   let originalGraph = { nodes: [], edges: [] };
 
   const buildGraphologyGraph = (nodes, edges) => {
-    const graph = new Graph();
+    const graph = new Graph({  });
 
     nodes.forEach(node => {
       graph.addNode(node.id, { label: node.label, data: node.data });
@@ -30,7 +29,6 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     metrics.betweennessCentrality = centrality.betweenness(graph);
     metrics.closenessCentrality = centrality.closeness(graph);
     metrics.eigenvectorCentrality = centrality.eigenvector(graph);
-    metrics.pageRank = pagerank(graph); // Use pagerank from graphology-pagerank
     metrics.modularity = modularity(graph);
 
     return metrics;
@@ -76,7 +74,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     data.nodes.forEach((node) => {
       const newNode = {
         id: node.id,
-        label: node.person?.personStdName || node.organization?.organizationDesc || node.religion?.religionDesc,
+        label: node.person?.personStdName || node.organization?.organizationDesc || node.religion?.religionDesc || node.relation?.relationDesc || node.document?.documentTitle || 'Unknown', // Fallback to 'Unknown'
         size: 15, // Slightly larger node size
         color: '#336699', // Professional blue color
         borderColor: '#000000', // Black border for sharper contrast
@@ -97,15 +95,15 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     // Process edges
 data.edges.forEach((edge) => {
 
-  //for testing purposes dont include religeon edges
-  // if (edge.type === 'religion' || edge.type === 'organization' ) {
-  //   return;
-  // }
-
   if (edge.from !== edge.to) {
-    const edgeId = `edge-${edge.from}-${edge.to}`;
+    // Create a unique edge ID based on its properties
+    const [source, target] = [edge.from, edge.to].sort(); // Sort to ensure uniqueness
+    const edgeId = `edge-${source}-${target}`;
+
+//if an edge already exists betweeen souce and target then skip it
+
+
     
-    if (!edgeIds.has(edgeId)) {
       const newEdge = {
         id: edgeId,
         source: edge.from,
@@ -113,10 +111,9 @@ data.edges.forEach((edge) => {
         color: getEdgeColor(edge.type), // Use the updated color palette for edges
         size: 2.5, // Slightly thicker for visibility
         hidden: false,
-        type: 'curvedArrow', // Curved edges for a more organic look
+        // type: 'curvedArrow', // Curved edges for a more organic look
         opacity: 0.85, // Slight transparency for a polished look
         date: edge.document?.date, // Add date from document to edge
-        roleType: edge.roleID, // Add the role ID to keep track of the role
         ...edge,
       };
 
@@ -162,11 +159,7 @@ data.edges.forEach((edge) => {
 
       edges.push(newEdge);
       edgeIds.add(edgeId);
-    }else{
-      console.log('edge already exists', edge.type);
-
-      
-    }
+    
   }
 });
 
@@ -176,6 +169,7 @@ data.edges.forEach((edge) => {
     });
 
     const filteredNodes = nodes.filter(node =>
+      // if the node does not have any edges then filter it out
       edges.some(edge => edge.source === node.id || edge.target === node.id)
     );
 
