@@ -119,7 +119,7 @@ const SigmaGraph = ({ onNodeClick, onNodeHover, graph = { nodes: [], edges: [] }
           outboundAttractionDistribution={false}
           adjustSizes={false}
           edgeWeightInfluence={0}
-          scalingRatio={2}
+          scalingRatio={3}
           strongGravityMode={false}
           gravity={0.01}
           slowDown={5}

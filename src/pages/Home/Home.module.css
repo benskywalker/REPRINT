@@ -111,3 +111,9 @@
 .infoContainer p:last-child {
   margin-bottom: 0; /* Remove margin from last paragraph */
 }
+
+.metrics{
+  list-style: none; /* Remove bullet points */
+  padding: 0; /* Remove default padding */
+  
+}

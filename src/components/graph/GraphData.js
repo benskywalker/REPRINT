@@ -2,6 +2,7 @@ import axios from 'axios';
 import Graph from 'graphology';
 import { centrality } from 'graphology-metrics';
 import modularity from 'graphology-communities-louvain';
+import { density } from 'graphology-metrics/graph';
 
 const fetchGraphData = async (url, minDate, maxDate) => {
   const graph = { nodes: [], edges: [] };
@@ -9,7 +10,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
   let originalGraph = { nodes: [], edges: [] };
 
   const buildGraphologyGraph = (nodes, edges) => {
-    const graph = new Graph({  });
+    const graph = new Graph({ multi: true });
 
     nodes.forEach(node => {
       graph.addNode(node.id, { label: node.label, data: node.data });
@@ -25,6 +26,11 @@ const fetchGraphData = async (url, minDate, maxDate) => {
   const computeMetrics = (graph) => {
     const metrics = {};
 
+    metrics.totalNodes = graph.order; // Total number of nodes
+    metrics.totalEdges = graph.size;  // Total number of edges
+    metrics.density = density(graph); // Density of the graph
+
+    // Existing centrality and modularity metrics
     metrics.degreeCentrality = centrality.degree(graph);
     metrics.betweennessCentrality = centrality.betweenness(graph);
     metrics.closenessCentrality = centrality.closeness(graph);
@@ -43,14 +49,13 @@ const fetchGraphData = async (url, minDate, maxDate) => {
 
   const getEdgeColor = (type) => {
     const edgeColors = {
-      document: 'rgb(113, 139, 255)',    
-      organization: 'rgb(166, 0, 255)', 
-      religion: 'rgb(2, 78, 255)',     
-      relationship: 'rgb(255, 0, 0)',
+      document: 'rgb(51, 153, 250)',    // Light Blue
+      organization: 'rgb(0, 204, 204)', // Medium Purple
+      religion: 'rgb(204, 51, 153)',     // Sky Blue
+      relationship: 'rgb(102, 255, 202)', // Light Pink
     };
   
-    return edgeColors[type]  
-    || generateRandomDarkColor();
+    return edgeColors[type] || generateRandomDarkColor();
   };
 
   try {
