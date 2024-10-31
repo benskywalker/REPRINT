@@ -79,7 +79,7 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     data.nodes.forEach((node) => {
       const newNode = {
         id: node.id,
-        label: node.person?.personStdName || node.organization?.organizationDesc || node.religion?.religionDesc || node.relation?.relationDesc || node.document?.documentTitle || 'Unknown', // Fallback to 'Unknown'
+        label: node.person?.fullName || node.organization?.organizationDesc || node.religion?.religionDesc || node.relation?.relationDesc || node.document?.documentTitle || 'Unknown', // Fallback to 'Unknown'
         size: 15, // Slightly larger node size
         color: '#336699', // Professional blue color
         borderColor: '#000000', // Black border for sharper contrast
