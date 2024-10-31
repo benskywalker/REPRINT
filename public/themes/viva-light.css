@@ -199,6 +199,7 @@
   --primary-700:#3b5094;
   --primary-800:#2e3f75;
   --primary-900:#222e55;
+  --graphBackground: #dedede;
 }
 
 .p-editor-container .p-editor-toolbar {
@@ -7161,7 +7162,6 @@
   padding: 15px;
   margin-bottom: 15px;
   color:black;
-
 }
 
 .query-input {
@@ -7177,18 +7177,10 @@
   gap: 10px; 
 }
 
-.title-container{
-  background-color: var(--query-color); /* Use the variable */
+.sidecar .p-tabview .p-tabview-panels {
+  border: 3px solid black !important;
 }
 
-.p-tabview{
-  background-color: var(--query-container);
-}
-
-.p-tabview .p-tabview-nav .p-tabview-nav-link{
-  background-color: var(--query-container);
-}
-
-.p-tabview .p-tabview-panels{
-  background-color:  var(--query-container);
+.graphContainer {
+  background-color: #000000 !important;
 }
