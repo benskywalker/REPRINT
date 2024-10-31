@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
-import SigmaGraph from '../components/graph/Sigmagraph';
-import styles from "../pages/Home/Home.module.css";
-import fetchGraphData from '../components/graph/GraphData';
+import SigmaGraph from '../graph/Sigmagraph';
+import styles from "../../pages/Home/Home.module.css";
+import fetchGraphData from '../graph/GraphData';
 import { ProgressSpinner } from 'primereact/progressspinner';
 
 const QueryGraph = ({ data, type }) => {

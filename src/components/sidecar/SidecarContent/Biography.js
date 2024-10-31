@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Image } from 'primereact/image';
-import Logo from '../images/logo.png'; // Import the logo image
 
 const Biography = ({ nodeData }) => {
   // useEffect(() => {

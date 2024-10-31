@@ -11,7 +11,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner'; // Import ProgressSpinner
 import { MultiSelect } from "primereact/multiselect";
-import QueryGraph from "../../components/QueryGraph";
+import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 

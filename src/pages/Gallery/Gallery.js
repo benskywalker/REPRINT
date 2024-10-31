@@ -3,10 +3,10 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
 import { TabMenu } from "primereact/tabmenu";
 
-import NodeDetails from "../../components/NodeDetails";
-import Filter from "../../components/galleryFilter/Filter";
-import GalleryEntry from "../../components/GalleryEntry";
-import GalleryDoc from "../../components/GalleryDoc";
+import Sidecar from "../../components/sidecar/Sidecar";
+import Filter from "../../components/gallery/galleryFilter/Filter";
+import GalleryEntry from "../../components/gallery/GalleryEntry";
+import GalleryDoc from "../../components/gallery/GalleryDoc";
 
 import "./Gallery.css";
 
@@ -239,7 +239,7 @@ const Gallery = ({ searchQuery }) => {
           maximizable
           style={{ width: "600px", height: "500px" }}
         >
-          <NodeDetails nodeData={dialog.nodeData} />
+          <Sidecar nodeData={dialog.nodeData} />
         </Dialog>
       ))}
     </div>

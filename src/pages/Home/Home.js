@@ -4,8 +4,8 @@ import { Splitter, SplitterPanel } from 'primereact/splitter'
 import { Accordion, AccordionTab } from 'primereact/accordion'
 import { Button } from 'primereact/button'
 import styles from './Home.module.css'
-import NodeDetails from '../../components/NodeDetails'
-import FilterTool from '../../components/graphSearch/FilterTool'
+import Sidecar from '../../components/sidecar/Sidecar'
+import FilterTool from '../../components/graph/graphSearch/FilterTool'
 import { Dialog } from 'primereact/dialog'
 import { v4 as uuidv4 } from 'uuid'
 import { DataTable } from 'primereact/datatable'
@@ -14,7 +14,7 @@ import ClipLoader from 'react-spinners/ClipLoader'
 import fetchGraphData from '../../components/graph/GraphData'
 import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
-import EdgeTypeFilter from '../../components/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
+import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
 const Home = ({ searchQuery }) => {
   const [loading, setLoading] = useState(true)
@@ -266,7 +266,7 @@ const Home = ({ searchQuery }) => {
       >
         <AccordionTab header={renderHeader(rowData, index)}>
           <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
-            <NodeDetails
+            <Sidecar
               key={id}
               nodeData={rowData}
               activeTabIndex={activeTabIndex}
@@ -439,7 +439,7 @@ const Home = ({ searchQuery }) => {
           }}
           breakpoints={{ '960px': '75vw', '641px': '100vw' }}
         >
-          <NodeDetails
+          <Sidecar
             nodeData={dialog.nodeData}
             handleNodeClick={handleNodeClick}
             activeTabIndex={dialog.activeTabIndex}

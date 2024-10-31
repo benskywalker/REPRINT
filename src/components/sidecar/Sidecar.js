@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import 'primeicons/primeicons.css'; // Ensure PrimeIcons are imported
 import { TabView, TabPanel } from 'primereact/tabview';
-import './NodeDetails.module.css';
+import './Sidecar.module.css';
 import LetterTable from './SidecarContent/LetterTable';
 import Relationships from './SidecarContent/Relationships';
 import OpenData from './SidecarContent/OpenData';
@@ -10,7 +10,7 @@ import Biography from './SidecarContent/Biography';
 import Letter from './SidecarContent/Letter'; // Adjust the import path as necessary
 import Mentions from './SidecarContent/Mentions';
 
-const NodeDetails = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex}) => {
+const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex}) => {
 
 const handleRowClick = (rowData) => {
   const newTabKey = `Letter-${rowData.document.documentID}`;
@@ -135,4 +135,4 @@ setActiveIndex(tabs.length - 1);
   );
 };
 
-export default NodeDetails;
+export default Sidecar;

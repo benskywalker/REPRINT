@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Gallery from "./pages/Gallery/Gallery";
-import Header from "./components/Header";
+import Header from "./components/header/Header";
 import Home from "./pages/Home/Home";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
