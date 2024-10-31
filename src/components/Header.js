@@ -3,7 +3,6 @@
 import React from "react";
 import { Button } from "primereact/button";
 import styles from "./Header.module.css";
-import { InputText } from "primereact/inputtext";
 import { Sidebar } from "primereact/sidebar";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
@@ -14,13 +13,11 @@ import { Image } from "primereact/image";
 import logoImage from './images/logo.png';
 
 
-const Header = ({ onUploadClick, onSearchChange }) => {
+const Header = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState("soho-dark"); // default theme
 
-  const handleInputChange = (event) => {
-    onSearchChange(event.target.value);
-  };
+
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
   };
@@ -43,11 +40,7 @@ const Header = ({ onUploadClick, onSearchChange }) => {
         </div>
         {/* <Image src={logo} alt="logo"  className={styles.logo}/> */}
       </NavLink>
-      <InputText
-        placeholder="Search"
-        className={styles.search}
-        onChange={handleInputChange}
-      />
+      
       {/* pi bar menu for sidebar pop up */}
       <Button
         icon="pi pi-bars"

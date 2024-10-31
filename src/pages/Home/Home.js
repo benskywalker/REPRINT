@@ -1,20 +1,20 @@
-import SigmaGraph from "../components/Sigmagraph";
+import SigmaGraph from "../../components/graph/Sigmagraph"; // Import the SigmaGraph component
 import { useState, useEffect } from "react";
 import { Splitter, SplitterPanel } from "primereact/splitter";
 import { Accordion, AccordionTab } from "primereact/accordion";
 import { Button } from "primereact/button";
 import styles from "./Home.module.css";
-import NodeDetails from "../components/NodeDetails";
-import FilterTool from "../components/FilterTool";
+import NodeDetails from "../../components/NodeDetails";
+import FilterTool from "../../components/graphSearch/FilterTool";
 import { Dialog } from "primereact/dialog";
 import { v4 as uuidv4 } from "uuid";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import ClipLoader from "react-spinners/ClipLoader";
-import fetchGraphData from "../components/GraphData";
+import fetchGraphData from "../../components/graph/GraphData";
 import { Slider } from "@mui/material";
 import { ToggleButton } from "primereact/togglebutton";
-import EdgeTypeFilter from "../components/EdgeTypeFilter"; // Import the new EdgeTypeFilter component
+import EdgeTypeFilter from "../../components/filterBox/EdgeTypeFilter"; // Import the new EdgeTypeFilter component
 
 const Home = ({ searchQuery }) => {
   const [loading, setLoading] = useState(true);
@@ -324,6 +324,35 @@ const Home = ({ searchQuery }) => {
                 header={"Sidecars"}
               />
             </DataTable>
+{/* Detailed explanation of how the graph works and application synopsis */}
+<div className={styles.infoContainer}>
+  <h3>Graph Information</h3>
+  <p>
+    This network graph maps relationships between entities like people,
+     organizations, documents, religions, and places. Each node represents
+      an entity, and each edge indicates a connection, allowing you to navigate
+       a web of relationships. The graph helps you quickly uncover hidden 
+       connections, contexts, and patterns within the network.
+  </p>
+  <p>
+    Click any node to view detailed information and its direct and indirect connections.
+     Hovering over nodes highlights related entities and connections for easy visual exploration.
+      Use the filters on the right to control which types of nodes and edges are shown,
+       focusing on the details most relevant to your research.
+  </p>
+  <p>
+    Adjust the time range slider below to filter entities and connections by specific time periods.
+     This enables you to observe historical changes, such as the influence of organizations,
+      shifts in religious connections, or key figures’ evolving roles over time.
+  </p>
+  <p>
+    Additional network analysis tools help identify influential entities and reveal communities within the graph.
+     Use these features to analyze specific connections, trace the impact of organizations, or examine cultural ties,
+      providing a comprehensive, time-sensitive view of the network.
+  </p>
+</div>
+
+
           </SplitterPanel>
           <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
             {loading ? (

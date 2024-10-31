@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Gallery from "./pages/Gallery";
+import Gallery from "./pages/Gallery/Gallery";
 import Header from "./components/Header";
-import Home from "./pages/Home";
+import Home from "./pages/Home/Home";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "primeflex/primeflex.css";
 import "./App.css";
-import QueryTool from "./pages/QueryTool";
+import QueryTool from "./pages/QueryTool/QueryTool";
 
 const Main = ({searchQuery}) => {
 

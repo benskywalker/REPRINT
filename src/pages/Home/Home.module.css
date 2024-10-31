@@ -43,7 +43,7 @@
 }
 
 .graphContainer .sliderContainer .slider {
-  width: 80%;
+  width: 50%;
   position: relative;
   display: flex;
   justify-content: center;
@@ -85,4 +85,29 @@
   position: relative;
   top: 0;
   right: 0;
+}
+
+
+.infoContainer {
+  padding: 20px; /* Add padding for spacing */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  font-family: Arial, sans-serif; /* Clean, readable font */
+  line-height: 1.6; /* Improve line spacing */
+  color: #e0e0e0; /* Light text color for contrast */
+}
+
+.infoContainer h3 {
+  font-size: 1.5em; /* Larger heading */
+  margin-bottom: 10px; /* Space below heading */
+  color: #1e90ff; /* Light blue color for heading */
+}
+
+.infoContainer p {
+  margin-bottom: 15px; /* Space between paragraphs */
+  font-size: 19px;
+}
+
+.infoContainer p:last-child {
+  margin-bottom: 0; /* Remove margin from last paragraph */
 }

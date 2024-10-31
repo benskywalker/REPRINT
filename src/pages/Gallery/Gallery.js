@@ -3,14 +3,12 @@ import React, { useState, useEffect } from "react";
 import { Dialog } from "primereact/dialog";
 import { TabMenu } from "primereact/tabmenu";
 
-import NodeDetails from "../components/NodeDetails";
-import Filter from "../components/Filter";
-import GalleryEntry from "../components/GalleryEntry";
-import GalleryDoc from "../components/GalleryDoc";
+import NodeDetails from "../../components/NodeDetails";
+import Filter from "../../components/galleryFilter/Filter";
+import GalleryEntry from "../../components/GalleryEntry";
+import GalleryDoc from "../../components/GalleryDoc";
 
-import "../components/Filter.css";
 import "./Gallery.css";
-import Biography from "../components/SidecarContent/Biography";
 
 const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
