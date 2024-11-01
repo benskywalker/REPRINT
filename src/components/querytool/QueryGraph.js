@@ -11,10 +11,11 @@ const QueryGraph = ({ data, type }) => {
     const [documents, setDocuments] = useState([]);
     const [religion, setReligion] = useState([]);
     const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
+    const [graph, setGraph] = useState({ nodes: [], edges: [] });
     const [loading, setLoading] = useState(true);
     const [hoveredNodeData, setHoveredNodeData] = useState(null);
 
-  const handleNodeHover = (nodeData) => {
+  const handleNodeHover = nodeData => {
     setHoveredNodeData(nodeData);
   };
 
@@ -36,45 +37,48 @@ const QueryGraph = ({ data, type }) => {
 
         const showEdges = true;
 
-    const getGraphData = async () => {
-        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
-        const graphData = await fetchGraphData(
-          `${baseExpressUrl}graph`,
-          2000,
-          0
-        );
-        setOriginalGraph(graphData.originalGraph || { nodes: [], edges: [] });
-        setLoading(false);
-      };
-       
+        const getGraphData = async () => {
+            const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+            const graphData = await fetchGraphData(
+              `${baseExpressUrl}graph`,
+              2000,
+              0
+            );
+            setOriginalGraph(graphData.originalGraph || { nodes: [], edges: [] });
+          };
+      useEffect(() => {
+
+        getGraphData();
+    }, []);
+
         useEffect(() => {
             const parseData = () => {
-                if(type === 'person_all_view'){
+                if(type === 'person'){
                     const people = new Set();
                     for(let i = 0; i < data.length; i++){
-                        people.add(data[i].personStdName);
+                        people.add(data[i].firstName + ' ' + data[i].lastName);
                     }
         
                     setPeople(Array.from(people));
-                } else if(type === 'organization_all_view'){
+                } else if(type === 'organization'){
                     const organizations = new Set();
                     for(let i = 0; i < data.length; i++){
                         organizations.add(data[i].organizationDesc);
                     }
                     setOrganizations(Array.from(organizations));
-                } else if(type === 'place_all_view'){
+                } else if(type === 'place'){
                     const places = new Set();
                     for(let i = 0; i < data.length; i++){
                         places.add(data[i].placeDesc);
                     }
                     setPlaces(Array.from(places));
-                } else if(type === 'document_all_view'){
+                } else if(type === 'document'){
                     const documents = new Set();
                     for(let i = 0; i < data.length; i++){
                         documents.add(data[i].documentID);
                     }
                     setDocuments(Array.from(documents));
-                } else if(type === 'religion_all_view'){
+                } else if(type === 'religion'){
                     const religion = new Set();
                     for(let i = 0; i < data.length; i++){
                         religion.add(data[i].religionDesc);
@@ -82,17 +86,18 @@ const QueryGraph = ({ data, type }) => {
                     setReligion(Array.from(religion));
                 }
             }
-
-            getGraphData();
-            parseData();
+            if(data){
+                parseData();
+            }
         }, [data, type]);
 
+        useEffect(() => {
         const createGraph = () => {
             const nodes = [];
             const edges = [];
-            if(type === 'person_all_view'){
+            if(type === 'person'){
             originalGraph.nodes.forEach(node => {
-                if(people.includes(node.label)){
+             if(people.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
                         node.color = "#FFFFFF";
                         nodes.push(node);
@@ -114,7 +119,7 @@ const QueryGraph = ({ data, type }) => {
                     }
                 }
             });
-            } else if(type === 'organization_all_view'){
+            } else if(type === 'organization'){
             originalGraph.nodes.forEach(node => {
                 if(organizations.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
@@ -138,7 +143,7 @@ const QueryGraph = ({ data, type }) => {
                     }
                 }
             });
-            } else if(type === 'place_all_view'){
+            } else if(type === 'place'){
             originalGraph.nodes.forEach(node => {
                 if(places.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
@@ -162,7 +167,7 @@ const QueryGraph = ({ data, type }) => {
                     }
                 }
             });
-            } else if(type === 'document_all_view'){
+            } else if(type === 'document'){
             originalGraph.edges.forEach(edge => {
                 if(edge.document && documents.find(doc => doc === edge.document.documentID)){
                 if(!(edges.find(e => e.id === edge.id))){
@@ -179,7 +184,7 @@ const QueryGraph = ({ data, type }) => {
                 }
                 }
             });
-            } else if(type === 'religion_all_view'){
+            } else if(type === 'religion'){
             originalGraph.nodes.forEach(node => {
                 if(religion.includes(node.label)){
                     if(!(nodes.find(n => n.id === node.id))){
@@ -204,27 +209,44 @@ const QueryGraph = ({ data, type }) => {
                 }
             });
         }
-            return { nodes, edges };
+            setLoading(false);
+            setGraph({ nodes, edges });
         }
+        if(originalGraph.nodes.length > 0){
+            createGraph();
+        }
+    }, [originalGraph, people, organizations, places, documents, religion, type]);
 
-        const graph = createGraph();
+  if(loading){
+    return (
+        <div className={styles.loading}>
+            <ProgressSpinner />
+        </div>
+    );
+  }
+
+  if(graph.nodes.length === 0){
+    return (
+        <div className={styles.noData}>
+            <h2>No data available</h2>
+        </div>
+    );
+}
+
   return (
-    <div className="QueryGraph">
-        {(graph.nodes.length > 0 ? <SigmaGraph
-                  graph={graph}
-                  onNodeHover={handleNodeHover}
-                  className={styles.sigma}
-                  onNodeClick={handleNodeClick}
-                  searchQuery={searchQuery}
-                  handleNodeunHover={handleNodeOut}
-                  handleGraphUpdate={handleGraphUpdate}
-                  showEdges={showEdges}
-                /> :
-                <div className="spinner-wrapper">
-                    <ProgressSpinner />
-                </div>  )}
+    <div className={styles.graphContainer}>
+      <SigmaGraph
+          graph={graph}
+          onNodeHover={handleNodeHover}
+          className={styles.sigma}
+          onNodeClick={handleNodeClick}
+          searchQuery={searchQuery}
+          handleNodeunHover={handleNodeOut}
+          handleGraphUpdate={handleGraphUpdate}
+          showEdges={showEdges}
+        />
     </div>
-  )
+  );
 }
 
 export default QueryGraph;
