@@ -3,7 +3,8 @@ import { Splitter, SplitterPanel } from 'primereact/splitter';
 import ClipLoader from 'react-spinners/ClipLoader'; // Import spinner
 import './Letter.css'; // Ensure this CSS is used for proper layout
 
-const Letter = ({ name }) => {
+const Letter = ({ file }) => {
+  const { internalPDFname, abstract } = file;
   const [isClosed, setIsClosed] = useState(false);
   const [pdfURL, setPdfURL] = useState('');
   const [letterExists, setLetterExists] = useState(false);
@@ -17,8 +18,8 @@ const Letter = ({ name }) => {
       try {
         setLoading(true); // Start loading
         const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
-        const url = `${baseExpressUrl}pdf/${name}`; // Corrected URL path
-        const transcriptUrl = `${baseExpressUrl}pdf/${name.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
+        const url = `${baseExpressUrl}pdf/${internalPDFname}`; // Corrected URL path
+        const transcriptUrl = `${baseExpressUrl}pdf/${internalPDFname.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
         const transcriptResponse = await fetch(transcriptUrl);
@@ -44,7 +45,7 @@ const Letter = ({ name }) => {
     };
 
     fetchPDF();
-  }, [name]);  // Ensure `[name]` is in the dependency array if you're fetching based on the `name` prop
+  }, [internalPDFname]);  // Ensure `[internalPDFname]` is in the dependency array if you're fetching based on the `internalPDFname` prop
 
 
   const handleResizeEnd = (e) => {
@@ -72,7 +73,7 @@ const Letter = ({ name }) => {
                 src={pdfURL}
                 width="100%"
                 height="100%"
-                title={`Letter ${name}`}
+                title={`Letter ${internalPDFname}`}
               ></iframe>
             </SplitterPanel>
             <SplitterPanel
@@ -84,7 +85,7 @@ const Letter = ({ name }) => {
                 src={transcriptURL}
                 width="100%"
                 height="100%"
-                title={`Transcription ${name}`}
+                title={`Transcription ${internalPDFname}`}
               ></iframe>
             </SplitterPanel>
           </Splitter>
@@ -96,7 +97,7 @@ const Letter = ({ name }) => {
                 width="100%"
                 height="100%"
                 style={{ flex: 1 }}
-                title={`Letter ${name}`}
+                title={`Letter ${internalPDFname}`}
               ></iframe>
             ) : (
               transcriptExists && (
@@ -105,14 +106,17 @@ const Letter = ({ name }) => {
                   width="100%"
                   height="100%"
                   style={{ flex: 1 }}
-                  title={`Transcription ${name}`}
+                  title={`Transcription ${internalPDFname}`}
                 ></iframe>
               )
             )}
           </div>
         )
       ) : (
-        <p>No letters available.</p>
+        <div>
+          <p>Document Abstract:</p>
+          <p>{abstract}</p>
+        </div>
       )}
     </div>
   );
