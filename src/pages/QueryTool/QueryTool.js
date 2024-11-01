@@ -4,12 +4,12 @@ import "./QueryTool.css";
 import { TabView, TabPanel } from "primereact/tabview";
 import { FloatLabel } from "primereact/floatlabel";
 import { InputText } from "primereact/inputtext";
-import { OverlayPanel } from "primereact/overlaypanel"; // Import OverlayPanel
+import { OverlayPanel } from "primereact/overlaypanel";
 import { ToggleButton } from "primereact/togglebutton";
 import axios from "axios";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
-import { ProgressSpinner } from "primereact/progressspinner"; // Import ProgressSpinner
+import { ProgressSpinner } from "primereact/progressspinner";
 import { MultiSelect } from "primereact/multiselect";
 import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
@@ -17,30 +17,31 @@ import { IconField } from "primereact/iconfield";
 
 const QueryTool = () => {
   const [value, setValue] = useState([20, 80]);
-  const op = useRef(null); //OverlayPanel reference
+  const op = useRef(null);
   const [checked, setChecked] = useState(true);
   const [fields, setFields] = useState([]);
   const [filteredFields, setFilteredFields] = useState([]);
-  const [selectedView, setSelectedView] = useState(null); // State for selected view
-  const [selectedField, setSelectedField] = useState(null); // State for selected field
-  const [splitButtonLabel, setSplitButtonLabel] = useState("In"); // State for SplitButton label
-  const [selectedOrder, setSelectedOrder] = useState(null); // State for selected order
+  const [selectedView, setSelectedView] = useState(null);
+  const [selectedField, setSelectedField] = useState(null);
+  const [splitButtonLabel, setSplitButtonLabel] = useState("In");
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const [sections, setSections] = useState([
     { id: Date.now(), selectedValue: "" },
-  ]); // State for managing query sections
-  const [activeIndex, setActiveIndex] = useState(0); // State for active tab index
-  const [queryData, setQueryData] = useState([]); // State for query data
-  const [loading, setLoading] = useState(false); // State for loading
+  ]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [queryData, setQueryData] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState([]);
-  const [globalFilter, setGlobalFilter] = useState(""); // Add global filter state
-  const [filters, setFilters] = useState(null); // Add filter state
+  const [globalFilter, setGlobalFilter] = useState("");
+  const [filters, setFilters] = useState(null);
+  const [currentTable, setCurrentTable] = useState("person");
 
   const [views, setViews] = useState([
-    { label: "Person", value: "person_all_view" },
-    { label: "Organization", value: "organization_all_view" },
-    { label: "Place", value: "place_all_view" },
-    { label: "Religion", value: "religion_all_view" },
-    { label: "Document", value: "document_all_view" },
+    { label: "Person", value: "person" },
+    { label: "Organization", value: "organization" },
+    { label: "Place", value: "place" },
+    { label: "Religion", value: "religion" },
+    { label: "Document", value: "document" },
   ]);
 
   const boolItems = [
@@ -61,30 +62,161 @@ const QueryTool = () => {
     { label: "Remove", value: "remove" },
   ];
 
-  const updateFields = (e) => {
-    setSelectedView(e.value); // Update selected view
+  const relatedEntitiesMap = {
+    person: ["document", "religion", "organization"],
+    organization: ["person", "religion", "document"],
+    religion: ["person", "organization"],
+    document: ["person", "organization"],
+  };
+
+  const handleButtonClick = async (rowData, entityType, currentTable) => {
+    try {
+      setLoading(true);
+      const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+      let table1;
+
+      // Determine the appropriate filter field based on the entity type
+      let body;
+
+      switch (currentTable) {
+        case "person":
+          console.log("Person: ");
+          table1 = currentTable + "2" + entityType;
+          if (entityType === "document") {
+            body = {
+              tables: [table1, entityType],
+              fields: ["docID", currentTable + "ID"],
+              operators: ["="],
+              values: [rowData.personID],
+              dependentFields: [entityType + "ID"],
+            };
+          } else {
+            body = {
+              tables: [table1, entityType],
+              fields: [entityType + "ID", currentTable + "ID"],
+              operators: ["="],
+              values: [rowData.personID],
+              dependentFields: [entityType + "ID"],
+            };
+          }
+          break;
+        case "organization":
+          if (entityType === "person") {
+            table1 = entityType + "2" + currentTable;
+            body = {
+              tables: [table1, entityType],
+              fields: [entityType + "ID", currentTable + "ID"],
+              operators: ["="],
+              values: [rowData.organizationID],
+              dependentFields: [entityType + "ID"],
+            };
+          } else if (entityType === "document") {
+            table1 = currentTable + "2" + entityType;
+            body = {
+              tables: [table1, entityType],
+              fields: ["docID", currentTable + "ID"],
+              operators: ["="],
+              values: [rowData.organizationID],
+              dependentFields: [entityType + "ID"],
+            };
+          } else {
+            table1 = currentTable + "2" + entityType;
+            body = {
+              tables: [table1, entityType],
+              fields: [entityType + "ID", currentTable + "ID"],
+              operators: ["="],
+              values: [rowData.organizationID],
+              dependentFields: [entityType + "ID"],
+            };
+          }
+          break;
+        case "religion":
+          table1 = entityType + "2" + currentTable;
+          body = {
+            tables: [table1, entityType],
+            fields: [entityType + "ID", currentTable + "ID"],
+            operators: ["="],
+            values: [rowData.religionID],
+            dependentFields: [entityType + "ID"],
+          };
+          break;
+
+        case "document":
+          table1 = entityType + "2" + currentTable;
+          body = {
+            tables: [table1, entityType],
+            fields: [entityType + "ID", "docID"],
+            operators: ["="],
+            values: [rowData.documentID],
+            dependentFields: [entityType + "ID"],
+          };
+          break;
+        default:
+          body = null;
+      }
+
+      console.log("Body", body);
+      const response = await axios.post(`${baseExpressUrl}knex-query`, body);
+      setQueryData(response.data[0]);
+      setSelectedView(entityType);
+      setCurrentTable(currentTable);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const actionBodyTemplate = (rowData) => {
+    const relatedEntities = relatedEntitiesMap[selectedView] || [];
+    return relatedEntities.map((entity, index) => (
+      <Column
+        key={index}
+        header={entity.charAt(0).toUpperCase() + entity.slice(1)}
+        body={(rowData) => (
+          <span
+            style={{
+              color: "blue",
+              textDecoration: "underline",
+              cursor: "pointer",
+            }}
+            onClick={() => handleButtonClick(rowData, entity, currentTable)}
+          >
+            {entity.charAt(0).toUpperCase() + entity.slice(1)}
+          </span>
+        )}
+      />
+    ));
+  };
+
+  const updateFilteredFields = () => {
     let filtered = [];
-    if (e.value === "person_all_view") {
-      filtered = fields.filter((view) => view.view === "person_all_view");
-    } else if (e.value === "organization_all_view") {
-      filtered = fields.filter((view) => view.view === "organization_all_view");
-    } else if (e.value === "place_all_view") {
-      filtered = fields.filter((view) => view.view === "place_all_view");
-    } else if (e.value === "religion_all_view") {
-      filtered = fields.filter((view) => view.view === "religion_all_view");
-    } else if (e.value === "document_all_view") {
-      filtered = fields.filter((view) => view.view === "document_all_view");
+    if (selectedView === "person") {
+      filtered = fields.filter((view) => view.view === "person");
+    } else if (selectedView === "organization") {
+      filtered = fields.filter((view) => view.view === "organization");
+    } else if (selectedView === "place") {
+      filtered = fields.filter((view) => view.view === "place");
+    } else if (selectedView === "religion") {
+      filtered = fields.filter((view) => view.view === "religion");
+    } else if (selectedView === "document") {
+      filtered = fields.filter((view) => view.view === "document");
     }
     setFilteredFields(filtered);
-    setSelectedField(null); // Reset selected field when view changes
-    setSplitButtonLabel("In"); // Reset SplitButton label when view changes
+    setVisibleColumns(filtered);
+    setSelectedField(null);
+    setSplitButtonLabel("In");
+  };
+
+  const updateFields = (e) => {
+    setSelectedView(e.value);
+    setCurrentTable(e.value);
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const baseExpressUrl =
-          process.env.BASEEXPRESSURL || "http://localhost:4000/";
+        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
         const response = await axios.get(`${baseExpressUrl}query-tool-fields`);
         setFields(response.data);
       } catch (error) {
@@ -94,92 +226,80 @@ const QueryTool = () => {
 
     fetchData();
   }, []);
+
   useEffect(() => {
     console.log(fields);
   }, [fields]);
+
+  useEffect(() => {
+    updateFilteredFields();
+    if (selectedView) {
+      // Optionally, you can fetch initial data for the selectedView here
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedView, fields]);
+
   const addNewSection = () => {
     setSections([...sections, { id: Date.now(), selectedValue: "" }]);
   };
 
   const removeSection = (id) => {
     if (sections.length === 1 || sections[0].id === id) {
-      return; // Prevent removing the first section
+      return;
     }
     setSections(sections.filter((section) => section.id !== id));
   };
 
   const onTabChange = (e) => {
     setActiveIndex(e.index);
-    console.log(`Tab changed to: ${e.index}`);
-    //get data from the server
     const fetchData = async () => {
       try {
-        setLoading(true); // Set loading to true before fetching data
-        // Log all the operations, fields, and values for the knex query
-        console.log(sections);
-
-        const knexQuery = sections.map((section) => {
-          console.log(section);
-          return {
-            operation: selectedView,
-            field: section.selectedField.field,
-            value: section.selectedValue,
-            action: section.selectedAction,
-          };
-        });
-
-        const operatorMapping = {
-          equals: "=",
-          not_equals: "!=",
-          like: "LIKE",
-          not_like: "NOT LIKE",
-          greater_than: ">",
-          less_than: "<",
-          greater_than_or_equal: ">=",
-          less_than_or_equal: "<=",
-        };
-
+        setLoading(true);
         const body = {
-          tables: selectedView,
-          fields: sections.map((section) => section.selectedField.field),
-          operators: sections.map(
-            (section) => operatorMapping[section.selectedParameter]
+          tables: [selectedView],
+          fields: sections.map((section) =>
+            section.selectedField ? section.selectedField.field : null
+          ),
+          operators: sections.map((section) =>
+            section.selectedParameter
+              ? {
+                  equals: "=",
+                  not_equals: "!=",
+                  like: "LIKE",
+                  not_like: "NOT LIKE",
+                  greater_than: ">",
+                  less_than: "<",
+                  greater_than_or_equal: ">=",
+                  less_than_or_equal: "<=",
+                }[section.selectedParameter]
+              : null
           ),
           values: sections.map((section) => section.selectedValue),
           logicalOperators: sections.map((section) => section.selectedAction),
         };
-
-        console.log(knexQuery);
-        console.log(body);
-        const baseExpressUrl =
-          process.env.BASEEXPRESSURL || "http://localhost:4000/";
-
+        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
         const response = await axios.post(`${baseExpressUrl}knex-query`, body);
         setQueryData(response.data[0]);
-        console.log(queryData);
       } catch (error) {
         console.log(error);
       } finally {
-        setLoading(false); // Set loading to false after fetching data
+        setLoading(false);
       }
     };
     fetchData();
   };
 
   useEffect(() => {
-    console.log("Query Data Updated:");
-    console.log(queryData);
+    console.log("Query Data Updated:", queryData);
   }, [queryData]);
 
   useEffect(() => {
-    // Pre-populate visibleColumns with the first 4 values of filteredFields
     if (filteredFields.length > 0) {
       setVisibleColumns(filteredFields);
     }
   }, [filteredFields]);
 
   const onColumnToggle = (event) => {
-    console.log("Event Value: ", event.value);
     let selectedColumns = event.value;
     let orderedSelectedColumns = filteredFields.filter((col) =>
       selectedColumns.some((sCol) => sCol.field === col.field)
@@ -188,15 +308,14 @@ const QueryTool = () => {
   };
 
   const onFilter = (e) => {
-    setFilters(e.filters); // Update state
-    sessionStorage.setItem("query-tool-filters", JSON.stringify(e.filters)); // Save to sessionStorage
+    setFilters(e.filters);
+    sessionStorage.setItem("query-tool-filters", JSON.stringify(e.filters));
   };
 
-  // Save global filter value to session storage when it changes
   const onGlobalFilterChange = (e) => {
     const value = e.target.value;
-    setGlobalFilter(value); // Apply the filter
-    sessionStorage.setItem("query-tool-globalFilter", value); // Save the filter to sessionStorage
+    setGlobalFilter(value);
+    sessionStorage.setItem("query-tool-globalFilter", value);
   };
 
   const renderHeader = () => {
@@ -207,8 +326,8 @@ const QueryTool = () => {
             <InputIcon className="pi pi-search"> </InputIcon>
             <InputText
               type="search"
-              value={globalFilter} // Ensure global filter input shows the correct value
-              onChange={onGlobalFilterChange} // Update on change
+              value={globalFilter}
+              onChange={onGlobalFilterChange}
               placeholder="Global Search"
             />
           </IconField>
@@ -230,12 +349,10 @@ const QueryTool = () => {
       <div className="title-container">
         <h1>Query Tool</h1>
       </div>
-      {/* Help Icon with click event, positioned at the bottom right */}
       <i
         className="pi pi-question-circle help-icon"
         onClick={(e) => op.current.toggle(e)}
       ></i>
-      {/* OverlayPanel Component */}
       <OverlayPanel
         ref={op}
         appendTo={document.body}
@@ -260,7 +377,7 @@ const QueryTool = () => {
               <h3>Search for:</h3>
               <Dropdown
                 tooltip="Message to display"
-                value={selectedView} // Bind selected view to Dropdown
+                value={selectedView}
                 onChange={(e) => updateFields(e)}
                 options={views}
                 optionLabel="label"
@@ -275,7 +392,7 @@ const QueryTool = () => {
                 <div className="query-input">
                   <Dropdown
                     tooltip="Message to display"
-                    value={section.selectedField} // Bind selected field to Dropdown
+                    value={section.selectedField}
                     onChange={(e) => {
                       const newSections = [...sections];
                       newSections[index].selectedField = e.value;
@@ -290,7 +407,7 @@ const QueryTool = () => {
                   />
                   <Dropdown
                     tooltip="Message to display"
-                    value={section.selectedParameter} // Bind selected parameter to Dropdown
+                    value={section.selectedParameter}
                     onChange={(e) => {
                       const newSections = [...sections];
                       newSections[index].selectedParameter = e.value;
@@ -304,7 +421,7 @@ const QueryTool = () => {
                   <FloatLabel>
                     <InputText
                       tooltip="Tips on what values to put"
-                      value={section.selectedValue} // Bind selected value to InputText
+                      value={section.selectedValue}
                       onChange={(e) => {
                         const newSections = [...sections];
                         newSections[index].selectedValue = e.target.value;
@@ -315,7 +432,7 @@ const QueryTool = () => {
                   </FloatLabel>
                   <Dropdown
                     tooltip="Select Action"
-                    value={section.selectedAction} // Bind selected action to Dropdown
+                    value={section.selectedAction}
                     onChange={(e) => {
                       const newSections = [...sections];
                       newSections[index].selectedAction = e.value;
@@ -382,7 +499,6 @@ const QueryTool = () => {
             </p>
           </TabPanel>
           <TabPanel header="Table" leftIcon="pi pi-table mr-2">
-            {/* table for data returned from server */}
             {loading ? (
               <div className="spinner-wrapper">
                 <ProgressSpinner />
@@ -405,22 +521,40 @@ const QueryTool = () => {
                   scrollHeight="450px"
                   resizableColumns
                   reorderableColumns
-                  globalFilter={globalFilter} // Add global filter
-                  filters={filters} // Add filters
-                  onFilter={onFilter} // Add onFilter callback
+                  globalFilter={globalFilter}
+                  filters={filters}
+                  onFilter={onFilter}
                 >
-                  {visibleColumns.map((fieldObj, index) => {
-                    return (
-                      <Column
-                        key={index}
-                        field={fieldObj.field}
-                        header={fieldObj.field}
-                        sortable
-                        filter
-                        filterPlaceholder={`Search by ${fieldObj.field}`}
-                      />
-                    );
-                  })}
+                  {visibleColumns.map((fieldObj, index) => (
+                    <Column
+                      key={index}
+                      field={fieldObj.field}
+                      header={fieldObj.field}
+                      sortable
+                      filter
+                      filterPlaceholder={`Search by ${fieldObj.field}`}
+                    />
+                  ))}
+                  {relatedEntitiesMap[selectedView]?.map((entity, index) => (
+                    <Column
+                      key={`related-${index}`}
+                      header={entity.charAt(0).toUpperCase() + entity.slice(1)}
+                      body={(rowData) => (
+                        <span
+                          style={{
+                            color: "blue",
+                            textDecoration: "underline",
+                            cursor: "pointer",
+                          }}
+                          onClick={() =>
+                            handleButtonClick(rowData, entity, currentTable)
+                          }
+                        >
+                          {entity.charAt(0).toUpperCase() + entity.slice(1)}
+                        </span>
+                      )}
+                    />
+                  ))}
                 </DataTable>
               )
             )}
