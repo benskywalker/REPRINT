@@ -8,9 +8,7 @@ import DocumentsGallery from "../../components/gallery/DocumentGallery";
 import PeopleGallery from "../../components/gallery/PeopleGallery";
 import "./Gallery.css";
 
-
 const Gallery = ({ searchQuery }) => {
-
   // Variables for the gallery
   const [people, setPeople] = useState([]);
   const [documents, setDocuments] = useState([]);
@@ -139,7 +137,7 @@ const Gallery = ({ searchQuery }) => {
   return (
     <div>
       <Filter onFilterChange={handleFilterChange} options={filterOptions} />
-      <TabView activeIndex={activeTab} onTabChange={onTabChange}>
+      <TabView activeIndex={activeTab} onTabChange={onTabChange} className="tabview-custom">
         <TabPanel header="Documents" rightIcon="pi pi-file">
           <DocumentsGallery
             documents={documents}
