@@ -3,21 +3,24 @@
   flex-wrap: wrap;
   gap: 20px;
   justify-content: center;
-  padding: 20px;
-  /* background-color: beige; */
+  padding: 8px;
 }
 
 .gallery-item {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  /* Center items vertically */
+  justify-content: center;
+  /* Center items horizontally */
   flex-direction: column;
-  border: 1px solid #ddd;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 10px 10px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
-  width: 350px; /* Increased width */
-  height: 200px; /* Increased height */
+  width: 350px;
+  /* Increased width */
+  height: 200px;
+  /* Increased height */
   cursor: pointer;
   /* background-color: white; */
 }
@@ -27,32 +30,41 @@
 }
 
 .gallery-card {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   height: 100%;
+  /* Ensure the card takes the full height */
   width: 100%;
+  /* Ensure the card takes the full width */
+  background-color: #343540;
+}
+
+.gallery-text {
+  text-align: center;
+  /* Center text inside the gallery-text div */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Center text vertically */
+  align-items: center;
+  /* Center text horizontally */
 }
 
 .gallery-item img {
   position: relative;
   border-radius: 5px;
-
   margin-right: 10px;
   width: 50%;
-  height: 150px; /* Adjusted height */
+  height: 150px;
+  /* Adjusted height */
   object-fit: cover;
-}
-
-.gallery-text {
-  text-align: start;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
 }
 
 .gallery-title {
   font-size: 14px;
   font-weight: bold;
   white-space: nowrap;
-  /* background-color: beige; */
 }
 
 .gallery-subtitle {
@@ -60,13 +72,12 @@
   font-style: italic;
   padding-top: 5px;
   padding-bottom: 5px;
-  /* background-color: beige; */
 }
 
 .gallery-bio {
   font-size: 12px;
-  /* font-weight: bold; */
-  /* background-color: beige; */
+  overflow-y: auto;
+  max-height: 100px;
 }
 
 .p-card-body {
@@ -77,5 +88,17 @@
   display: flex;
   align-items: start;
   padding: 10px;
-  /* background-color: beige; */
+}
+
+.tabview-custom {
+  width: 100vw;
+  margin: 0 auto;
+  /* Center the TabView */
+  overflow-y: auto;
+  max-height: 90vh;
+}
+
+.tabview-custom .p-tabview-panel {
+  width: 100%;
+  /* Adjust this value as needed */
 }
