@@ -1,24 +1,18 @@
 import SigmaGraph from '../../components/graph/Sigmagraph' // Import the SigmaGraph component
 import { useState, useEffect } from 'react'
-import { Splitter, SplitterPanel } from 'primereact/splitter'
-import { Accordion, AccordionTab } from 'primereact/accordion'
-import { Button } from 'primereact/button'
 import styles from './QueryGraph.module.css'
 import Sidecar from '../../components/sidecar/Sidecar'
 import FilterTool from '../../components/graph/graphSearch/FilterTool'
 import { Dialog } from 'primereact/dialog'
 import { v4 as uuidv4 } from 'uuid'
-import { DataTable } from 'primereact/datatable'
-import { Column } from 'primereact/column'
 import ClipLoader from 'react-spinners/ClipLoader'
 import fetchGraphData from '../../components/graph/GraphData'
 import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
-const QueryGraph = () => {
+const QueryGraph = ({data, type}) => {
   const [loading, setLoading] = useState(true)
-  const [selectedNodes, setSelectedNodes] = useState([])
   const [timeRange, setTimeRange] = useState([1600, 1700])
   const [dialogs, setDialogs] = useState([])
   const [hoveredNodeData, setHoveredNodeData] = useState(null)
@@ -37,8 +31,10 @@ const QueryGraph = () => {
   ]) // Default selected edge types
 
   const getGraphData = async () => {
+    console.log("Data from query",data,"Type", type)
     const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
-    const graphData = await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+    const graphData = {};
+    //await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
     setGraph(graphData.graph || { nodes: [], edges: [] })
     setMetrics(graphData.metrics)
     setMinDate(graphData.minDate)
@@ -46,7 +42,7 @@ const QueryGraph = () => {
     setTimeRange([graphData.minDate, graphData.maxDate])
     setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
     setLoading(false)
-    console.log('Graph Data:', graphData)
+    // console.log('Graph Data:', graphData)
   }
 
   useEffect(() => {
@@ -72,32 +68,6 @@ const QueryGraph = () => {
 
   const handleNodeOut = () => {
     setHoveredNodeData(null)
-  }
-
-  const handleNodeClick = node => {
-    console.log(node)
-    setSelectedNodes(prevSelectedNodes => [
-      {
-        ...node,
-        isOpen: false,
-        activeTabIndex: 0,
-        idNode: uuidv4()
-      },
-      ...prevSelectedNodes
-    ])
-  }
-
-  const handleCloseNode = rowIndex => {
-    setSelectedNodes(prevSelectedNodes => {
-      const updatedNodes = prevSelectedNodes.filter(
-        (_, index) => index !== rowIndex.rowIndex
-      )
-      return [...updatedNodes]
-    })
-  }
-
-  const onRowReorder = event => {
-    setSelectedNodes(event.value)
   }
 
   const handleTimeRangeChange = (event, newValue) => {
@@ -203,81 +173,6 @@ const QueryGraph = () => {
     // Update the graph by pruning nodes and edges that are outside the time range
   }
 
-  const renderHeader = (node, index) => (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-      }}
-    >
-      <span>{node?.data?.person?.fullName || node.label}</span>
-      <Button
-        icon='pi pi-external-link'
-        className='p-button-rounded p-button-text'
-        onClick={event => {
-          event.stopPropagation()
-          event.preventDefault()
-          handleOpenClick(node)
-        }}
-      />
-      <Button
-        icon='pi pi-times'
-        className='p-button-rounded p-button-text'
-        onClick={event => {
-          event.stopPropagation()
-          event.preventDefault()
-          handleCloseNode(index)
-        }}
-      />
-    </div>
-  )
-
-  const toggleAccordion = nodeId => {
-    const nodeToToggle = selectedNodes.find(node => node.idNode === nodeId)
-    setSelectedNodes(prevSelectedNodes =>
-      prevSelectedNodes.map(node =>
-        node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
-      )
-    )
-  }
-
-  const renderAccordion = (rowData, index) => {
-    const id = rowData.idNode
-    const activeTabIndex =
-      selectedNodes.find(node => node.idNode === id)?.activeTabIndex || 0
-
-    const setActiveTabIndex = newIndex => {
-      setSelectedNodes(prevSelectedNodes =>
-        prevSelectedNodes.map(node =>
-          node.idNode === id ? { ...node, activeTabIndex: newIndex } : node
-        )
-      )
-    }
-
-    return (
-      <Accordion
-        key={id}
-        activeIndex={
-          selectedNodes.find(node => node.idNode === id)?.isOpen ? 0 : null
-        }
-        onTabChange={() => toggleAccordion(id)}
-        style={{ width: '100%', flexGrow: 1 }}
-      >
-        <AccordionTab header={renderHeader(rowData, index)}>
-          <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
-            <Sidecar
-              key={id}
-              nodeData={rowData}
-              activeTabIndex={activeTabIndex}
-              setActiveTabIndex={setActiveTabIndex}
-              handleNodeClick={handleNodeClick}
-            />
-          </div>
-        </AccordionTab>
-      </Accordion>
-    )
-  }
 
   const onFilterChange = (filteredGraph, terms) => {
     setSelectedTerms(terms)
@@ -373,7 +268,7 @@ const QueryGraph = () => {
         >
           <Sidecar
             nodeData={dialog.nodeData}
-            handleNodeClick={handleNodeClick}
+            handleNodeClick={handleOpenClick}
             activeTabIndex={dialog.activeTabIndex}
             setActiveTabIndex={index => {
               const updatedDialogs = dialogs.map(dlg =>
