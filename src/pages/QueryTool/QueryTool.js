@@ -29,6 +29,7 @@ const QueryTool = () => {
     { id: Date.now(), selectedValue: "" },
   ]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const previousIndex = useRef(0);
   const [queryData, setQueryData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState([]);
@@ -251,42 +252,53 @@ const QueryTool = () => {
   };
 
   const onTabChange = (e) => {
-    setActiveIndex(e.index);
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const body = {
-          tables: [selectedView],
-          fields: sections.map((section) =>
-            section.selectedField ? section.selectedField.field : null
-          ),
-          operators: sections.map((section) =>
-            section.selectedParameter
-              ? {
-                  equals: "=",
-                  not_equals: "!=",
-                  like: "LIKE",
-                  not_like: "NOT LIKE",
-                  greater_than: ">",
-                  less_than: "<",
-                  greater_than_or_equal: ">=",
-                  less_than_or_equal: "<=",
-                }[section.selectedParameter]
-              : null
-          ),
-          values: sections.map((section) => section.selectedValue),
-          logicalOperators: sections.map((section) => section.selectedAction),
-        };
-        const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
-        const response = await axios.post(`${baseExpressUrl}knex-query`, body);
-        setQueryData(response.data[0]);
-      } catch (error) {
-        console.log(error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    const newIndex = e.index;
+    const oldIndex = previousIndex.current;
+
+    // Assuming "Query" is index 0 and "Table" is index 3
+    if (oldIndex === 0 && newIndex === 3) {
+      const fetchData = async () => {
+        try {
+          setLoading(true);
+          const body = {
+            tables: [selectedView],
+            fields: sections.map((section) =>
+              section.selectedField ? section.selectedField.field : null
+            ),
+            operators: sections.map((section) =>
+              section.selectedParameter
+                ? {
+                    equals: "=",
+                    not_equals: "!=",
+                    like: "LIKE",
+                    not_like: "NOT LIKE",
+                    greater_than: ">",
+                    less_than: "<",
+                    greater_than_or_equal: ">=",
+                    less_than_or_equal: "<=",
+                  }[section.selectedParameter]
+                : null
+            ),
+            values: sections.map((section) => section.selectedValue),
+            dependentFields: sections.map((section) => section.selectedAction),
+          };
+          const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
+          const response = await axios.post(
+            `${baseExpressUrl}knex-query`,
+            body
+          );
+          setQueryData(response.data[0]);
+        } catch (error) {
+          console.log(error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchData();
+    }
+
+    setActiveIndex(newIndex);
+    previousIndex.current = newIndex;
   };
 
   useEffect(() => {
@@ -484,7 +496,7 @@ const QueryTool = () => {
                 <ProgressSpinner />
               </div>
             ) : (
-              queryData && <QueryGraph/>
+              queryData && <QueryGraph />
             )}
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
