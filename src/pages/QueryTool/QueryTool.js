@@ -496,8 +496,7 @@ const QueryTool = () => {
                 <ProgressSpinner />
               </div>
             ) : (
-              queryData && <QueryGraph />
-              queryData && <QueryGraph data={queryData} type={selectedView}/>
+              queryData && <QueryGraph data={queryData} type={selectedView} />
             )}
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
