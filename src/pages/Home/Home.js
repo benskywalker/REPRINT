@@ -16,7 +16,7 @@ import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
-const Home = ({ searchQuery }) => {
+const Home = () => {
   const [loading, setLoading] = useState(true)
   const [selectedNodes, setSelectedNodes] = useState([])
   const [timeRange, setTimeRange] = useState([1600, 1700])
@@ -388,7 +388,6 @@ const Home = ({ searchQuery }) => {
                   onNodeHover={handleNodeHover}
                   className={styles.sigma}
                   onNodeClick={handleNodeClick}
-                  searchQuery={searchQuery}
                   handleNodeunHover={handleNodeOut}
                   handleGraphUpdate={handleGraphUpdate}
                   showEdges={showEdges}

@@ -1,252 +1,391 @@
-import React, { useState, useEffect } from 'react'
-import SigmaGraph from '../graph/Sigmagraph';
-import styles from "../../pages/Home/Home.module.css";
-import fetchGraphData from '../graph/GraphData';
-import { ProgressSpinner } from 'primereact/progressspinner';
+import SigmaGraph from '../../components/graph/Sigmagraph' // Import the SigmaGraph component
+import { useState, useEffect } from 'react'
+import { Splitter, SplitterPanel } from 'primereact/splitter'
+import { Accordion, AccordionTab } from 'primereact/accordion'
+import { Button } from 'primereact/button'
+import styles from './QueryGraph.module.css'
+import Sidecar from '../../components/sidecar/Sidecar'
+import FilterTool from '../../components/graph/graphSearch/FilterTool'
+import { Dialog } from 'primereact/dialog'
+import { v4 as uuidv4 } from 'uuid'
+import { DataTable } from 'primereact/datatable'
+import { Column } from 'primereact/column'
+import ClipLoader from 'react-spinners/ClipLoader'
+import fetchGraphData from '../../components/graph/GraphData'
+import { Slider } from '@mui/material'
+import { ToggleButton } from 'primereact/togglebutton'
+import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
-const QueryGraph = ({ data, type }) => {
-    const [people, setPeople] = useState([]);
-    const [organizations, setOrganizations] = useState([]);
-    const [places, setPlaces] = useState([]);
-    const [documents, setDocuments] = useState([]);
-    const [religion, setReligion] = useState([]);
-    const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] });
-    const [graph, setGraph] = useState({ nodes: [], edges: [] });
-    const [loading, setLoading] = useState(true);
-    const [hoveredNodeData, setHoveredNodeData] = useState(null);
+const QueryGraph = () => {
+  const [loading, setLoading] = useState(true)
+  const [selectedNodes, setSelectedNodes] = useState([])
+  const [timeRange, setTimeRange] = useState([1600, 1700])
+  const [dialogs, setDialogs] = useState([])
+  const [hoveredNodeData, setHoveredNodeData] = useState(null)
+  const [graph, setGraph] = useState({ nodes: [], edges: [] })
+  const [minDate, setMinDate] = useState(1650)
+  const [maxDate, setMaxDate] = useState(1800)
+  const [metrics, setMetrics] = useState(null)
+  const [originalGraph, setOriginalGraph] = useState({ nodes: [], edges: [] })
+  const [showEdges, setShowEdges] = useState(true)
+  const [selectedTerms, setSelectedTerms] = useState([])
+  const [selectedEdgeTypes, setSelectedEdgeTypes] = useState([
+    'document',
+    'organization',
+    'religion',
+    'relationship'
+  ]) // Default selected edge types
 
-  const handleNodeHover = nodeData => {
-    setHoveredNodeData(nodeData);
-  };
-
-  const handleNodeOut = () => {
-    setHoveredNodeData(null);
-  };
-
-  const handleNodeClick = (nodeData) => {
-    console.log(nodeData);
-    };
-
-    const handleGraphUpdate = (graph) => {
-        setOriginalGraph(graph || { nodes: [], edges: [] });
-        };
-
-        const searchQuery = (query) => {
-            console.log(query);
-            };
-
-        const showEdges = true;
-
-        const getGraphData = async () => {
-            const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
-            const graphData = await fetchGraphData(
-              `${baseExpressUrl}graph`,
-              2000,
-              0
-            );
-            setOriginalGraph(graphData.originalGraph || { nodes: [], edges: [] });
-          };
-      useEffect(() => {
-
-        getGraphData();
-    }, []);
-
-        useEffect(() => {
-            const parseData = () => {
-                if(type === 'person'){
-                    const people = new Set();
-                    for(let i = 0; i < data.length; i++){
-                        people.add(data[i].firstName + ' ' + data[i].lastName);
-                    }
-        
-                    setPeople(Array.from(people));
-                } else if(type === 'organization'){
-                    const organizations = new Set();
-                    for(let i = 0; i < data.length; i++){
-                        organizations.add(data[i].organizationDesc);
-                    }
-                    setOrganizations(Array.from(organizations));
-                } else if(type === 'place'){
-                    const places = new Set();
-                    for(let i = 0; i < data.length; i++){
-                        places.add(data[i].placeDesc);
-                    }
-                    setPlaces(Array.from(places));
-                } else if(type === 'document'){
-                    const documents = new Set();
-                    for(let i = 0; i < data.length; i++){
-                        documents.add(data[i].documentID);
-                    }
-                    setDocuments(Array.from(documents));
-                } else if(type === 'religion'){
-                    const religion = new Set();
-                    for(let i = 0; i < data.length; i++){
-                        religion.add(data[i].religionDesc);
-                    }
-                    setReligion(Array.from(religion));
-                }
-            }
-            if(data){
-                parseData();
-            }
-        }, [data, type]);
-
-        useEffect(() => {
-        const createGraph = () => {
-            const nodes = [];
-            const edges = [];
-            if(type === 'person'){
-            originalGraph.nodes.forEach(node => {
-             if(people.includes(node.label)){
-                    if(!(nodes.find(n => n.id === node.id))){
-                        node.color = "#FFFFFF";
-                        nodes.push(node);
-                    } 
-                }
-            });
-            originalGraph.edges.forEach(edge => {
-                if(!(edges.find(e => e.id === edge.id))){
-                    const source = originalGraph.nodes.find(n => n.id === edge.source);
-                    const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(people.includes(source.label) || people.includes(target.label)){
-                        edges.push(edge);
-                        if(!(nodes.find(n => n.id === source.id))){
-                            nodes.push(source);
-                        }
-                        if(!(nodes.find(n => n.id === target.id))){
-                            nodes.push(target);
-                        }
-                    }
-                }
-            });
-            } else if(type === 'organization'){
-            originalGraph.nodes.forEach(node => {
-                if(organizations.includes(node.label)){
-                    if(!(nodes.find(n => n.id === node.id))){
-                        node.color = "#FFFFFF";
-                        nodes.push(node);
-                    }
-                }
-            });
-            originalGraph.edges.forEach(edge => {
-                if(!(edges.find(e => e.id === edge.id))){
-                    const source = originalGraph.nodes.find(n => n.id === edge.source);
-                    const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(organizations.includes(source.label) || organizations.includes(target.label)){
-                        edges.push(edge);
-                        if(!(nodes.find(n => n.id === source.id))){
-                            nodes.push(source);
-                        }
-                        if(!(nodes.find(n => n.id === target.id))){
-                            nodes.push(target);
-                        }
-                    }
-                }
-            });
-            } else if(type === 'place'){
-            originalGraph.nodes.forEach(node => {
-                if(places.includes(node.label)){
-                    if(!(nodes.find(n => n.id === node.id))){
-                        node.color = "#FFFFFF";
-                        nodes.push(node);
-                    }
-                }
-            });
-            originalGraph.edges.forEach(edge => {
-                if(!(edges.find(e => e.id === edge.id))){
-                    const source = originalGraph.nodes.find(n => n.id === edge.source);
-                    const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(places.includes(source.label) || places.includes(target.label)){
-                        edges.push(edge);
-                        if(!(nodes.find(n => n.id === source.id))){
-                            nodes.push(source);
-                        }
-                        if(!(nodes.find(n => n.id === target.id))){
-                            nodes.push(target);
-                        }
-                    }
-                }
-            });
-            } else if(type === 'document'){
-            originalGraph.edges.forEach(edge => {
-                if(edge.document && documents.find(doc => doc === edge.document.documentID)){
-                if(!(edges.find(e => e.id === edge.id))){
-                    edge.color = "#FFFFFF";
-                    edges.push(edge);
-                    const source = originalGraph.nodes.find(n => n.id === edge.source);
-                    const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(!(nodes.find(n => n.id === source.id))){
-                        nodes.push(source);
-                    }
-                    if(!(nodes.find(n => n.id === target.id))){
-                        nodes.push(target);
-                    }
-                }
-                }
-            });
-            } else if(type === 'religion'){
-            originalGraph.nodes.forEach(node => {
-                if(religion.includes(node.label)){
-                    if(!(nodes.find(n => n.id === node.id))){
-                        nodes.color = "#FFFFFF";
-                        nodes.push(node);
-                    }
-                }
-            });
-            originalGraph.edges.forEach(edge => {
-                if(!(edges.find(e => e.id === edge.id))){
-                    const source = originalGraph.nodes.find(n => n.id === edge.source);
-                    const target = originalGraph.nodes.find(n => n.id === edge.target);
-                    if(religion.includes(source.label) || religion.includes(target.label)){
-                        edges.push(edge);
-                        if(!(nodes.find(n => n.id === source.id))){
-                            nodes.push(source);
-                        }
-                        if(!(nodes.find(n => n.id === target.id))){
-                            nodes.push(target);
-                        }
-                    }
-                }
-            });
-        }
-            setLoading(false);
-            setGraph({ nodes, edges });
-        }
-        if(originalGraph.nodes.length > 0){
-            createGraph();
-        }
-    }, [originalGraph, people, organizations, places, documents, religion, type]);
-
-  if(loading){
-    return (
-        <div className={styles.loading}>
-            <ProgressSpinner />
-        </div>
-    );
+  const getGraphData = async () => {
+    const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
+    const graphData = await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+    setGraph(graphData.graph || { nodes: [], edges: [] })
+    setMetrics(graphData.metrics)
+    setMinDate(graphData.minDate)
+    setMaxDate(graphData.maxDate)
+    setTimeRange([graphData.minDate, graphData.maxDate])
+    setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
+    setLoading(false)
+    console.log('Graph Data:', graphData)
   }
 
-  if(graph.nodes.length === 0){
+  useEffect(() => {
+    getGraphData()
+  }, [])
+
+  const handleOpenClick = rowData => {
+    const id = uuidv4()
+    setDialogs(prevDialogs => [...prevDialogs, { id, nodeData: rowData }])
+  }
+
+  const handleCloseDialog = id => {
+    setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id))
+  }
+
+  const handleGraphUpdate = graph => {
+    setGraph(graph || { nodes: [], edges: [] })
+  }
+
+  const handleNodeHover = nodeData => {
+    setHoveredNodeData(nodeData)
+  }
+
+  const handleNodeOut = () => {
+    setHoveredNodeData(null)
+  }
+
+  const handleNodeClick = node => {
+    console.log(node)
+    setSelectedNodes(prevSelectedNodes => [
+      {
+        ...node,
+        isOpen: false,
+        activeTabIndex: 0,
+        idNode: uuidv4()
+      },
+      ...prevSelectedNodes
+    ])
+  }
+
+  const handleCloseNode = rowIndex => {
+    setSelectedNodes(prevSelectedNodes => {
+      const updatedNodes = prevSelectedNodes.filter(
+        (_, index) => index !== rowIndex.rowIndex
+      )
+      return [...updatedNodes]
+    })
+  }
+
+  const onRowReorder = event => {
+    setSelectedNodes(event.value)
+  }
+
+  const handleTimeRangeChange = (event, newValue) => {
+    setTimeRange(newValue)
+    applyFilters(newValue, selectedTerms, selectedEdgeTypes)
+  }
+
+  const applyFilters = (timeRange, terms, edgeTypes = selectedEdgeTypes) => {
+    const newEdges = originalGraph.edges.filter(edge => {
+      const parseDate = dateStr => {
+        if (typeof dateStr === 'number') {
+          return new Date(dateStr, 0)
+        }
+
+        if (typeof dateStr !== 'string') {
+          return null
+        }
+
+        const parts = dateStr.split('-')
+        if (parts.length === 3) {
+          return new Date(parts[0], parts[1] - 1, parts[2])
+        } else if (parts.length === 2) {
+          return new Date(parts[0], parts[1] - 1)
+        } else if (parts.length === 1) {
+          return new Date(parts[0], 0)
+        }
+
+        return null
+      }
+
+      // If no edge types are selected, show all edges
+      if (edgeTypes.length === 0) {
+        return true
+      }
+
+      // Only include edges that match the selected edge types
+      if (!edgeTypes.includes(edge.type)) {
+        return false
+      }
+
+      if (edge.type === 'document') {
+        const edgeDate = parseDate(edge.date)
+        return (
+          edgeDate >= new Date(timeRange[0], 0) &&
+          edgeDate <= new Date(timeRange[1], 11, 31)
+        )
+      } else {
+        return true
+      }
+    })
+
+    const newNodes = originalGraph.nodes.filter(node => {
+      return newEdges.some(
+        edge => edge.source === node.id || edge.target === node.id
+      )
+    })
+
+    const filteredGraph = { nodes: newNodes, edges: newEdges }
+    filterGraphWithTerms(filteredGraph, terms)
+  }
+
+  const filterGraphWithTerms = (graph, terms) => {
+    if (terms.length === 0) {
+      setGraph(graph)
+      return
+    }
+
+    const filteredNodes = graph.nodes.filter(
+      node =>
+        (node.data?.person?.fullName !== undefined &&
+          terms.includes(node.data.person.fullName)) ||
+        (node.label !== undefined && terms.includes(node.label))
+    )
+
+    const connectedNodeIds = new Set(filteredNodes.map(node => node.id))
+    const immediateConnections = new Set()
+
+    graph.edges.forEach(edge => {
+      if (connectedNodeIds.has(edge.source)) {
+        immediateConnections.add(edge.target)
+      }
+      if (connectedNodeIds.has(edge.target)) {
+        immediateConnections.add(edge.source)
+      }
+    })
+
+    const allFilteredNodes = graph.nodes.filter(
+      node => connectedNodeIds.has(node.id) || immediateConnections.has(node.id)
+    )
+
+    const filteredEdges = graph.edges.filter(
+      edge =>
+        (connectedNodeIds.has(edge.source) &&
+          immediateConnections.has(edge.target)) ||
+        (connectedNodeIds.has(edge.target) &&
+          immediateConnections.has(edge.source))
+    )
+
+    setGraph({ nodes: allFilteredNodes, edges: filteredEdges })
+  }
+
+  const handleTimeRangeCommit = async (event, newValue) => {
+    // Update the graph by pruning nodes and edges that are outside the time range
+  }
+
+  const renderHeader = (node, index) => (
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center'
+      }}
+    >
+      <span>{node?.data?.person?.fullName || node.label}</span>
+      <Button
+        icon='pi pi-external-link'
+        className='p-button-rounded p-button-text'
+        onClick={event => {
+          event.stopPropagation()
+          event.preventDefault()
+          handleOpenClick(node)
+        }}
+      />
+      <Button
+        icon='pi pi-times'
+        className='p-button-rounded p-button-text'
+        onClick={event => {
+          event.stopPropagation()
+          event.preventDefault()
+          handleCloseNode(index)
+        }}
+      />
+    </div>
+  )
+
+  const toggleAccordion = nodeId => {
+    const nodeToToggle = selectedNodes.find(node => node.idNode === nodeId)
+    setSelectedNodes(prevSelectedNodes =>
+      prevSelectedNodes.map(node =>
+        node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
+      )
+    )
+  }
+
+  const renderAccordion = (rowData, index) => {
+    const id = rowData.idNode
+    const activeTabIndex =
+      selectedNodes.find(node => node.idNode === id)?.activeTabIndex || 0
+
+    const setActiveTabIndex = newIndex => {
+      setSelectedNodes(prevSelectedNodes =>
+        prevSelectedNodes.map(node =>
+          node.idNode === id ? { ...node, activeTabIndex: newIndex } : node
+        )
+      )
+    }
+
     return (
-        <div className={styles.noData}>
-            <h2>No data available</h2>
-        </div>
-    );
-}
+      <Accordion
+        key={id}
+        activeIndex={
+          selectedNodes.find(node => node.idNode === id)?.isOpen ? 0 : null
+        }
+        onTabChange={() => toggleAccordion(id)}
+        style={{ width: '100%', flexGrow: 1 }}
+      >
+        <AccordionTab header={renderHeader(rowData, index)}>
+          <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
+            <Sidecar
+              key={id}
+              nodeData={rowData}
+              activeTabIndex={activeTabIndex}
+              setActiveTabIndex={setActiveTabIndex}
+              handleNodeClick={handleNodeClick}
+            />
+          </div>
+        </AccordionTab>
+      </Accordion>
+    )
+  }
+
+  const onFilterChange = (filteredGraph, terms) => {
+    setSelectedTerms(terms)
+    applyFilters(timeRange, terms, selectedEdgeTypes)
+  }
+
+  const handleEdgeTypeChange = newEdgeTypes => {
+    console.log('Selected Edge Types:', newEdgeTypes)
+    setSelectedEdgeTypes(newEdgeTypes)
+    applyFilters(timeRange, selectedTerms, newEdgeTypes)
+  }
 
   return (
-    <div className={styles.graphContainer}>
-      <SigmaGraph
-          graph={graph}
-          onNodeHover={handleNodeHover}
-          className={styles.sigma}
-          onNodeClick={handleNodeClick}
-          searchQuery={searchQuery}
-          handleNodeunHover={handleNodeOut}
-          handleGraphUpdate={handleGraphUpdate}
-          showEdges={showEdges}
-        />
-    </div>
-  );
+    <>
+      <div className={styles.content}>
+            {loading ? (
+              <div className={styles.loaderContainer}>
+                <ClipLoader color='#36d7b7' loading={loading} size={150} />
+              </div>
+            ) : (
+              <div className={styles.graphContainer}>
+                <div className={styles.filterToolContainer}>
+                  <FilterTool
+                    graph={graph}
+                    setGraph={setGraph}
+                    originalGraph={originalGraph}
+                    onFilterChange={onFilterChange}
+                  />
+                              <ToggleButton
+                    onIcon='pi pi-check'
+                    offIcon='pi pi-times'
+                    checked={showEdges}
+                    onChange={e => setShowEdges(e.value)}
+                    onLabel='Show Edges'
+                    offLabel='Hide Edges'
+                    severity={showEdges ? 'success' : 'danger'}
+                  />
+
+                </div>
+                <SigmaGraph
+                  graph={graph}
+                  onNodeHover={handleNodeHover}
+                  className={styles.sigma}
+                  onNodeClick={handleOpenClick}
+                  handleNodeunHover={handleNodeOut}
+                  handleGraphUpdate={handleGraphUpdate}
+                  showEdges={showEdges}
+                />
+
+                <div className={styles.sliderContainer}>
+                  <Slider
+                    value={timeRange}
+                    onChange={handleTimeRangeChange}
+                    onChangeCommitted={handleTimeRangeCommit}
+                    valueLabelDisplay='auto'
+                    min={minDate}
+                    max={maxDate}
+                    step={1}
+                    className={styles.slider}
+                    marks={[
+                      { value: minDate, label: minDate },
+                      { value: maxDate, label: maxDate }
+                    ]}
+                  />
+                </div>
+              </div>
+            )}
+                  {/* Add the EdgeTypeFilter component in the bottom-right corner */}
+      <EdgeTypeFilter
+        selectedEdgeTypes={selectedEdgeTypes}
+        onChange={handleEdgeTypeChange}
+      />
+      </div>
+
+
+      {dialogs.map(dialog => (
+        <Dialog
+          key={dialog.id}
+          header={
+            dialog.nodeData.data?.person?.fullName || dialog?.nodeData?.label
+          }
+          maximizable
+          modal={false}
+          visible={true}
+          onHide={() => handleCloseDialog(dialog.id)}
+          style={{
+            width: '35vw',
+            height: '70vh',
+            minWidth: '15vw',
+            minHeight: '15vw'
+          }}
+          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+        >
+          <Sidecar
+            nodeData={dialog.nodeData}
+            handleNodeClick={handleNodeClick}
+            activeTabIndex={dialog.activeTabIndex}
+            setActiveTabIndex={index => {
+              const updatedDialogs = dialogs.map(dlg =>
+                dlg.id === dialog.id ? { ...dlg, activeTabIndex: index } : dlg
+              )
+              setDialogs(updatedDialogs)
+            }}
+          />
+        </Dialog>
+      ))}
+    </>
+  )
 }
 
-export default QueryGraph;
+export default QueryGraph
