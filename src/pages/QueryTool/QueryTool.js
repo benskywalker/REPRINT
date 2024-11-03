@@ -14,6 +14,8 @@ import { MultiSelect } from "primereact/multiselect";
 import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
+import fetchGraphData from '../../components/graph/GraphData'
+
 
 const QueryTool = () => {
   const [value, setValue] = useState([20, 80]);
@@ -25,6 +27,8 @@ const QueryTool = () => {
   const [selectedField, setSelectedField] = useState(null);
   const [splitButtonLabel, setSplitButtonLabel] = useState("In");
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [queryNodes, setQueryNodes] = useState([]);
+  const [queryEdges, setQueryEdges] = useState([]);
   const [sections, setSections] = useState([
     { id: Date.now(), selectedValue: "" },
   ]);
@@ -36,6 +40,7 @@ const QueryTool = () => {
   const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState(null);
   const [currentTable, setCurrentTable] = useState("person");
+  const [graphData, setGraphData] = useState(null);
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -158,7 +163,11 @@ const QueryTool = () => {
 
       console.log("Body", body);
       const response = await axios.post(`${baseExpressUrl}knex-query`, body);
+      console.log("Response", response.data);
+      const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0)
+
       setQueryData(response.data[0]);
+      setGraphData(graphResults);
       setSelectedView(entityType);
       setCurrentTable(currentTable);
     } catch (error) {
@@ -254,9 +263,9 @@ const QueryTool = () => {
   const onTabChange = (e) => {
     const newIndex = e.index;
     const oldIndex = previousIndex.current;
-
+    console.log("Tab changed");
     // Assuming "Query" is index 0 and "Table" is index 3
-    if (oldIndex === 0 && newIndex === 3) {
+    if (oldIndex === 0 && newIndex === 3 || oldIndex === 0 && newIndex === 1) {
       const fetchData = async () => {
         try {
           setLoading(true);
@@ -287,7 +296,11 @@ const QueryTool = () => {
             `${baseExpressUrl}knex-query`,
             body
           );
+          const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0)
+
+          console.log("Response", response.data);
           setQueryData(response.data[0]);
+          setGraphData(graphResults);
         } catch (error) {
           console.log(error);
         } finally {
@@ -484,7 +497,7 @@ const QueryTool = () => {
                 <ProgressSpinner />
               </div>
             ) : (
-              queryData && <QueryGraph data={queryData} type={selectedView} />
+              graphData && <QueryGraph graphData={graphData}/>
             )}
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">

@@ -11,7 +11,7 @@ import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
-const QueryGraph = ({ data, type }) => {
+const QueryGraph = ({ graphData }) => {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState([1600, 1700])
   const [dialogs, setDialogs] = useState([])
@@ -31,10 +31,7 @@ const QueryGraph = ({ data, type }) => {
   ]) // Default selected edge types
 
   const getGraphData = async () => {
-    console.log("Data from query", data, "Type", type)
-    const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
-    const graphData = {}
-    // await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+    console.log('Graph Data:', graphData)
     setGraph(graphData.graph || { nodes: [], edges: [] })
     setMetrics(graphData.metrics)
     setMinDate(graphData.minDate)
@@ -42,12 +39,11 @@ const QueryGraph = ({ data, type }) => {
     setTimeRange([graphData.minDate, graphData.maxDate])
     setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
     setLoading(false)
-    // console.log('Graph Data:', graphData)
   }
 
   useEffect(() => {
     getGraphData()
-  }, [])
+  }, [graphData])
 
   const handleOpenClick = rowData => {
     const id = uuidv4()
@@ -283,3 +279,20 @@ const QueryGraph = ({ data, type }) => {
 }
 
 export default QueryGraph
+
+
+// const getGraphData = async () => {
+//   const graphData = { graph:{nodes, edges} }
+//   setGraph(graphData)
+//   setOriginalGraph(graphData)
+//   // await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+//   setGraph(graphData.graph || { nodes: [], edges: [] })
+//   // setMetrics(graphData.metrics)
+//   // setMinDate(graphData.minDate)
+//   // setMaxDate(graphData.maxDate)
+//   // setTimeRange([graphData.minDate, graphData.maxDate])
+//   // setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
+//   setLoading(false)
+//   // console.log('Graph Data:', graphData)
+//   console.log('Graph Data:', graphData.graph)
+// }
