@@ -2,25 +2,12 @@ import React from "react";
 import { Card } from "primereact/card";
 
 const DocumentsGallery = ({ documents, searchQuery, filters }) => {
+  console.log(documents);
   const flist = filters || [];
 
-  const formatNames = (names) => {
-    return names
-      .split(",")
-      .map((name) => {
-        const parts = name.trim().split(" ");
-        return parts
-          .map(
-            (part) => part.charAt(0).toUpperCase() + part.slice(1)
-          )
-          .join(" ");
-      })
-      .join(", ");
-  };
-
   const createDocumentCard = (document, index) => {
-    const sender = formatNames(document.senders).slice(0, -2);
-    const receiver = formatNames(document.receivers).slice(0, -2);
+    const sender = document.author;
+    const receiver = document.receiver;
     const date = document.sortingDate;
     let bio = document.abstract;
     if (!bio) {
@@ -35,8 +22,8 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
       >
         <Card className="gallery-card">
           <div className="gallery-text">
-            <div className="gallery-title">{`From: ${sender}`}</div>
-            <div className="gallery-title">{`To: ${receiver}`}</div>
+            {sender && <div className="gallery-title">{`From: ${sender}`}</div>}
+            {receiver && <div className="gallery-title">{`To: ${receiver}`}</div>}
             <div className="gallery-subtitle">{date}</div>
             <div className="gallery-bio">{bio}</div>
           </div>

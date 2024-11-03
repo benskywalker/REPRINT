@@ -46,7 +46,7 @@ const Gallery = ({ searchQuery }) => {
         setPeopleFilterOptions(peopleFilterOptions);
 
         // Fetch documents from the API
-        const documentRes = await fetch(`${baseExpressUrl}documents`);
+        const documentRes = await fetch(`${baseExpressUrl}gallery/docs`);
         const documentData = await documentRes.json();
         setDocuments(documentData);
 
