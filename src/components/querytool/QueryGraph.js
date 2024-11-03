@@ -10,6 +10,7 @@ import fetchGraphData from '../../components/graph/GraphData'
 import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
+import e from 'express'
 
 const QueryGraph = ({ data, type }) => {
   const [loading, setLoading] = useState(true)
@@ -33,8 +34,7 @@ const QueryGraph = ({ data, type }) => {
   const getGraphData = async () => {
     console.log("Data from query", data, "Type", type)
     const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
-    const graphData = {}
-    // await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+    const graphData = await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
     setGraph(graphData.graph || { nodes: [], edges: [] })
     setMetrics(graphData.metrics)
     setMinDate(graphData.minDate)
@@ -42,12 +42,146 @@ const QueryGraph = ({ data, type }) => {
     setTimeRange([graphData.minDate, graphData.maxDate])
     setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
     setLoading(false)
-    // console.log('Graph Data:', graphData)
+    console.log('Graph Data:', graphData)
   }
 
   useEffect(() => {
     getGraphData()
   }, [])
+
+  useEffect(() => {
+    const parseData = () => {
+      if(data.length > 0)
+      {
+        const graph = { nodes: [], edges: [] }
+        if(type === 'person')
+        {
+          console.log('Data:', data)
+          // Add the person to the graph
+          data.forEach(person => {
+            const id = "person_" + person.personID;
+            console.log(id)
+            const node = originalGraph.nodes.find(node => node.id === id);
+            if(node)
+            {
+              if(!graph.nodes.includes(node))
+              {
+                graph.nodes.push(node)
+              }
+              const edges = originalGraph.edges.filter(edge => edge.source === id || edge.target === id);
+              edges.forEach(edge => {
+                console.log('Edge:', edge)
+                if(!graph.edges.includes(edge) && (graph.nodes.find(node => node.id === edge.source) || graph.nodes.find(node => node.id === edge.target)))
+                {
+                  if(!graph.nodes.find(node => node.id === edge.source))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.source))
+                  }
+                  if(!graph.nodes.find(node => node.id === edge.target))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.target))
+                  }
+                  graph.edges.push(edge)
+                }
+              });
+            }
+          });
+          //Need to figure out if documents are nodes or edges
+        } else if(type === 'document')
+        {
+          
+        } else if(type === 'organization')
+        {
+          data.forEach(organization => {
+            const id = "organization_" + organization.organizationID;
+            const node = originalGraph.nodes.find(node => node.id === id);
+            if(node)
+            {
+              if(!graph.nodes.includes(node))
+              {
+                graph.nodes.push(node)
+              }
+              const edges = originalGraph.edges.filter(edge => edge.source === id || edge.target === id);
+              edges.forEach(edge => {
+                if(!graph.edges.includes(edge) && (graph.nodes.find(node => node.id === edge.source) || graph.nodes.find(node => node.id === edge.target)))
+                {
+                  if(!graph.nodes.find(node => node.id === edge.source))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.source))
+                  }
+                  if(!graph.nodes.find(node => node.id === edge.target))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.target))
+                  }
+                  graph.edges.push(edge)
+                }
+              });
+            }
+          });
+        } else if(type === 'religion')
+        {
+          data.forEach(religion => {
+            const id = "religion_" + religion.religionID;
+            const node = originalGraph.nodes.find(node => node.id === id);
+            if(node)
+            {
+              if(!graph.nodes.includes(node))
+              {
+                graph.nodes.push(node)
+              }
+              const edges = originalGraph.edges.filter(edge => edge.source === id || edge.target === id);
+              edges.forEach(edge => {
+                if(!graph.edges.includes(edge) && (graph.nodes.find(node => node.id === edge.source) || graph.nodes.find(node => node.id === edge.target)))
+                {
+                  if(!graph.nodes.find(node => node.id === edge.source))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.source))
+                  }
+                  if(!graph.nodes.find(node => node.id === edge.target))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.target))
+                  }
+                  graph.edges.push(edge)
+                }
+              });
+            }
+          });
+        } else if(type === 'place')
+        {
+          data.forEach(place => {
+            const id = "place_" + place.placeID;
+            const node = originalGraph.nodes.find(node => node.id === id);
+            if(node)
+            {
+              if(!graph.nodes.includes(node))
+              {
+                graph.nodes.push(node)
+              }
+              const edges = originalGraph.edges.filter(edge => edge.source === id || edge.target === id);
+              edges.forEach(edge => {
+                if(!graph.edges.includes(edge) && (graph.nodes.find(node => node.id === edge.source) || graph.nodes.find(node => node.id === edge.target)))
+                {
+                  if(!graph.nodes.find(node => node.id === edge.source))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.source))
+                  }
+                  if(!graph.nodes.find(node => node.id === edge.target))
+                  {
+                    graph.nodes.push(originalGraph.nodes.find(node => node.id === edge.target))
+                  }
+                  graph.edges.push(edge)
+                }
+              });
+            }
+          });
+        }
+
+        console.log('Graph:', graph)
+        setGraph(graph);
+      }
+    }
+    parseData()
+  }, [data, type, originalGraph]);
 
   const handleOpenClick = rowData => {
     const id = uuidv4()
