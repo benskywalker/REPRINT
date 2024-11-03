@@ -64,7 +64,7 @@
 .gallery-title {
   font-size: 14px;
   font-weight: bold;
-  white-space: nowrap;
+  white-space: wrap;
 }
 
 .gallery-subtitle {
