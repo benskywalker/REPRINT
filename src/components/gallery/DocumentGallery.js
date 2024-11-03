@@ -6,11 +6,15 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
   const flist = filters || [];
 
   const formatName = (name) => {
-    return name.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+    const names = name.split(",");
+    for(let i = 0; i < names.length; i++) {
+      names[i] = names[i].split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+    }
+    return names.join(", ");
   };
 
   const createDocumentCard = (document, index) => {
-    const sender = document.sender ? formatName(document.sender) : null;
+    const sender = document.author ? formatName(document.author) : null;
     const receiver = document.receiver ? formatName(document.receiver) : null;
     const date = document.sortingDate;
     let bio = document.abstract;
