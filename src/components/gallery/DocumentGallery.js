@@ -5,9 +5,13 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
   console.log(documents);
   const flist = filters || [];
 
+  const formatName = (name) => {
+    return name.split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+  };
+
   const createDocumentCard = (document, index) => {
-    const sender = document.author;
-    const receiver = document.receiver;
+    const sender = document.sender ? formatName(document.sender) : null;
+    const receiver = document.receiver ? formatName(document.receiver) : null;
     const date = document.sortingDate;
     let bio = document.abstract;
     if (!bio) {
