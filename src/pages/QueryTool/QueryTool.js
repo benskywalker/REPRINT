@@ -361,19 +361,7 @@ const QueryTool = () => {
       <div className="title-container">
         <h1>Query Tool</h1>
       </div>
-      <i
-        className="pi pi-question-circle help-icon"
-        onClick={(e) => op.current.toggle(e)}
-      ></i>
-      <OverlayPanel
-        ref={op}
-        appendTo={document.body}
-        className="custom-overlay-panel"
-      >
-        <div>
-          <p>Query tool 101 guide here</p>
-        </div>
-      </OverlayPanel>
+
       <div className="query-container">
         <TabView
           className="query-tool"
@@ -530,7 +518,7 @@ const QueryTool = () => {
                   showGridlines
                   stripedRows
                   scrollable
-                  scrollHeight="450px"
+                  scrollHeight="45vh"
                   resizableColumns
                   reorderableColumns
                   globalFilter={globalFilter}
@@ -573,6 +561,19 @@ const QueryTool = () => {
           </TabPanel>
         </TabView>
       </div>
+            <i
+        className="pi pi-question-circle help-icon"
+        onClick={(e) => op.current.toggle(e)}
+      ></i>
+      <OverlayPanel
+        ref={op}
+        appendTo={document.body}
+        className="custom-overlay-panel"
+      >
+        <div>
+          <p>Query tool 101 guide here</p>
+        </div>
+      </OverlayPanel>
     </div>
   );
 };

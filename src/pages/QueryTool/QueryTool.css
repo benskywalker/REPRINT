@@ -1,7 +1,8 @@
 .query-tool-container {
     display: flex;
     flex-direction: column;
-    height: 90vh;
+    position:relative;
+    min-height:  calc(100vh - 60px);
 }
 
 /* .title-container{
@@ -25,7 +26,6 @@
     /* background-color: green; */
     flex-grow: 1;
     overflow: auto;
-    max-height: 65vh;
 
     /* background-color:#ff0000; */
   

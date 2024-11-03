@@ -11,7 +11,7 @@ import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
 
-const QueryGraph = ({data, type}) => {
+const QueryGraph = ({ data, type }) => {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState([1600, 1700])
   const [dialogs, setDialogs] = useState([])
@@ -31,10 +31,10 @@ const QueryGraph = ({data, type}) => {
   ]) // Default selected edge types
 
   const getGraphData = async () => {
-    console.log("Data from query",data,"Type", type)
+    console.log("Data from query", data, "Type", type)
     const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
-    const graphData = {};
-    //await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
+    const graphData = {}
+    // await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
     setGraph(graphData.graph || { nodes: [], edges: [] })
     setMetrics(graphData.metrics)
     setMinDate(graphData.minDate)
@@ -188,63 +188,62 @@ const QueryGraph = ({data, type}) => {
   return (
     <>
       <div className={styles.content}>
-            {loading ? (
-              <div className={styles.loaderContainer}>
-                <ClipLoader color='#36d7b7' loading={loading} size={150} />
-              </div>
-            ) : (
-              <div className={styles.graphContainer}>
-                <div className={styles.filterToolContainer}>
-                  <FilterTool
-                    graph={graph}
-                    setGraph={setGraph}
-                    originalGraph={originalGraph}
-                    onFilterChange={onFilterChange}
-                  />
-                              <ToggleButton
-                    onIcon='pi pi-check'
-                    offIcon='pi pi-times'
-                    checked={showEdges}
-                    onChange={e => setShowEdges(e.value)}
-                    onLabel='Show Edges'
-                    offLabel='Hide Edges'
-                    severity={showEdges ? 'success' : 'danger'}
-                  />
+        {loading ? (
+          <div className={styles.loaderContainer}>
+            <ClipLoader color='#36d7b7' loading={loading} size={150} />
+          </div>
+        ) : (
+          <div className={styles.graphContainer}>
+            <div className={styles.filterToolContainer}>
+              <FilterTool
+                graph={graph}
+                setGraph={setGraph}
+                originalGraph={originalGraph}
+                onFilterChange={onFilterChange}
+              />
+              <ToggleButton
+                onIcon='pi pi-check'
+                offIcon='pi pi-times'
+                checked={showEdges}
+                onChange={e => setShowEdges(e.value)}
+                onLabel='Show Edges'
+                offLabel='Hide Edges'
+                severity={showEdges ? 'success' : 'danger'}
+              />
 
-                </div>
-                <SigmaGraph
-                  graph={graph}
-                  onNodeHover={handleNodeHover}
-                  className={styles.sigma}
-                  onNodeClick={handleOpenClick}
-                  handleNodeunHover={handleNodeOut}
-                  handleGraphUpdate={handleGraphUpdate}
-                  showEdges={showEdges}
-                />
+            </div>
+            <SigmaGraph
+              graph={graph}
+              onNodeHover={handleNodeHover}
+              className={styles.sigma}
+              onNodeClick={handleOpenClick}
+              handleNodeunHover={handleNodeOut}
+              handleGraphUpdate={handleGraphUpdate}
+              showEdges={showEdges}
+            />
 
-                <div className={styles.sliderContainer}>
-                  <Slider
-                    value={timeRange}
-                    onChange={handleTimeRangeChange}
-                    onChangeCommitted={handleTimeRangeCommit}
-                    valueLabelDisplay='auto'
-                    min={minDate}
-                    max={maxDate}
-                    step={1}
-                    className={styles.slider}
-                    marks={[
-                      { value: minDate, label: minDate },
-                      { value: maxDate, label: maxDate }
-                    ]}
-                  />
-                </div>
-              </div>
-            )}
-                  {/* Add the EdgeTypeFilter component in the bottom-right corner */}
-      <EdgeTypeFilter
-        selectedEdgeTypes={selectedEdgeTypes}
-        onChange={handleEdgeTypeChange}
-      />
+            <div className={styles.sliderContainer}>
+              <Slider
+                value={timeRange}
+                onChange={handleTimeRangeChange}
+                onChangeCommitted={handleTimeRangeCommit}
+                valueLabelDisplay='auto'
+                min={minDate}
+                max={maxDate}
+                step={1}
+                className={styles.slider}
+                marks={[
+                  { value: minDate, label: minDate },
+                  { value: maxDate, label: maxDate }
+                ]}
+              />
+            </div>
+            <EdgeTypeFilter
+              selectedEdgeTypes={selectedEdgeTypes}
+              onChange={handleEdgeTypeChange}
+            />
+          </div>
+        )}
       </div>
 
 
