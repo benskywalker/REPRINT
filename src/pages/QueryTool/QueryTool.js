@@ -14,10 +14,7 @@ import { MultiSelect } from "primereact/multiselect";
 import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
-import fetchGraphData from '../../components/graph/GraphData'
-
-
-
+import fetchGraphData from "../../components/graph/GraphData";
 
 const QueryTool = () => {
   const [value, setValue] = useState([20, 80]);
@@ -43,7 +40,6 @@ const QueryTool = () => {
   const [filters, setFilters] = useState(null);
   const [currentTable, setCurrentTable] = useState("person");
   const [graphData, setGraphData] = useState(null);
-
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -86,6 +82,8 @@ const QueryTool = () => {
 
       // Determine the appropriate filter field based on the entity type
       let body;
+
+      console.log("Current Table:", currentTable);
 
       switch (currentTable) {
         case "person":
@@ -167,12 +165,10 @@ const QueryTool = () => {
       console.log("Body", body);
       const response = await axios.post(`${baseExpressUrl}knex-query`, body);
       console.log("Response", response.data);
-      const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0)
 
       setQueryData(response.data.rows);
-      setGraphData(graphResults);
       setSelectedView(entityType);
-      setCurrentTable(currentTable);
+      setCurrentTable(entityType);
     } catch (error) {
       console.log(error);
     } finally {
@@ -268,7 +264,10 @@ const QueryTool = () => {
     const oldIndex = previousIndex.current;
     console.log("Tab changed");
     // Assuming "Query" is index 0 and "Table" is index 3
-    if (oldIndex === 0 && newIndex === 3 || oldIndex === 0 && newIndex === 1) {
+    if (
+      (oldIndex === 0 && newIndex === 3) ||
+      (oldIndex === 0 && newIndex === 1)
+    ) {
       const fetchData = async () => {
         try {
           setLoading(true);
@@ -299,7 +298,12 @@ const QueryTool = () => {
             `${baseExpressUrl}knex-query`,
             body
           );
-          const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0, body)
+          const graphResults = await fetchGraphData(
+            `${baseExpressUrl}knex-query`,
+            2000,
+            0,
+            body
+          );
 
           console.log("Response", response.data, response.data.rows);
           setQueryData(response.data.rows);
@@ -453,10 +457,13 @@ const QueryTool = () => {
                       const newSections = [...sections];
                       newSections[index].selectedAction = e.value;
                       setSections(newSections);
-                      if (index == newSections.length - 1 && (e.value === "and" || e.value === "or")) {
+                      if (
+                        index == newSections.length - 1 &&
+                        (e.value === "and" || e.value === "or")
+                      ) {
                         addNewSection();
                       } else if (e.value === "remove") {
-                        if(index == newSections.length - 1) {
+                        if (index == newSections.length - 1) {
                           sections[index - 1].selectedAction = null;
                         }
                         removeSection(section.id);
@@ -503,7 +510,7 @@ const QueryTool = () => {
                 <ProgressSpinner />
               </div>
             ) : (
-              graphData && <QueryGraph graphData={graphData}/>
+              graphData && <QueryGraph graphData={graphData} />
             )}
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
@@ -574,33 +581,33 @@ const QueryTool = () => {
           </TabPanel>
         </TabView>
       </div>
-            <i
+      <i
         className="pi pi-question-circle help-icon"
         onClick={(e) => op.current.toggle(e)}
       ></i>
       <OverlayPanel
-  ref={op}
-  appendTo={document.body}
-  className="custom-overlay-panel bottom-right-overlay"
->
-  <div>
-    <p>
-      The Query Tool allows you to search for information in the database
-      using a variety of parameters. You can search for information about
-      people, organizations, places, religions, and documents. You can
-      also view the search results in a table, network graph, or map.
-    </p>
-    {/* paragraph on how to use it  */}
-    <p>
-      To use the Query Tool, select the type of information you want to
-      search for from the dropdown menu. Then, add search parameters by
-      selecting a field, operator, and value. You can add multiple search
-      parameters by clicking the "Add" button. You can also specify the
-      order in which the search results are displayed by selecting a field
-      to order by and choosing between ascending or descending order.
-    </p>
-  </div>
-</OverlayPanel>
+        ref={op}
+        appendTo={document.body}
+        className="custom-overlay-panel bottom-right-overlay"
+      >
+        <div>
+          <p>
+            The Query Tool allows you to search for information in the database
+            using a variety of parameters. You can search for information about
+            people, organizations, places, religions, and documents. You can
+            also view the search results in a table, network graph, or map.
+          </p>
+          {/* paragraph on how to use it  */}
+          <p>
+            To use the Query Tool, select the type of information you want to
+            search for from the dropdown menu. Then, add search parameters by
+            selecting a field, operator, and value. You can add multiple search
+            parameters by clicking the "Add" button. You can also specify the
+            order in which the search results are displayed by selecting a field
+            to order by and choosing between ascending or descending order.
+          </p>
+        </div>
+      </OverlayPanel>
     </div>
   );
 };
