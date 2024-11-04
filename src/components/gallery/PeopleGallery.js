@@ -2,6 +2,7 @@ import React from "react";
 import { Card } from "primereact/card";
 
 const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
+  console.log(people);
   const flist = filters || [];
 
   const capitalizeFirstLetter = (string) => {
@@ -25,6 +26,11 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
       bio = "No bio available";
     }
 
+    let org = person.organization;
+    if (!org) {
+      org = "No organization available";
+    }
+
     return (
       <div
         key={person.personID}
@@ -35,7 +41,7 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
           <div className="gallery-text">
             <div className="gallery-title">{name}</div>
             <div className="gallery-subtitle">{religion}</div>
-            <div className="gallery-subtitle">ORGANIZATION</div>
+            <div className="gallery-subtitle">{org}</div>
             {/* <div className="gallery-bio">{bio}</div> */}
           </div>
         </Card>
@@ -47,7 +53,7 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
     <div className="gallery">
       {people
         .filter((person) =>
-          `${person.firstName} ${person.lastName} ${person.religion}`
+          `${person.firstName} ${person.lastName} ${person.religion} ${person.organization}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         )
@@ -55,7 +61,7 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
           (person) =>
             flist.length === 0 ||
             flist.some((filter) =>
-              `${person.firstName} ${person.lastName} ${person.religion}`
+              `${person.firstName} ${person.lastName} ${person.religion} ${person.organization}`
                 .toLowerCase()
                 .includes(filter.code.toLowerCase())
             )
