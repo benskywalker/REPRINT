@@ -4,7 +4,7 @@ import { centrality } from 'graphology-metrics';
 import modularity from 'graphology-communities-louvain';
 import { density } from 'graphology-metrics/graph';
 
-const fetchGraphData = async (url, minDate, maxDate) => {
+const fetchGraphData = async (url, minDate, maxDate, body) => {
   const graph = { nodes: [], edges: [] };
   let metrics = null;
   let originalGraph = { nodes: [], edges: [] };
@@ -34,7 +34,6 @@ const fetchGraphData = async (url, minDate, maxDate) => {
     metrics.degreeCentrality = centrality.degree(graph);
     metrics.betweennessCentrality = centrality.betweenness(graph);
     metrics.closenessCentrality = centrality.closeness(graph);
-    metrics.eigenvectorCentrality = centrality.eigenvector(graph);
     metrics.modularity = modularity(graph);
 
     return metrics;
@@ -59,12 +58,9 @@ const fetchGraphData = async (url, minDate, maxDate) => {
   };
 
   try {
-    const body = {
-      minDate,
-      maxDate,
-    };
     const response = await axios.post(url, body);
     const data = response.data;
+    console.log("Response", response.data);
 
     if (!data.nodes || !data.edges) {
       throw new Error('Invalid data format: nodes or edges are missing');

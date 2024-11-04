@@ -6,6 +6,10 @@
   padding: 8px;
 }
 
+.title-container {
+  background-color: transparent;
+}
+
 .gallery-item {
   display: flex;
   align-items: center;

@@ -15,6 +15,8 @@ import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import fetchGraphData from '../../components/graph/GraphData'
+import LoadingBar from 'react-top-loading-bar';
+
 
 
 const QueryTool = () => {
@@ -41,6 +43,8 @@ const QueryTool = () => {
   const [filters, setFilters] = useState(null);
   const [currentTable, setCurrentTable] = useState("person");
   const [graphData, setGraphData] = useState(null);
+  const loadingBarRef = useRef(null);
+
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -78,6 +82,7 @@ const QueryTool = () => {
   const handleButtonClick = async (rowData, entityType, currentTable) => {
     try {
       setLoading(true);
+      loadingBarRef.current.continuousStart();
       const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
       let table1;
 
@@ -166,7 +171,7 @@ const QueryTool = () => {
       console.log("Response", response.data);
       const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0)
 
-      setQueryData(response.data[0]);
+      setQueryData(response.data.rows);
       setGraphData(graphResults);
       setSelectedView(entityType);
       setCurrentTable(currentTable);
@@ -174,6 +179,7 @@ const QueryTool = () => {
       console.log(error);
     } finally {
       setLoading(false);
+      loadingBarRef.current.complete();
     }
   };
 
@@ -296,10 +302,10 @@ const QueryTool = () => {
             `${baseExpressUrl}knex-query`,
             body
           );
-          const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0)
+          const graphResults = await fetchGraphData(`${baseExpressUrl}knex-query`, 2000, 0, body)
 
-          console.log("Response", response.data);
-          setQueryData(response.data[0]);
+          console.log("Response", response.data, response.data.rows);
+          setQueryData(response.data.rows);
           setGraphData(graphResults);
         } catch (error) {
           console.log(error);
@@ -502,13 +508,7 @@ const QueryTool = () => {
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
             <p className="m-0">
-              Sed ut perspiciatis unde omnis iste natus error sit voluptatem
-              accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
-              quae ab illo inventore veritatis et quasi architecto beatae vitae
-              dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit
-              aspernatur aut odit aut fugit, sed quia consequuntur magni dolores
-              eos qui ratione voluptatem sequi nesciunt. Consectetur, adipisci
-              velit, sed quia non numquam eius modi.
+              The map view will be available in a future release
             </p>
           </TabPanel>
           <TabPanel header="Table" leftIcon="pi pi-table mr-2">
@@ -579,14 +579,28 @@ const QueryTool = () => {
         onClick={(e) => op.current.toggle(e)}
       ></i>
       <OverlayPanel
-        ref={op}
-        appendTo={document.body}
-        className="custom-overlay-panel"
-      >
-        <div>
-          <p>Query tool 101 guide here</p>
-        </div>
-      </OverlayPanel>
+  ref={op}
+  appendTo={document.body}
+  className="custom-overlay-panel bottom-right-overlay"
+>
+  <div>
+    <p>
+      The Query Tool allows you to search for information in the database
+      using a variety of parameters. You can search for information about
+      people, organizations, places, religions, and documents. You can
+      also view the search results in a table, network graph, or map.
+    </p>
+    {/* paragraph on how to use it  */}
+    <p>
+      To use the Query Tool, select the type of information you want to
+      search for from the dropdown menu. Then, add search parameters by
+      selecting a field, operator, and value. You can add multiple search
+      parameters by clicking the "Add" button. You can also specify the
+      order in which the search results are displayed by selecting a field
+      to order by and choosing between ascending or descending order.
+    </p>
+  </div>
+</OverlayPanel>
     </div>
   );
 };

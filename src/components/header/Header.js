@@ -74,11 +74,11 @@ const Header = () => {
           </li>
         </ul>
         <hr></hr>
-        <Button
+        {/* <Button
         style={{ width: "25%" }}
           icon={selectedTheme === "viva-light" ? "pi pi-moon" : "pi pi-sun"}
           onClick={toggleTheme}
-        />
+        /> */}
       </Sidebar>
     </div>
   );

@@ -61,7 +61,7 @@
     justify-content: center; /* This centers the slider */
     width: 100%;
     padding: 10px;
-    background-color: #302F2F;
+    background-color: #343540;
     position: relative; /* Allows for absolute positioning of the help icon */
 }
 
@@ -89,4 +89,37 @@
     align-items: center;
     height: 100%; /* Ensure the parent takes up full viewport height */
     overflow: hidden;
+  }
+
+  .bottom-right-overlay {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    margin: 20px;
+    z-index: 1000; /* Ensure it appears above other elements */
+    max-width: 400px; /* Adjust as needed */
+    max-height: 600px;
+  }
+
+  .query-section{
+    background-color: #343540;
+  }
+
+  .query-input{
+    background-color: #343540;
+    border: #343540;
+  }
+
+  .title-container{
+    background-color: none;
+  }
+
+  .title-container h1{
+    color: white;
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-align: center;
+    font-size: 2rem;
+    margin: 0;
+    padding: 10px;
+
   }
