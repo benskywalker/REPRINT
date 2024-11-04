@@ -51,7 +51,7 @@ const Gallery = ({ searchQuery }) => {
         setDocuments(documentData);
 
         // Document Filters
-        const uniqueDates = Array.from(new Set(documentData.map((document) => document.sortingDate.slice(0,4))));
+        const uniqueDates = Array.from(new Set(documentData.map((document) => document.sortingDate ? document.sortingDate.slice(0,4) : null)));
         const filterDates = uniqueDates.map((date) => ({
           name: date,
           code: date,
@@ -68,9 +68,9 @@ const Gallery = ({ searchQuery }) => {
 
   // Update filter options based on active tab
   useEffect(() => {
-    if (activeTab === 0) {
+    if (activeTab === 1) {
       setFilterOptions(PeopleFilterOptions);
-    } else if (activeTab === 1) {
+    } else if (activeTab === 0) {
       setFilterOptions(DocFilterOptions);
     }
   }, [activeTab, PeopleFilterOptions, DocFilterOptions]);

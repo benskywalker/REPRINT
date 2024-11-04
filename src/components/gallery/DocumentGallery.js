@@ -44,7 +44,7 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
     <div className="gallery">
       {documents
         .filter((document) =>
-          `${document.receivers} ${document.senders} ${document.sortingDate}`
+          `${document.author} ${document.receiver} ${document.sortingDate}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         )
@@ -52,7 +52,7 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
           (document) =>
             flist.length === 0 ||
             flist.some((filter) =>
-              `${document.receivers} ${document.senders} ${document.sortingDate}`
+              `${document.receiver} ${document.author} ${document.sortingDate}`
                 .toLowerCase()
                 .includes(filter.code.toLowerCase())
             )
