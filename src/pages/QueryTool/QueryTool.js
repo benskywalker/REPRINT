@@ -15,7 +15,7 @@ import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import fetchGraphData from '../../components/graph/GraphData'
-import LoadingBar from 'react-top-loading-bar';
+
 
 
 
@@ -43,7 +43,6 @@ const QueryTool = () => {
   const [filters, setFilters] = useState(null);
   const [currentTable, setCurrentTable] = useState("person");
   const [graphData, setGraphData] = useState(null);
-  const loadingBarRef = useRef(null);
 
 
   const [views, setViews] = useState([
@@ -82,7 +81,6 @@ const QueryTool = () => {
   const handleButtonClick = async (rowData, entityType, currentTable) => {
     try {
       setLoading(true);
-      loadingBarRef.current.continuousStart();
       const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
       let table1;
 
@@ -179,7 +177,6 @@ const QueryTool = () => {
       console.log(error);
     } finally {
       setLoading(false);
-      loadingBarRef.current.complete();
     }
   };
 
