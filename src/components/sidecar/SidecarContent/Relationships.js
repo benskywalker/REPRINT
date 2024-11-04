@@ -14,101 +14,32 @@ import { IconField } from "primereact/iconfield";
 import "./LettersTable.css";
 
 const Relationships = ({ nodeData, handleNodeClick }) => {
-  const nodeId = nodeData.data.person.personID;
-
-  const fetchNodeData = async (id) => {
-    console.log(id);
-    try {
-      const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL || "http://localhost:4000/";
-      const url = `${baseExpressUrl}person/${id}`; // Corrected URL path
-      const dataResponse = await fetch(url);
-      if (dataResponse.ok) {
-        return await dataResponse.json();
-      } else {
-        console.error("Person not found or server returned an error.");
-      }
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    }
-  };
-
-  const fetchFullName = async (id) => {
-    try {
-      const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL || "http://localhost:4000/";
-      const url = `${baseExpressUrl}personFullName/${id}`;
-      const response = await fetch(url);
-      if (response.ok) {
-        const data = await response.json();
-        return data.fullName;
-      } else {
-        console.error("Full name not found or server returned an error.");
-      }
-    } catch (error) {
-      console.error("Error fetching full name:", error);
-    }
-  };
 
   const [relationships, setRelationships] = useState([]);
+
+
+
   useEffect(() => {
-    const fetchFullNames = async () => {
-      if (nodeData.relations) {
-        const updatedRelations = await Promise.all(
-          nodeData.relations.map(async (relation) => {
-            const personId =
-              relation.person1ID === nodeId
-                ? relation.person2ID
-                : relation.person1ID;
-            const fullName = await fetchFullName(personId);
-            return { ...relation, person: { fullName } };
-          })
-        );
-        setRelationships(updatedRelations);
-        setFilteredData(updatedRelations);
-      }
-    };
-    fetchFullNames();
+    if (nodeData.relations) {
+      console.log("nodeData.relations", nodeData.relations);
+      //get the person id from the nodeData.person
+      const personId = nodeData.data.person.personID;
+
+      //set nodeData.person to person1 or person2, depending on the personID
+      nodeData.relations.forEach((relation) => {
+        console.log("relation", relation.relationship.person1ID, "personId", personId, "person1", relation.relationship.person1, "person2", relation.relationship.person2);
+        if (relation.relationship.person1ID === personId) {
+          relation.person = relation.relationship.person2;
+        } else {
+          relation.person = relation.relationship.person1;
+        }
+      });
+
+      setRelationships(nodeData.relations);
+    }
   }, [nodeData]);
 
-  const handleItemClick = async (e) => {
-    console.log(e.data);
-    var personId;
-    if (e.data.person1ID === nodeId) {
-      personId = e.data.person2ID;
-    } else {
-      personId = e.data.person1ID;
-    }
-
-    // Wait for the node data to be fetched
-    const fetchedData = await fetchNodeData(personId);
-    const documents = fetchedData.documents.map((doc) => ({ document: doc })); // Transform documents
-    const person = fetchedData.person;
-    const religion = fetchedData.religion;
-    const mentions = fetchedData.mentions;
-    const relations = fetchedData.relationships;
-
-    // Organize the fetched data
-    const data = {
-      person: person,
-      documents: documents, // Transform documents
-      religion: religion,
-      mentions: mentions,
-      relations: relationships,
-    };
-    // Safely check if firstName and lastName exist before destructuring
-    const { firstName = "", lastName = "" } = data.person || {};
-
-    // Create the fullName if either firstName or lastName exist
-    if (firstName || lastName) {
-      data.person.fullName = `${firstName} ${lastName}`.trim();
-    } else {
-      // Handle the case where the name fields don't exist
-      data.person.fullName = "No Name Available";
-    }
-
-    const node = { data, person, documents, religion, mentions, relations };
-    console.log(node);
-    handleNodeClick(node);
-  };
+  
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState(null); // Add filter state
@@ -321,7 +252,6 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
         globalFilter={globalFilter}
         filters={filters} // Set filters from state
         header={header}
-        onRowClick={handleItemClick}
         stateStorage="session" // Saves state to sessionStorage
         stateKey="relationships-table-state" // Unique key for this table's state
         className="custom-datatable"
@@ -329,47 +259,47 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
         onValueChange={(filteredData) => setFilteredData(filteredData)} // Update filtered data state
       >
         <Column
-          field="person.fullName"
+          field="person"
           header="Name"
           sortable
           filter
           filterPlaceholder="Search"
         ></Column>
         <Column
-          field="relationship1to2Desc"
+          field="relationship.relationship1to2Desc"
           header="Relationship"
           sortable
           filter
           filterPlaceholder="Search"
         ></Column>
         <Column
-          field="relationship2to1Desc"
+          field="relationship.relationship2to1Desc"
           header="Relationship2"
           sortable
           filter
           filterPlaceholder="Search"
         ></Column>
-        <Column
-          field="dateStart"
+        {/* <Column
+          field="relationship.dateStart"
           header="Started"
           sortable
           filter
           filterPlaceholder="Search"
         ></Column>
         <Column
-          field="dateEnd"
+          field="relationship.dateEnd"
           header="Ended"
           sortable
           filter
           filterPlaceholder="Search"
         ></Column>
         <Column
-          field="dateEndCause"
+          field="relationship.dateEndCause"
           header="End reason"
           sortable
           filter
           filterPlaceholder="Search"
-        ></Column>
+        ></Column> */}
       </DataTable>
     </div>
   ) : (
