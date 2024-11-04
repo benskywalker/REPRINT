@@ -67,7 +67,6 @@ const QueryTool = () => {
   const actionItems = [
     { label: "And", value: "and" },
     { label: "Or", value: "or" },
-    { label: "Else", value: "else" },
     { label: "Remove", value: "remove" },
   ];
 
