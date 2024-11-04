@@ -68,7 +68,7 @@ const QueryTool = () => {
 
   const firstActionItems = [
     { label: "And", value: "and" },
-    { label: "Or", value: "or" }
+    { label: "Or", value: "or" },
   ];
 
   const relatedEntitiesMap = {
@@ -166,7 +166,6 @@ const QueryTool = () => {
           body = null;
       }
 
-      console.log("Body", body);
       const response = await axios.post(`${baseExpressUrl}knex-query`, body);
       console.log("Response", response.data);
 
