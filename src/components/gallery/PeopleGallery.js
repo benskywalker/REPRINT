@@ -29,6 +29,8 @@ const PeopleGallery = ({ people, filters, handleButtonClick }) => {
     let org = person.organization;
     if (!org) {
       org = "No organization available";
+    } else {
+      org = org.split(",").join(", ");
     }
 
     return (

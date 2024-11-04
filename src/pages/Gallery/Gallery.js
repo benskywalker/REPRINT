@@ -42,7 +42,17 @@ const Gallery = ({ searchQuery }) => {
           code: religion,
         }));
 
-        const uniqueOrganizations = Array.from(new Set(data.map((person) => person.organization)));
+        const uniqueOrganizations = [];
+        data.forEach((person) => {
+          const org = person.organization;
+          if(org) {
+            org.split(",").forEach((organization) => {
+              if(!uniqueOrganizations.includes(organization)) {
+                uniqueOrganizations.push(organization);
+              }
+            });
+          }
+        });
         const filterOrganizations = uniqueOrganizations.map((organization) => ({
           name: organization,
           code: organization,
