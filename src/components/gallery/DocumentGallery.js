@@ -2,7 +2,6 @@ import React from "react";
 import { Card } from "primereact/card";
 
 const DocumentsGallery = ({ documents, searchQuery, filters }) => {
-  console.log(documents);
   const flist = filters || [];
 
   const formatName = (name) => {

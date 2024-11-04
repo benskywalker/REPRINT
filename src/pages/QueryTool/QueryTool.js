@@ -453,9 +453,12 @@ const QueryTool = () => {
                       const newSections = [...sections];
                       newSections[index].selectedAction = e.value;
                       setSections(newSections);
-                      if (e.value === "and" || e.value === "or") {
+                      if (index == newSections.length - 1 && (e.value === "and" || e.value === "or")) {
                         addNewSection();
                       } else if (e.value === "remove") {
+                        if(index == newSections.length - 1) {
+                          sections[index - 1].selectedAction = null;
+                        }
                         removeSection(section.id);
                       }
                     }}
