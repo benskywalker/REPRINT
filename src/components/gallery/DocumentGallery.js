@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "primereact/card";
 
-const DocumentsGallery = ({ documents, searchQuery, filters }) => {
+const DocumentsGallery = ({ documents, filters }) => {
   const flist = filters || [];
 
   const formatName = (name) => {
@@ -42,11 +42,6 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
   return (
     <div className="gallery">
       {documents
-        .filter((document) =>
-          `${document.author} ${document.receiver} ${document.sortingDate}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
         .filter(
           (document) =>
             flist.length === 0 ||

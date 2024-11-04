@@ -14,6 +14,8 @@ const Gallery = ({ searchQuery }) => {
   const [documents, setDocuments] = useState([]);
   const [dialogs, setDialogs] = useState([]);
   const [filters, setFilters] = useState([]);
+  const [peopleFilters, setPeopleFilters] = useState([]);
+  const [docFilters, setDocFilters] = useState([]);
   const [filterOptions, setFilterOptions] = useState([]);
   const [PeopleFilterOptions, setPeopleFilterOptions] = useState([]);
   const [DocFilterOptions, setDocFilterOptions] = useState([]);
@@ -85,8 +87,12 @@ const Gallery = ({ searchQuery }) => {
   // Update filter options based on active tab
   useEffect(() => {
     if (activeTab === 1) {
+      setDocFilters(filters);
+      setFilters(peopleFilters);
       setFilterOptions(PeopleFilterOptions);
     } else if (activeTab === 0) {
+      setPeopleFilters(filters);
+      setFilters(docFilters);
       setFilterOptions(DocFilterOptions);
     }
   }, [activeTab, PeopleFilterOptions, DocFilterOptions]);
@@ -152,19 +158,18 @@ const Gallery = ({ searchQuery }) => {
 
   return (
     <div>
-      <Filter onFilterChange={handleFilterChange} options={filterOptions} />
       <TabView activeIndex={activeTab} onTabChange={onTabChange} className="tabview-custom">
         <TabPanel header="Documents" rightIcon="pi pi-file">
+        <Filter onFilterChange={handleFilterChange} options={DocFilterOptions} filters = {docFilters} />
           <DocumentsGallery
             documents={documents}
-            searchQuery={searchQuery}
             filters={filters}
           />
         </TabPanel>
         <TabPanel header="People" leftIcon="pi pi-users">
+          <Filter onFilterChange={handleFilterChange} options={PeopleFilterOptions} filters = {peopleFilters} />
           <PeopleGallery
             people={people}
-            searchQuery={searchQuery}
             filters={filters}
             handleButtonClick={handleButtonClick}
           />
