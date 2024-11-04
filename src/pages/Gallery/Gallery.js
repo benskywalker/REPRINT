@@ -42,7 +42,13 @@ const Gallery = ({ searchQuery }) => {
           code: religion,
         }));
 
-        const peopleFilterOptions = filterNames.concat(filterReligions);
+        const uniqueOrganizations = Array.from(new Set(data.map((person) => person.organization)));
+        const filterOrganizations = uniqueOrganizations.map((organization) => ({
+          name: organization,
+          code: organization,
+        }));
+
+        const peopleFilterOptions = filterNames.concat(filterReligions).concat(filterOrganizations);
         setPeopleFilterOptions(peopleFilterOptions);
 
         // Fetch documents from the API

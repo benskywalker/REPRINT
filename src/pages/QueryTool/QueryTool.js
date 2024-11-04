@@ -70,6 +70,11 @@ const QueryTool = () => {
     { label: "Remove", value: "remove" },
   ];
 
+  const firstActionItems = [
+    { label: "And", value: "and" },
+    { label: "Or", value: "or" }
+  ];
+
   const relatedEntitiesMap = {
     person: ["document", "religion", "organization"],
     organization: ["person", "religion", "document"],
@@ -461,7 +466,7 @@ const QueryTool = () => {
                         removeSection(section.id);
                       }
                     }}
-                    options={actionItems}
+                    options={index != 0 ? actionItems : firstActionItems}
                     optionLabel="label"
                     placeholder="Select Action"
                     className="w-full md:w-14rem"
