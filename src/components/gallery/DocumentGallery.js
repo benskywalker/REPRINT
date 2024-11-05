@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "primereact/card";
-import { useEffect } from "react";
-import Sidecar from '../sidecar/Sidecar'
+import Sidecar from '../sidecar/Sidecar';
+import { Dialog } from 'primereact/dialog';
+import { v4 as uuidv4 } from 'uuid';
 
 const DocumentsGallery = ({ documents, filters }) => {
+  const [dialogs, setDialogs] = useState([]);
   const flist = filters || [];
 
   useEffect(() => {
@@ -16,6 +18,15 @@ const DocumentsGallery = ({ documents, filters }) => {
       names[i] = names[i].split(" ").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
     }
     return names.join(", ");
+  };
+
+  const handleOpenClick = (document) => {
+    const id = uuidv4();
+    setDialogs(prevDialogs => [...prevDialogs, { id, nodeData: { data: { document } } }]);
+  };
+
+  const handleCloseDialog = (id) => {
+    setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id));
   };
 
   const createDocumentCard = (document, index) => {
@@ -31,7 +42,7 @@ const DocumentsGallery = ({ documents, filters }) => {
       <div
         key={document.document || index}
         className="gallery-item"
-        onClick={() => console.log(document)}
+        onClick={() => handleOpenClick(document)}
       >
         <Sidecar nodeData={{ data: { document: { ...document, sender, receiver } } }} />
       </div>
@@ -51,6 +62,27 @@ const DocumentsGallery = ({ documents, filters }) => {
             )
         )
         .map((document, index) => createDocumentCard(document, index))}
+      {dialogs.map(dialog => (
+        <Dialog
+          key={dialog.id}
+          header={dialog.nodeData.data.document.title || "Document Details"}
+          maximizable
+          modal={false}
+          visible={true}
+          onHide={() => handleCloseDialog(dialog.id)}
+          style={{
+            width: '35vw',
+            height: '70vh',
+            minWidth: '15vw',
+            minHeight: '15vw'
+          }}
+          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+        >
+          <Sidecar
+            nodeData={dialog.nodeData}
+          />
+        </Dialog>
+      ))}
     </div>
   );
 };
