@@ -1,8 +1,14 @@
 import React from "react";
 import { Card } from "primereact/card";
+import { useEffect } from "react";
+import Sidecar from '../sidecar/Sidecar'
 
 const DocumentsGallery = ({ documents, searchQuery, filters }) => {
   const flist = filters || [];
+
+  useEffect(() => {
+    console.log(documents);
+  }, [documents]);
 
   const formatName = (name) => {
     const names = name.split(",");
@@ -27,14 +33,7 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
         className="gallery-item"
         onClick={() => console.log(document)}
       >
-        <Card className="gallery-card">
-          <div className="gallery-text">
-            {sender && <div className="gallery-title">{`From: ${sender}`}</div>}
-            {receiver && <div className="gallery-title">{`To: ${receiver}`}</div>}
-            <div className="gallery-subtitle">{date}</div>
-            <div className="gallery-bio">{bio}</div>
-          </div>
-        </Card>
+        <Sidecar nodeData={{ data: { document: { ...document, sender, receiver } } }} />
       </div>
     );
   };

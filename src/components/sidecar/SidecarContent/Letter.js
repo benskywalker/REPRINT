@@ -13,6 +13,7 @@ const Letter = ({ file }) => {
   const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
+    console.log('internalPDFname:', file);
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
@@ -113,10 +114,14 @@ const Letter = ({ file }) => {
           </div>
         )
       ) : (
-        <div>
-          <p>Document Abstract:</p>
-          <p>{abstract}</p>
-        </div>
+      
+      <div className="letter-text">
+        {file.sender && <div className="letter-title">{`From: ${file.sender}`}</div>}
+        {file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>}
+        {file.date && <div className="letter-subtitle">{file.date}</div>}
+        {file.abstract && <div className="letter-bio">{`${file.abstract}`}</div>}
+
+      </div>
       )}
     </div>
   );
