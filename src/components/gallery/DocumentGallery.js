@@ -3,7 +3,7 @@ import { Card } from "primereact/card";
 import { useEffect } from "react";
 import Sidecar from '../sidecar/Sidecar'
 
-const DocumentsGallery = ({ documents, searchQuery, filters }) => {
+const DocumentsGallery = ({ documents, filters }) => {
   const flist = filters || [];
 
   useEffect(() => {
@@ -41,11 +41,6 @@ const DocumentsGallery = ({ documents, searchQuery, filters }) => {
   return (
     <div className="gallery">
       {documents
-        .filter((document) =>
-          `${document.author} ${document.receiver} ${document.sortingDate}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
         .filter(
           (document) =>
             flist.length === 0 ||
