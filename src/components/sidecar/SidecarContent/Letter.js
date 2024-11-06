@@ -13,6 +13,7 @@ const Letter = ({ file }) => {
   const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
+    console.log('internalPDFname:', file);
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
@@ -20,25 +21,25 @@ const Letter = ({ file }) => {
         const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
         const url = `${baseExpressUrl}pdf/${internalPDFname}`; // Corrected URL path
         const transcriptUrl = `${baseExpressUrl}pdf/${internalPDFname.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
-        console.log('fetching PDF:', url);
+        // console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
         const transcriptResponse = await fetch(transcriptUrl);
-        console.log('letterResponse', letterResponse);
+        // console.log('letterResponse', letterResponse);
         if (letterResponse.ok) {
           setPdfURL(url);  // No need to hardcode again, just reuse the same url
           setLetterExists(true);
         } else {
-          console.log('PDF not found or server returned an error.');
+          // console.log('PDF not found or server returned an error.');
         }
 
         if (transcriptResponse.ok) {
           setTranscriptURL(transcriptUrl);
           setTranscriptExists(true);
         } else {
-          console.log('Transcript not found or server returned an error.');
+          // console.log('Transcript not found or server returned an error.');
         }
       } catch (error) {
-        console.error('Error fetching PDF:', error);
+        // console.error('Error fetching PDF:', error);
       } finally {
         setLoading(false); // Stop loading when finished
       }
@@ -113,10 +114,16 @@ const Letter = ({ file }) => {
           </div>
         )
       ) : (
-        <div>
-          <p>Document Abstract:</p>
-          <p>{abstract}</p>
-        </div>
+      
+      <div className="letter-text">
+        {file.sender && <div className="letter-title">{`From: ${file.sender}`}</div>}
+        {file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>}
+        <div className="letter-subtitle">
+  {`Date: ${file.date ? file.date : file.sortingDate}`}
+</div>
+        {file.abstract && <div className="letter-bio">{`${file.abstract}`}</div>}
+
+      </div>
       )}
     </div>
   );

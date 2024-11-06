@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MultiSelect } from "primereact/multiselect";
 import "./Filter.css";
 
-const Filter = ({ onFilterChange, options }) => {
-  const [selectedFilters, setSelectedFilters] = useState(null);
+const Filter = ({ onFilterChange, options, filters }) => {
+  const [selectedFilters, setSelectedFilters] = useState(filters || []);
 
   const handleFilterChange = (filter) => {
+    filter = filter.filter((f) => options.includes(f));
+    console.log(filter);
     setSelectedFilters(filter);
     onFilterChange(filter);
   };

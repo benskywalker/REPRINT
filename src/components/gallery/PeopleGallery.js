@@ -1,7 +1,7 @@
 import React from "react";
 import { Card } from "primereact/card";
 
-const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
+const PeopleGallery = ({ people, filters, handleButtonClick }) => {
   console.log(people);
   const flist = filters || [];
 
@@ -29,6 +29,8 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
     let org = person.organization;
     if (!org) {
       org = "No organization available";
+    } else {
+      org = org.split(",").join(", ");
     }
 
     return (
@@ -52,11 +54,6 @@ const PeopleGallery = ({ people, searchQuery, filters, handleButtonClick }) => {
   return (
     <div className="gallery">
       {people
-        .filter((person) =>
-          `${person.firstName} ${person.lastName} ${person.religion} ${person.organization}`
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase())
-        )
         .filter(
           (person) =>
             flist.length === 0 ||
