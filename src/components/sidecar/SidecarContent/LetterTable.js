@@ -36,7 +36,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
             const docData = [
                 doc.document?.sender || null,
                 doc.document?.receiver || null,
-                doc.document?.documentID || null,
+                doc.document?.importID || null,
                 doc.document?.date || null
             ];
             tableRows.push(docData);
@@ -52,7 +52,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
         const filteredData = getFilteredData().map(doc => ({
             Sender: doc.document?.sender || 'Sender not found',
             Receiver: doc.document?.receiver || 'Receiver not found',
-            DocumentID: doc.document?.documentID || 'ID not found',
+            DocumentID: doc.document?.importID || 'ID not found',
             Date: doc.document?.date || 'Date not found'
         }));
     
@@ -78,7 +78,7 @@ export default function LetterTable({ nodeData, onRowClick }) {
                     children: doc.document ? [
                         new TableCell({ children: [new Paragraph(doc.document.sender || 'Sender not found')] }),
                         new TableCell({ children: [new Paragraph(doc.document.receiver || 'Receiver not found')] }),
-                        new TableCell({ children: [new Paragraph(String(doc.document.documentID) || 'ID not found')] }),
+                        new TableCell({ children: [new Paragraph(String(doc.document.importID) || 'ID not found')] }),
                         new TableCell({ children: [new Paragraph(doc.document.date || 'Date not found')] }),
                     ] : [
                         new TableCell({ children: [new Paragraph('')] }),
@@ -208,7 +208,7 @@ const renderHeader = () => {
                     filterPlaceholder="Search by receiver"
                 ></Column>
                 <Column
-                    field="document.documentID"
+                    field="document.importID"
                     header="Document ID"
                     sortable
                     filter
