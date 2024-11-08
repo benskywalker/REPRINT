@@ -13,6 +13,7 @@ const Gallery = ({ searchQuery }) => {
   const [people, setPeople] = useState([]);
   const [documents, setDocuments] = useState([]);
   const [dialogs, setDialogs] = useState([]);
+  const [docDialogs, setDocDialogs] = useState([]);
   const [filters, setFilters] = useState([]);
   const [peopleFilters, setPeopleFilters] = useState([]);
   const [docFilters, setDocFilters] = useState([]);
@@ -156,6 +157,10 @@ const Gallery = ({ searchQuery }) => {
     setActiveTab(e.index);
   };
 
+  const handleCloseDocDialog = (id) => {
+    setDocDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id));
+  };
+
   return (
     <div>
       <TabView activeIndex={activeTab} onTabChange={onTabChange} className="tabview-custom">
@@ -164,6 +169,7 @@ const Gallery = ({ searchQuery }) => {
           <DocumentsGallery
             documents={documents}
             filters={filters}
+            setDialogs={setDocDialogs}
           />
         </TabPanel>
         <TabPanel header="People" leftIcon="pi pi-users">
@@ -187,6 +193,27 @@ const Gallery = ({ searchQuery }) => {
           style={{ width: "600px", height: "500px" }}
         >
           <Sidecar nodeData={dialog.nodeData} />
+        </Dialog>
+      ))}
+      {docDialogs.map(dialog => (
+        <Dialog
+          key={dialog.id}
+          header={dialog.nodeData.data.document.title || "Document Details"}
+          maximizable
+          modal={false}
+          visible={true}
+          onHide={() => handleCloseDocDialog(dialog.id)}
+          style={{
+            width: '35vw',
+            height: '70vh',
+            minWidth: '15vw',
+            minHeight: '15vw'
+          }}
+          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+        >
+          <Sidecar
+            nodeData={dialog.nodeData}
+          />
         </Dialog>
       ))}
     </div>
