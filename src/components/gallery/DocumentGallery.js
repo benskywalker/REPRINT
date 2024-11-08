@@ -48,8 +48,10 @@ const DocumentsGallery = ({ documents, filters }) => {
           <div className="gallery-text">
             {sender && <div className="gallery-title">{`From: ${sender}`}</div>}
             {receiver && <div className="gallery-title">{`To: ${receiver}`}</div>}
-            <div className="gallery-subtitle">{date}</div>
+            {date && <div className="gallery-subtitle">{`Date: ${date}`}</div>}
+            <div className="letter-subtitle"> {`Document ID: ${document.importID}`}</div>
             <div className="gallery-bio">{bio}</div>
+
           </div>
         </Card>
               </div>

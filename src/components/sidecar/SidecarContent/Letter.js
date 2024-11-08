@@ -120,15 +120,27 @@ const Letter = ({ file }) => {
       ) : (
 
         <div className="letter-text">
-          {file.sender ? (
-            <div className="letter-title">{`From: ${file.sender}`}</div>
+          <div className="letter-subtitle">
+            {`ID: ${file.importID}`}
+          </div>
+          {file.connections && file.connections[0] && file.connections[0].roleName === 'Sender' ? (
+            <div className="letter-title">{`From: ${file.connections[0].personFullName}`}</div>
           ) : (
-            file.author && <div className="letter-title">{`From: ${file.author}`}</div>
+            file.sender ? (
+              <div className="letter-title">{`From: ${file.sender}`}</div>
+            ) : (
+              file.author && <div className="letter-title">{`From: ${file.author}`}</div>
+            )
           )}
-          {file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>}
+          {file.connections && file.connections[1] && file.connections[1].roleName === 'Receiver' ? (
+            <div className="letter-title">{`To: ${file.connections[1].personFullName}`}</div>
+          ) : (
+            file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>
+          )}
           <div className="letter-subtitle">
             {`Date: ${file.date ? file.date : file.sortingDate}`}
           </div>
+
           {file.abstract && <div className="letter-bio">{`${file.abstract}`}</div>}
 
         </div>
