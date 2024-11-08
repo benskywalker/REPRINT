@@ -44,8 +44,15 @@ const DocumentsGallery = ({ documents, filters }) => {
         className="gallery-item"
         onClick={() => handleOpenClick(document)}
       >
-        <Sidecar nodeData={{ data: { document: { ...document, sender, receiver } } }} />
-      </div>
+<Card className="gallery-card">
+          <div className="gallery-text">
+            {sender && <div className="gallery-title">{`From: ${sender}`}</div>}
+            {receiver && <div className="gallery-title">{`To: ${receiver}`}</div>}
+            <div className="gallery-subtitle">{date}</div>
+            <div className="gallery-bio">{bio}</div>
+          </div>
+        </Card>
+              </div>
     );
   };
 
