@@ -119,31 +119,33 @@ const Letter = ({ file }) => {
         )
       ) : (
 
-        <div className="letter-text">
-          <div className="letter-subtitle">
-            {`ID: ${file.importID}`}
-          </div>
-          {file.connections && file.connections[0] && file.connections[0].roleName === 'Sender' ? (
-            <div className="letter-title">{`From: ${file.connections[0].personFullName}`}</div>
-          ) : (
-            file.sender ? (
-              <div className="letter-title">{`From: ${file.sender}`}</div>
-            ) : (
-              file.author && <div className="letter-title">{`From: ${file.author}`}</div>
-            )
-          )}
-          {file.connections && file.connections[1] && file.connections[1].roleName === 'Receiver' ? (
-            <div className="letter-title">{`To: ${file.connections[1].personFullName}`}</div>
-          ) : (
-            file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>
-          )}
-          <div className="letter-subtitle">
-            {`Date: ${file.date ? file.date : file.sortingDate}`}
-          </div>
+<div >
+  <div>
+    <strong>Document ID:</strong> {file.importID}
+  </div>
+  {file.connections && file.connections[0] && file.connections[0].roleName === 'Sender' ? (
+    <div><strong>From:</strong> {file.connections[0].personFullName}</div>
+  ) : (
+    file.sender ? (
+      <div><strong>From:</strong> {file.sender}</div>
+    ) : (
+      file.author && <div><strong>From:</strong> {file.author}</div>
+    )
+  )}
+  {file.connections && file.connections[1] && file.connections[1].roleName === 'Receiver' ? (
+    <div><strong>To:</strong> {file.connections[1].personFullName}</div>
+  ) : (
+    file.receiver && <div><strong>To:</strong> {file.receiver}</div>
+  )}
+  <div>
+    <strong>Date:</strong> {file.date ? file.date : file.sortingDate}
+  </div>
 
-          {file.abstract && <div className="letter-bio">{`${file.abstract}`}</div>}
-
-        </div>
+  {file.abstract && (
+  <div>
+    <strong>Abstract:</strong> {file.abstract}
+  </div>
+)}</div>
       )}
     </div>
   );

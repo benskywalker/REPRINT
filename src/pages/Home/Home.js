@@ -321,45 +321,47 @@ const Home = () => {
               />
             </DataTable>
             {/* Detailed explanation of how the graph works and application synopsis */}
-            <div className={styles.infoContainer}>
-              <h3>Graph Information</h3>
-              <p>
-                This network graph maps relationships between entities like
-                people, organizations, documents, religions, and places. Each
-                node represents an entity, and each edge indicates a connection,
-                allowing you to navigate a web of relationships. The graph helps
-                you quickly uncover hidden connections, contexts, and patterns
-                within the network.
-              </p>
-              <p>
-                Click any node to view detailed information and its direct and
-                indirect connections. Hovering over nodes highlights related
-                entities and connections for easy visual exploration. Use the
-                filters on the right to control which types of nodes and edges
-                are shown, focusing on the details most relevant to your
-                research.
-              </p>
-              <p>
-                Adjust the time range slider below to filter entities and
-                connections by specific time periods. This enables you to
-                observe historical changes, such as the influence of
-                organizations, shifts in religious connections, or key figures’
-                evolving roles over time.
-              </p>
-              <p>
-                Use these features to analyze specific connections, trace the
-                impact of organizations, or examine cultural ties, providing a
-                comprehensive, time-sensitive view of the network.
-              </p>
-              <h3>Metrics</h3>
-              {metrics && (
-                <ul className={styles.metrics}>
-                  <li>Total Nodes: {metrics.totalNodes}</li>
-                  <li>Total Edges: {metrics.totalEdges}</li>
-                  <li>Density: {metrics.density}</li>
-                </ul>
-              )}
-            </div>
+  <Accordion multiple activeIndex={[0, 1]}>
+  <AccordionTab header="Graph Information">
+    <p>
+      This network graph maps relationships between entities like
+      people, organizations, documents, religions, and places. Each
+      node represents an entity, and each edge indicates a connection,
+      allowing you to navigate a web of relationships. The graph helps
+      you quickly uncover hidden connections, contexts, and patterns
+      within the network.
+    </p>
+    <p>
+      Click any node to view detailed information and its direct and
+      indirect connections. Hovering over nodes highlights related
+      entities and connections for easy visual exploration. Use the
+      filters on the right to control which types of nodes and edges
+      are shown, focusing on the details most relevant to your
+      research.
+    </p>
+    <p>
+      Adjust the time range slider below to filter entities and
+      connections by specific time periods. This enables you to
+      observe historical changes, such as the influence of
+      organizations, shifts in religious connections, or key figures’
+      evolving roles over time.
+    </p>
+    <p>
+      Use these features to analyze specific connections, trace the
+      impact of organizations, or examine cultural ties, providing a
+      comprehensive, time-sensitive view of the network.
+    </p>
+  </AccordionTab>
+  <AccordionTab header="Metrics">
+    {metrics && (
+      <ul className={styles.metrics}>
+        <li>Total Nodes: {metrics.totalNodes}</li>
+        <li>Total Edges: {metrics.totalEdges}</li>
+        <li>Density: {metrics.density}</li>
+      </ul>
+    )}
+  </AccordionTab>
+</Accordion>
           </SplitterPanel>
           <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
             {loading ? (
