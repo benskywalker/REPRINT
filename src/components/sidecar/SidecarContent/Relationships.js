@@ -14,10 +14,7 @@ import { IconField } from "primereact/iconfield";
 import "./LettersTable.css";
 
 const Relationships = ({ nodeData, handleNodeClick }) => {
-
   const [relationships, setRelationships] = useState([]);
-
-
 
   useEffect(() => {
     if (nodeData.relations) {
@@ -27,7 +24,7 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
 
       //set nodeData.person to person1 or person2, depending on the personID
       nodeData.relations.forEach((relation) => {
-        console.log("relation", relation.relationship.person1ID, "personId", personId, "person1", relation.relationship.person1, "person2", relation.relationship.person2);
+        //console.log("relation", relation.relationship.person1ID, "personId", personId, "person1", relation.relationship.person1, "person2", relation.relationship.person2);
         if (relation.relationship.person1ID === personId) {
           relation.person = relation.relationship.person2;
         } else {
@@ -38,8 +35,6 @@ const Relationships = ({ nodeData, handleNodeClick }) => {
       setRelationships(nodeData.relations);
     }
   }, [nodeData]);
-
-  
 
   const [globalFilter, setGlobalFilter] = useState("");
   const [filters, setFilters] = useState(null); // Add filter state
