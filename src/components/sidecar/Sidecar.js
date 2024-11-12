@@ -87,7 +87,7 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
                   {tab.header}
                   {index >= 5 && ( // Only show close icon for dynamically added tabs
                     <span
-                      className="pi pi-times" // PrimeIcons close icon class
+                      className="pi pi-times mr-2" // PrimeIcons close icon class
                       onClick={() => handleTabClose(tab.key)}
                       style={{
                         marginLeft: '10px',
