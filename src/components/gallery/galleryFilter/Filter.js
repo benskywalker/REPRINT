@@ -13,17 +13,15 @@ const Filter = ({ onFilterChange, options, filters }) => {
   };
 
   return (
-    <div className="filter-container">
-      <MultiSelect
-        value={selectedFilters}
-        onChange={(e) => handleFilterChange(e.value)}
-        options={options}
-        optionLabel="name"
-        filter
-        placeholder="Select Filters"
-        className="p-multiselect"
-      />
-    </div>
+    <MultiSelect
+      value={selectedFilters}
+      onChange={(e) => handleFilterChange(e.value)}
+      options={options}
+      optionLabel="name"
+      filter
+      placeholder="Select Filters"
+      className="p-multiselect"
+    />
   );
 };
 
