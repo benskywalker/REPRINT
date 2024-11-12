@@ -31,6 +31,8 @@ export default function SigmaGraph({
   onNodeHover,
   handleNodeunHover,
   showEdges,
+  nodesUrl, 
+  edgesUrl,
 }) {
   const [filters, setFilters] = useState({
     person: true,
@@ -76,8 +78,8 @@ export default function SigmaGraph({
         setLoadingProgress(30); // Start loading
 
         // Define your endpoints
-        const nodesUrl = "http://localhost:4000/nodes";
-        const edgesUrl = "http://localhost:4000/edges";
+        // const nodesUrl = "http://localhost:4000/nodes";
+        // const edgesUrl = "http://localhost:4000/edges";
 
         // Fetch and build the graph with filters and date range
         const { graph, metrics: computedMetrics } = await fetchAndBuildGraph(

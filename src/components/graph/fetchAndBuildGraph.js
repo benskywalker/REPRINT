@@ -56,8 +56,8 @@ const fetchAndBuildGraph = async (nodesUrl, edgesUrl, filters, edgeTypeFilters, 
 
   try {
     const [nodesResponse, edgesResponse] = await Promise.all([
-      axios.get(nodesUrl),
-      axios.get(edgesUrl)
+      axios.post(nodesUrl),
+      axios.post(edgesUrl)
     ])
 
     const nodesData = nodesResponse.data

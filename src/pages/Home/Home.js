@@ -399,6 +399,8 @@ const Home = () => {
                   handleNodeunHover={handleNodeOut}
                   handleGraphUpdate={handleGraphUpdate}
                   showEdges={showEdges}
+                  nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'nodes'}
+                  edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'edges'}
                 />
 
                 <div className={styles.sliderContainer}>
