@@ -1,4 +1,5 @@
-import SigmaGraph from '../../components/graph/Sigmagraph' // Import the SigmaGraph component
+// import SigmaGraph from '../../components/graph/Sigmagraph' // Import the SigmaGraph component
+import SigmaDisplay from '../../components/graph/Sigmagraph'
 import { useState, useEffect } from 'react'
 import { Splitter, SplitterPanel } from 'primereact/splitter'
 import { Accordion, AccordionTab } from 'primereact/accordion'
@@ -15,9 +16,9 @@ import fetchGraphData from '../../components/graph/GraphData'
 import { Slider } from '@mui/material'
 import { ToggleButton } from 'primereact/togglebutton'
 import EdgeTypeFilter from '../../components/graph/filterBox/EdgeTypeFilter' // Import the new EdgeTypeFilter component
-
+        
 const Home = () => {
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [selectedNodes, setSelectedNodes] = useState([])
   const [timeRange, setTimeRange] = useState([1600, 1700])
   const [dialogs, setDialogs] = useState([])
@@ -35,23 +36,25 @@ const Home = () => {
     'religion',
     'relationship'
   ]) // Default selected edge types
+  
 
-  const getGraphData = async () => {
-    const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
-    const graphData = await fetchGraphData(`${baseExpressUrl}graph2`, 2000, 0)
-    setGraph(graphData.graph || { nodes: [], edges: [] })
-    setMetrics(graphData.metrics)
-    setMinDate(graphData.minDate)
-    setMaxDate(graphData.maxDate)
-    setTimeRange([graphData.minDate, graphData.maxDate])
-    setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
-    setLoading(false)
-    console.log('Graph Data:', graphData)
-  }
+  // const getGraphData = async () => {
+  //   const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL
+  //   // const graphData = await fetchGraphData(`${baseExpressUrl}nodes`, `${baseExpressUrl}edges`, 2000, 0)
+  //   const graphData = await buildGraph(`${baseExpressUrl}nodes`, `${baseExpressUrl}edges`, 2000, 0)
+  //   setGraph(graphData.graph || { nodes: [], edges: [] })
+  //   setMetrics(graphData.metrics)
+  //   setMinDate(graphData.minDate)
+  //   setMaxDate(graphData.maxDate)
+  //   setTimeRange([graphData.minDate, graphData.maxDate])
+  //   setOriginalGraph(graphData.graph || { nodes: [], edges: [] })
+  //   setLoading(false)
+  //   console.log('Graph Data:', graphData)
+  // }
 
-  useEffect(() => {
-    getGraphData()
-  }, [])
+  // useEffect(() => {
+  //   getGraphData()
+  // }, [])
 
   const handleOpenClick = rowData => {
     const id = uuidv4()
@@ -365,7 +368,7 @@ const Home = () => {
               </div>
             ) : (
               <div className={styles.graphContainer}>
-                <div className={styles.filterToolContainer}>
+                {/* <div className={styles.filterToolContainer}>
                   <FilterTool
                     graph={graph}
                     setGraph={setGraph}
@@ -382,9 +385,9 @@ const Home = () => {
                     severity={showEdges ? 'success' : 'danger'}
                   />
 
-                </div>
-                <SigmaGraph
-                  graph={graph}
+                </div> */}
+                <SigmaDisplay
+                  // graph={graph}
                   onNodeHover={handleNodeHover}
                   className={styles.sigma}
                   onNodeClick={handleNodeClick}
@@ -394,7 +397,7 @@ const Home = () => {
                 />
 
                 <div className={styles.sliderContainer}>
-                  <Slider
+                  {/* <Slider
                     value={timeRange}
                     onChange={handleTimeRangeChange}
                     onChangeCommitted={handleTimeRangeCommit}
@@ -407,7 +410,7 @@ const Home = () => {
                       { value: minDate, label: minDate },
                       { value: maxDate, label: maxDate }
                     ]}
-                  />
+                  /> */}
                 </div>
               </div>
             )}
@@ -415,10 +418,10 @@ const Home = () => {
         </Splitter>
       </div>
       {/* Add the EdgeTypeFilter component in the bottom-right corner */}
-      <EdgeTypeFilter
+      {/* <EdgeTypeFilter
         selectedEdgeTypes={selectedEdgeTypes}
         onChange={handleEdgeTypeChange}
-      />
+      /> */}
 
       {dialogs.map(dialog => (
         <Dialog
