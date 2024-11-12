@@ -124,7 +124,6 @@ const Gallery = ({ searchQuery }) => {
     const data = await response.json();
     const documents = [];
 
-    console.log("HEREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE: ", data);
     data.documents.forEach((element) => {
       if (element.date == null) {
         element.date = element.sortingDate;
@@ -191,7 +190,7 @@ const Gallery = ({ searchQuery }) => {
         onTabChange={onTabChange}
         className="tabview-custom"
       >
-        <TabPanel header="Documents" rightIcon="pi pi-file">
+        <TabPanel header="Documents" leftIcon="pi pi-file">
           <Filter
             onFilterChange={handleFilterChange}
             options={DocFilterOptions}

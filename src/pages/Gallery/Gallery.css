@@ -106,3 +106,7 @@
   width: 100%;
   /* Adjust this value as needed */
 }
+
+.tabview-custom .p-tabview-nav li a .pi {
+  margin-right: 8px; /* Adjust the value as needed */
+}
