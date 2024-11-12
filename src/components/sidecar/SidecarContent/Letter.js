@@ -4,7 +4,7 @@ import ClipLoader from 'react-spinners/ClipLoader'; // Import spinner
 import './Letter.css'; // Ensure this CSS is used for proper layout
 
 const Letter = ({ file }) => {
-  const { internalPDFname, abstract } = file;
+  let { internalPDFname, abstract } = file;
   const [isClosed, setIsClosed] = useState(false);
   const [pdfURL, setPdfURL] = useState('');
   const [letterExists, setLetterExists] = useState(false);
@@ -13,13 +13,17 @@ const Letter = ({ file }) => {
   const [loading, setLoading] = useState(true); // Loading state
 
   useEffect(() => {
-    console.log('internalPDFname:', file);
+    if (internalPDFname.includes(',')) {
+      internalPDFname = internalPDFname.split(',')[0];
+    }
+    console.log('internalPDFname:', internalPDFname);
     // Fetch the letter (or transcript) by id
     const fetchPDF = async () => {
       try {
         setLoading(true); // Start loading
         const baseExpressUrl = process.env.REACT_APP_BASEEXPRESSURL;
         const url = `${baseExpressUrl}pdf/${internalPDFname}`; // Corrected URL path
+        console.log(url);
         const transcriptUrl = `${baseExpressUrl}pdf/${internalPDFname.replace('_1.pdf', '_transcript.pdf')}`; // Corrected URL path
         // console.log('fetching PDF:', url);
         const letterResponse = await fetch(url);
@@ -114,16 +118,34 @@ const Letter = ({ file }) => {
           </div>
         )
       ) : (
-      
-      <div className="letter-text">
-        {file.sender && <div className="letter-title">{`From: ${file.sender}`}</div>}
-        {file.receiver && <div className="letter-title">{`To: ${file.receiver}`}</div>}
-        <div className="letter-subtitle">
-  {`Date: ${file.date ? file.date : file.sortingDate}`}
-</div>
-        {file.abstract && <div className="letter-bio">{`${file.abstract}`}</div>}
 
-      </div>
+<div >
+  <div>
+    <strong>Document ID:</strong> {file.importID}
+  </div>
+  {file.connections && file.connections[0] && file.connections[0].roleName === 'Sender' ? (
+    <div><strong>From:</strong> {file.connections[0].personFullName}</div>
+  ) : (
+    file.sender ? (
+      <div><strong>From:</strong> {file.sender}</div>
+    ) : (
+      file.author && <div><strong>From:</strong> {file.author}</div>
+    )
+  )}
+  {file.connections && file.connections[1] && file.connections[1].roleName === 'Receiver' ? (
+    <div><strong>To:</strong> {file.connections[1].personFullName}</div>
+  ) : (
+    file.receiver && <div><strong>To:</strong> {file.receiver}</div>
+  )}
+  <div>
+    <strong>Date:</strong> {file.date ? file.date : file.sortingDate}
+  </div>
+
+  {file.abstract && (
+  <div>
+    <strong>Abstract:</strong> {file.abstract}
+  </div>
+)}</div>
       )}
     </div>
   );

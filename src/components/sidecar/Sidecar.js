@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import 'primeicons/primeicons.css'; // Ensure PrimeIcons are imported
 import { TabView, TabPanel } from 'primereact/tabview';
-import './Sidecar.module.css';
+import './Sidecar.css';
 import LetterTable from './SidecarContent/LetterTable';
 import Relationships from './SidecarContent/Relationships';
 import OpenData from './SidecarContent/OpenData';
@@ -15,15 +15,15 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
   const [activeIndex, setActiveIndex] = useState(0);
 
   const handleRowClick = (rowData) => {
-    const newTabKey = `Letter-${rowData.document.documentID}`;
+    const newTabKey = `Letter-${rowData.document.importID}`;
     setTabs((prevTabs) => {
       const existingTab = prevTabs.find(tab => tab.key === newTabKey);
 
       if (!existingTab) {
         const newTab = {
           key: newTabKey,
-          header: `Letter ${rowData.document.documentID}`,
-          content: <Letter file={rowData.document} id={rowData.document.documentID} className="tab-content-container" />
+          header: `Letter ${rowData.document.importID}`,
+          content: <Letter file={rowData.document} id={rowData.document.importID} className="tab-content-container" />
         };
         const newTabs = [...prevTabs, newTab];
         setActiveIndex(newTabs.length - 1); // Set the new tab as active
@@ -36,11 +36,11 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
   };
 
   const [tabs, setTabs] = useState([
-    { key: "Biography", header: "Biography", content: <Biography nodeData={nodeData} className="tab-content-container" /> },
-    { key: "Letters", header: "Letters", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} className="tab-content-container" /> },
-    { key: "Mentions", header: "Mentions", content: <Mentions nodeData={nodeData} onRowClick={handleRowClick} className="tab-content-container" /> },
-    { key: "Relationships", header: "Relationships", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} className="tab-content-container" /> },
-    { key: "Open Data", header: "Open Data", content: <OpenData nodeData={nodeData} className="tab-content-container" /> }
+    { key: "Biography", header: "Biography", icon: "pi pi-user ml-2", content: <Biography nodeData={nodeData} className="tab-content-container" /> },
+    { key: "Letters", header: "Letters", icon: "pi pi-book ml-2", content: <LetterTable nodeData={nodeData} onRowClick={handleRowClick} className="tab-content-container" /> },
+    { key: "Mentions", header: "Mentions", icon: "pi pi-comment ml-2", content: <Mentions nodeData={nodeData} onRowClick={handleRowClick} className="tab-content-container" /> },
+    { key: "Relationships", header: "Relationships", icon: "pi pi-sitemap ml-2", content: <Relationships nodeData={nodeData} handleNodeClick={handleNodeClick} className="tab-content-container" /> },
+    { key: "Open Data", header: "Open Data", icon: "pi pi-plus-circle ml-2", content: <OpenData nodeData={nodeData} className="tab-content-container" /> }
   ]);
 
   const handleTabChange = (e) => {
@@ -81,6 +81,7 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
           {tabs.map((tab, index) => (
             <TabPanel
               key={tab.key}
+              rightIcon={tab.icon} // Use the icon field from the tab object
               header={
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   {tab.header}

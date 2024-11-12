@@ -188,7 +188,7 @@ const QueryTool = () => {
         body={(rowData) => (
           <span
             style={{
-              color: "blue",
+              color: "#ADD8E6",
               textDecoration: "underline",
               cursor: "pointer",
             }}
@@ -548,7 +548,7 @@ const QueryTool = () => {
                   filters={filters}
                   onFilter={onFilter}
                 >
-                  {visibleColumns.map((fieldObj, index) => (
+                  {visibleColumns.slice(0, 3).map((fieldObj, index) => (
                     <Column
                       key={index}
                       field={fieldObj.field}
@@ -558,17 +558,14 @@ const QueryTool = () => {
                       filterPlaceholder={`Search by ${fieldObj.field}`}
                     />
                   ))}
+
                   {relatedEntitiesMap[selectedView]?.map((entity, index) => (
                     <Column
                       key={`related-${index}`}
                       header={entity.charAt(0).toUpperCase() + entity.slice(1)}
                       body={(rowData) => (
                         <span
-                          style={{
-                            color: "blue",
-                            textDecoration: "underline",
-                            cursor: "pointer",
-                          }}
+                          className="action-link"
                           onClick={() =>
                             handleButtonClick(rowData, entity, currentTable)
                           }
@@ -576,6 +573,17 @@ const QueryTool = () => {
                           {entity.charAt(0).toUpperCase() + entity.slice(1)}
                         </span>
                       )}
+                    />
+                  ))}
+
+                  {visibleColumns.slice(3).map((fieldObj, index) => (
+                    <Column
+                      key={index + 3}
+                      field={fieldObj.field}
+                      header={fieldObj.field}
+                      sortable
+                      filter
+                      filterPlaceholder={`Search by ${fieldObj.field}`}
                     />
                   ))}
                 </DataTable>

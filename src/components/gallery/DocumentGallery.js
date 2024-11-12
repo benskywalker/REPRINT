@@ -4,8 +4,7 @@ import Sidecar from '../sidecar/Sidecar';
 import { Dialog } from 'primereact/dialog';
 import { v4 as uuidv4 } from 'uuid';
 
-const DocumentsGallery = ({ documents, filters }) => {
-  const [dialogs, setDialogs] = useState([]);
+const DocumentsGallery = ({ documents, filters, setDialogs }) => {
   const flist = filters || [];
 
   useEffect(() => {
@@ -25,10 +24,6 @@ const DocumentsGallery = ({ documents, filters }) => {
     setDialogs(prevDialogs => [...prevDialogs, { id, nodeData: { data: { document } } }]);
   };
 
-  const handleCloseDialog = (id) => {
-    setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id));
-  };
-
   const createDocumentCard = (document, index) => {
     const sender = document.author ? formatName(document.author) : null;
     const receiver = document.receiver ? formatName(document.receiver) : null;
@@ -44,8 +39,17 @@ const DocumentsGallery = ({ documents, filters }) => {
         className="gallery-item"
         onClick={() => handleOpenClick(document)}
       >
-        <Sidecar nodeData={{ data: { document: { ...document, sender, receiver } } }} />
-      </div>
+<Card className="gallery-card">
+          <div className="gallery-text">
+            {sender && <div className="gallery-title">{`From: ${sender}`}</div>}
+            {receiver && <div className="gallery-title">{`To: ${receiver}`}</div>}
+            {date && <div className="gallery-subtitle">{`Date: ${date}`}</div>}
+            <div className="letter-subtitle"> {`Document ID: ${document.importID}`}</div>
+            <div className="gallery-bio">{bio}</div>
+
+          </div>
+        </Card>
+              </div>
     );
   };
 
@@ -62,27 +66,6 @@ const DocumentsGallery = ({ documents, filters }) => {
             )
         )
         .map((document, index) => createDocumentCard(document, index))}
-      {dialogs.map(dialog => (
-        <Dialog
-          key={dialog.id}
-          header={dialog.nodeData.data.document.title || "Document Details"}
-          maximizable
-          modal={false}
-          visible={true}
-          onHide={() => handleCloseDialog(dialog.id)}
-          style={{
-            width: '35vw',
-            height: '70vh',
-            minWidth: '15vw',
-            minHeight: '15vw'
-          }}
-          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
-        >
-          <Sidecar
-            nodeData={dialog.nodeData}
-          />
-        </Dialog>
-      ))}
     </div>
   );
 };

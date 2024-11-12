@@ -56,219 +56,222 @@ const Home = () => {
   //   getGraphData()
   // }, [])
 
-  const handleOpenClick = rowData => {
-    const id = uuidv4()
-    setDialogs(prevDialogs => [...prevDialogs, { id, nodeData: rowData }])
-  }
+  const handleOpenClick = (rowData) => {
+    const id = uuidv4();
+    setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData: rowData }]);
+  };
 
-  const handleCloseDialog = id => {
-    setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id))
-  }
+  const handleCloseDialog = (id) => {
+    setDialogs((prevDialogs) =>
+      prevDialogs.filter((dialog) => dialog.id !== id)
+    );
+  };
 
-  const handleGraphUpdate = graph => {
-    setGraph(graph || { nodes: [], edges: [] })
-  }
+  const handleGraphUpdate = (graph) => {
+    setGraph(graph || { nodes: [], edges: [] });
+  };
 
-  const handleNodeHover = nodeData => {
-    setHoveredNodeData(nodeData)
-  }
+  const handleNodeHover = (nodeData) => {
+    setHoveredNodeData(nodeData);
+  };
 
   const handleNodeOut = () => {
-    setHoveredNodeData(null)
-  }
+    setHoveredNodeData(null);
+  };
 
-  const handleNodeClick = node => {
-    console.log(node)
-    setSelectedNodes(prevSelectedNodes => [
+  const handleNodeClick = (node) => {
+    console.log(node);
+    setSelectedNodes((prevSelectedNodes) => [
       {
         ...node,
         isOpen: false,
         activeTabIndex: 0,
-        idNode: uuidv4()
+        idNode: uuidv4(),
       },
-      ...prevSelectedNodes
-    ])
-  }
+      ...prevSelectedNodes,
+    ]);
+  };
 
-  const handleCloseNode = rowIndex => {
-    setSelectedNodes(prevSelectedNodes => {
+  const handleCloseNode = (rowIndex) => {
+    setSelectedNodes((prevSelectedNodes) => {
       const updatedNodes = prevSelectedNodes.filter(
         (_, index) => index !== rowIndex.rowIndex
-      )
-      return [...updatedNodes]
-    })
-  }
+      );
+      return [...updatedNodes];
+    });
+  };
 
-  const onRowReorder = event => {
-    setSelectedNodes(event.value)
-  }
+  const onRowReorder = (event) => {
+    setSelectedNodes(event.value);
+  };
 
   const handleTimeRangeChange = (event, newValue) => {
-    setTimeRange(newValue)
-    applyFilters(newValue, selectedTerms, selectedEdgeTypes)
-  }
+    setTimeRange(newValue);
+    applyFilters(newValue, selectedTerms, selectedEdgeTypes);
+  };
 
   const applyFilters = (timeRange, terms, edgeTypes = selectedEdgeTypes) => {
-    const newEdges = originalGraph.edges.filter(edge => {
-      const parseDate = dateStr => {
-        if (typeof dateStr === 'number') {
-          return new Date(dateStr, 0)
+    const newEdges = originalGraph.edges.filter((edge) => {
+      const parseDate = (dateStr) => {
+        if (typeof dateStr === "number") {
+          return new Date(dateStr, 0);
         }
 
-        if (typeof dateStr !== 'string') {
-          return null
+        if (typeof dateStr !== "string") {
+          return null;
         }
 
-        const parts = dateStr.split('-')
+        const parts = dateStr.split("-");
         if (parts.length === 3) {
-          return new Date(parts[0], parts[1] - 1, parts[2])
+          return new Date(parts[0], parts[1] - 1, parts[2]);
         } else if (parts.length === 2) {
-          return new Date(parts[0], parts[1] - 1)
+          return new Date(parts[0], parts[1] - 1);
         } else if (parts.length === 1) {
-          return new Date(parts[0], 0)
+          return new Date(parts[0], 0);
         }
 
-        return null
-      }
+        return null;
+      };
 
       // If no edge types are selected, show all edges
       if (edgeTypes.length === 0) {
-        return true
+        return true;
       }
 
       // Only include edges that match the selected edge types
       if (!edgeTypes.includes(edge.type)) {
-        return false
+        return false;
       }
 
-      if (edge.type === 'document') {
-        const edgeDate = parseDate(edge.date)
+      if (edge.type === "document") {
+        const edgeDate = parseDate(edge.date);
         return (
           edgeDate >= new Date(timeRange[0], 0) &&
           edgeDate <= new Date(timeRange[1], 11, 31)
-        )
+        );
       } else {
-        return true
+        return true;
       }
-    })
+    });
 
-    const newNodes = originalGraph.nodes.filter(node => {
+    const newNodes = originalGraph.nodes.filter((node) => {
       return newEdges.some(
-        edge => edge.source === node.id || edge.target === node.id
-      )
-    })
+        (edge) => edge.source === node.id || edge.target === node.id
+      );
+    });
 
-    const filteredGraph = { nodes: newNodes, edges: newEdges }
-    filterGraphWithTerms(filteredGraph, terms)
-  }
+    const filteredGraph = { nodes: newNodes, edges: newEdges };
+    filterGraphWithTerms(filteredGraph, terms);
+  };
 
   const filterGraphWithTerms = (graph, terms) => {
     if (terms.length === 0) {
-      setGraph(graph)
-      return
+      setGraph(graph);
+      return;
     }
 
     const filteredNodes = graph.nodes.filter(
-      node =>
+      (node) =>
         (node.data?.person?.fullName !== undefined &&
           terms.includes(node.data.person.fullName)) ||
         (node.label !== undefined && terms.includes(node.label))
-    )
+    );
 
-    const connectedNodeIds = new Set(filteredNodes.map(node => node.id))
-    const immediateConnections = new Set()
+    const connectedNodeIds = new Set(filteredNodes.map((node) => node.id));
+    const immediateConnections = new Set();
 
-    graph.edges.forEach(edge => {
+    graph.edges.forEach((edge) => {
       if (connectedNodeIds.has(edge.source)) {
-        immediateConnections.add(edge.target)
+        immediateConnections.add(edge.target);
       }
       if (connectedNodeIds.has(edge.target)) {
-        immediateConnections.add(edge.source)
+        immediateConnections.add(edge.source);
       }
-    })
+    });
 
     const allFilteredNodes = graph.nodes.filter(
-      node => connectedNodeIds.has(node.id) || immediateConnections.has(node.id)
-    )
+      (node) =>
+        connectedNodeIds.has(node.id) || immediateConnections.has(node.id)
+    );
 
     const filteredEdges = graph.edges.filter(
-      edge =>
+      (edge) =>
         (connectedNodeIds.has(edge.source) &&
           immediateConnections.has(edge.target)) ||
         (connectedNodeIds.has(edge.target) &&
           immediateConnections.has(edge.source))
-    )
+    );
 
-    setGraph({ nodes: allFilteredNodes, edges: filteredEdges })
-  }
+    setGraph({ nodes: allFilteredNodes, edges: filteredEdges });
+  };
 
   const handleTimeRangeCommit = async (event, newValue) => {
     // Update the graph by pruning nodes and edges that are outside the time range
-  }
+  };
 
   const renderHeader = (node, index) => (
     <div
       style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center'
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
       }}
     >
       <span>{node?.data?.person?.fullName || node.label}</span>
       <Button
-        icon='pi pi-external-link'
-        className='p-button-rounded p-button-text'
-        onClick={event => {
-          event.stopPropagation()
-          event.preventDefault()
-          handleOpenClick(node)
+        icon="pi pi-external-link"
+        className="p-button-rounded p-button-text"
+        onClick={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          handleOpenClick(node);
         }}
       />
       <Button
-        icon='pi pi-times'
-        className='p-button-rounded p-button-text'
-        onClick={event => {
-          event.stopPropagation()
-          event.preventDefault()
-          handleCloseNode(index)
+        icon="pi pi-times"
+        className="p-button-rounded p-button-text"
+        onClick={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          handleCloseNode(index);
         }}
       />
     </div>
-  )
+  );
 
-  const toggleAccordion = nodeId => {
-    const nodeToToggle = selectedNodes.find(node => node.idNode === nodeId)
-    setSelectedNodes(prevSelectedNodes =>
-      prevSelectedNodes.map(node =>
+  const toggleAccordion = (nodeId) => {
+    const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
+    setSelectedNodes((prevSelectedNodes) =>
+      prevSelectedNodes.map((node) =>
         node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
       )
-    )
-  }
+    );
+  };
 
   const renderAccordion = (rowData, index) => {
-    const id = rowData.idNode
+    const id = rowData.idNode;
     const activeTabIndex =
-      selectedNodes.find(node => node.idNode === id)?.activeTabIndex || 0
+      selectedNodes.find((node) => node.idNode === id)?.activeTabIndex || 0;
 
-    const setActiveTabIndex = newIndex => {
-      setSelectedNodes(prevSelectedNodes =>
-        prevSelectedNodes.map(node =>
+    const setActiveTabIndex = (newIndex) => {
+      setSelectedNodes((prevSelectedNodes) =>
+        prevSelectedNodes.map((node) =>
           node.idNode === id ? { ...node, activeTabIndex: newIndex } : node
         )
-      )
-    }
+      );
+    };
 
     return (
       <Accordion
         key={id}
         activeIndex={
-          selectedNodes.find(node => node.idNode === id)?.isOpen ? 0 : null
+          selectedNodes.find((node) => node.idNode === id)?.isOpen ? 0 : null
         }
         onTabChange={() => toggleAccordion(id)}
-        style={{ width: '100%', flexGrow: 1 }}
+        style={{ width: "100%", flexGrow: 1 }}
       >
         <AccordionTab header={renderHeader(rowData, index)}>
-          <div style={{ overflow: 'auto', height: '100%', maxHeight: '45vh' }}>
+          <div style={{ overflow: "auto", height: "100%", maxHeight: "45vh" }}>
             <Sidecar
               key={id}
               nodeData={rowData}
@@ -279,92 +282,94 @@ const Home = () => {
           </div>
         </AccordionTab>
       </Accordion>
-    )
-  }
+    );
+  };
 
   const onFilterChange = (filteredGraph, terms) => {
-    setSelectedTerms(terms)
-    applyFilters(timeRange, terms, selectedEdgeTypes)
-  }
+    setSelectedTerms(terms);
+    applyFilters(timeRange, terms, selectedEdgeTypes);
+  };
 
-  const handleEdgeTypeChange = newEdgeTypes => {
-    console.log('Selected Edge Types:', newEdgeTypes)
-    setSelectedEdgeTypes(newEdgeTypes)
-    applyFilters(timeRange, selectedTerms, newEdgeTypes)
-  }
+  const handleEdgeTypeChange = (newEdgeTypes) => {
+    console.log("Selected Edge Types:", newEdgeTypes);
+    setSelectedEdgeTypes(newEdgeTypes);
+    applyFilters(timeRange, selectedTerms, newEdgeTypes);
+  };
 
   return (
     <>
       <div className={styles.content}>
-        <Splitter style={{ overflowY: 'auto' }}>
+        <Splitter style={{ overflowY: "auto" }}>
           <SplitterPanel
             size={30}
             minSize={0}
             style={{
-              display: 'flex',
-              flexDirection: 'column',
-              height: '90vh',
-              overflowY: 'auto'
+              display: "flex",
+              flexDirection: "column",
+              height: "90vh",
+              overflowY: "auto",
             }}
           >
             <DataTable
-              className='Home-DataTable'
+              className="Home-DataTable"
               value={selectedNodes}
               reorderableRows
               onRowReorder={onRowReorder}
               key={selectedNodes.length}
-              emptyMessage='Select a node to view its details'
+              emptyMessage="Select a node to view its details"
             >
               <Column
                 body={(rowData, index) => renderAccordion(rowData, index)}
-                header={'Sidecars'}
+                header={"Sidecars"}
               />
             </DataTable>
             {/* Detailed explanation of how the graph works and application synopsis */}
-            <div className={styles.infoContainer}>
-              <h3>Graph Information</h3>
-              <p>
-                This network graph maps relationships between entities like
-                people, organizations, documents, religions, and places. Each
-                node represents an entity, and each edge indicates a connection,
-                allowing you to navigate a web of relationships. The graph helps
-                you quickly uncover hidden connections, contexts, and patterns
-                within the network.
-              </p>
-              <p>
-                Click any node to view detailed information and its direct and
-                indirect connections. Hovering over nodes highlights related
-                entities and connections for easy visual exploration. Use the
-                filters on the right to control which types of nodes and edges
-                are shown, focusing on the details most relevant to your
-                research.
-              </p>
-              <p>
-                Adjust the time range slider below to filter entities and
-                connections by specific time periods. This enables you to
-                observe historical changes, such as the influence of
-                organizations, shifts in religious connections, or key figures’
-                evolving roles over time.
-              </p>
-              <p>
-                Use these features to analyze specific connections, trace the impact of
-                organizations, or examine cultural ties, providing a
-                comprehensive, time-sensitive view of the network.
-              </p>
-              <h3>Metrics</h3>
-              {metrics && (
-                <ul className={styles.metrics} >
-                  <li>Total Nodes: {metrics.totalNodes}</li>
-                  <li>Total Edges: {metrics.totalEdges}</li>
-                  <li>Density: {metrics.density}</li>
-                </ul>
-              )}
-            </div>
+  <Accordion multiple activeIndex={[0, 1]}>
+  <AccordionTab header="Graph Information">
+    <p>
+      This network graph maps relationships between entities like
+      people, organizations, documents, religions, and places. Each
+      node represents an entity, and each edge indicates a connection,
+      allowing you to navigate a web of relationships. The graph helps
+      you quickly uncover hidden connections, contexts, and patterns
+      within the network.
+    </p>
+    <p>
+      Click any node to view detailed information and its direct and
+      indirect connections. Hovering over nodes highlights related
+      entities and connections for easy visual exploration. Use the
+      filters on the right to control which types of nodes and edges
+      are shown, focusing on the details most relevant to your
+      research.
+    </p>
+    <p>
+      Adjust the time range slider below to filter entities and
+      connections by specific time periods. This enables you to
+      observe historical changes, such as the influence of
+      organizations, shifts in religious connections, or key figures’
+      evolving roles over time.
+    </p>
+    <p>
+      Use these features to analyze specific connections, trace the
+      impact of organizations, or examine cultural ties, providing a
+      comprehensive, time-sensitive view of the network.
+    </p>
+  </AccordionTab>
+  <AccordionTab header="Metrics">
+    {metrics && (
+      <ul className={styles.metrics}>
+        <li>Total Nodes: {metrics.totalNodes}</li>
+        <li>Total Edges: {metrics.totalEdges}</li>
+        <li>Density: {metrics.density}</li>
+      </ul>
+    )}
+  </AccordionTab>
+</Accordion>
           </SplitterPanel>
           <SplitterPanel className={styles.sigmaPanel} size={70} minSize={0}>
             {loading ? (
               <div className={styles.loaderContainer}>
-                <ClipLoader color='#36d7b7' loading={loading} size={150} />
+                <ClipLoader color="#36d7b7" loading={loading} size={150} />
               </div>
             ) : (
               <div className={styles.graphContainer}>
@@ -375,14 +380,14 @@ const Home = () => {
                     originalGraph={originalGraph}
                     onFilterChange={onFilterChange}
                   />
-                              <ToggleButton
-                    onIcon='pi pi-check'
-                    offIcon='pi pi-times'
+                  <ToggleButton
+                    onIcon="pi pi-check"
+                    offIcon="pi pi-times"
                     checked={showEdges}
-                    onChange={e => setShowEdges(e.value)}
-                    onLabel='Show Edges'
-                    offLabel='Hide Edges'
-                    severity={showEdges ? 'success' : 'danger'}
+                    onChange={(e) => setShowEdges(e.value)}
+                    onLabel="Show Edges"
+                    offLabel="Hide Edges"
+                    severity={showEdges ? "success" : "danger"}
                   />
 
                 </div> */}
@@ -401,14 +406,14 @@ const Home = () => {
                     value={timeRange}
                     onChange={handleTimeRangeChange}
                     onChangeCommitted={handleTimeRangeCommit}
-                    valueLabelDisplay='auto'
+                    valueLabelDisplay="auto"
                     min={minDate}
                     max={maxDate}
                     step={1}
                     className={styles.slider}
                     marks={[
                       { value: minDate, label: minDate },
-                      { value: maxDate, label: maxDate }
+                      { value: maxDate, label: maxDate },
                     ]}
                   /> */}
                 </div>
@@ -423,7 +428,7 @@ const Home = () => {
         onChange={handleEdgeTypeChange}
       /> */}
 
-      {dialogs.map(dialog => (
+      {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
           header={
@@ -434,28 +439,28 @@ const Home = () => {
           visible={true}
           onHide={() => handleCloseDialog(dialog.id)}
           style={{
-            width: '35vw',
-            height: '70vh',
-            minWidth: '15vw',
-            minHeight: '15vw'
+            width: "35vw",
+            height: "70vh",
+            minWidth: "15vw",
+            minHeight: "15vw",
           }}
-          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+          breakpoints={{ "960px": "75vw", "641px": "100vw" }}
         >
           <Sidecar
             nodeData={dialog.nodeData}
             handleNodeClick={handleNodeClick}
             activeTabIndex={dialog.activeTabIndex}
-            setActiveTabIndex={index => {
-              const updatedDialogs = dialogs.map(dlg =>
+            setActiveTabIndex={(index) => {
+              const updatedDialogs = dialogs.map((dlg) =>
                 dlg.id === dialog.id ? { ...dlg, activeTabIndex: index } : dlg
-              )
-              setDialogs(updatedDialogs)
+              );
+              setDialogs(updatedDialogs);
             }}
           />
         </Dialog>
       ))}
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
