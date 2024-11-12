@@ -20,7 +20,7 @@ const Filter = ({ onFilterChange, options, filters }) => {
       optionLabel="name"
       filter
       placeholder="Select Filters"
-      className="p-multiselect"
+      className="filter"
     />
   );
 };
