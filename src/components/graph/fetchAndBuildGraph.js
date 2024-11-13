@@ -224,20 +224,23 @@ const buildGraph = (
     const groupMatch = filters[node.group];
     const termMatch = terms.length === 0 || terms.includes(node.label);
 
-    // Collect all relevant dates
-    // Collect all relevant dates
-    const relevantDates = [
-      extractYear(node.date),
-      // extractYear(node.birthDate),
-      // extractYear(node.deathDate)
-    ];
+    
 
-    // Check if any relevant date is undefined or within the range
-    const dateMatch = relevantDates.some(
-      (date) =>
-        typeof date === "undefined" ||
-        (typeof date === "number" && date >= startDate && date <= endDate)
-    );
+    let dateMatch = true;
+    if (startDate || endDate) {
+      const nodeDate = extractYear(node.date);
+      if (nodeDate) {
+        if (startDate && endDate) {
+          dateMatch = nodeDate >= startDate && nodeDate <= endDate;
+        } else if (startDate) {
+          dateMatch = nodeDate >= startDate;
+        } else if (endDate) {
+          dateMatch = nodeDate <= endDate;
+        }
+      } else {
+        dateMatch = false;
+      }
+    }
 
     return groupMatch && termMatch && dateMatch;
   });
