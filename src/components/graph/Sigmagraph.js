@@ -26,6 +26,7 @@ import {
   Button,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { Toast } from 'primereact/toast'; // Import Toast from primereact
 
 export default function SigmaGraph({
   onNodeClick,
@@ -69,6 +70,7 @@ export default function SigmaGraph({
   const [maxDate, setMaxDate] = useState(1800);
   const [dateValue, setDateValue] = useState([1680, 1800]); // [startDate, endDate]
   const [commitedDateValue, setCommitedDateValue] = useState([1680, 1700]);
+  const toast = useRef(null); // Create a ref for Toast
 
 
   const handleZoomIn = () => {
@@ -165,6 +167,18 @@ export default function SigmaGraph({
         setLoadingProgress(70); // Data fetched
       } catch (error) {
         console.error("Error fetching graph data:", error);
+        let errorMessage = error.message || "An error occurred while fetching graph data";
+        if (error.message === "mnemonist/fixed-stack: `capacity` should be a positive number."){
+          errorMessage = "No valid nodes or edges found for creating the graph";
+        }
+        if (toast.current) {
+          toast.current.show({
+            severity: 'error',
+            summary: 'Error',
+            detail: errorMessage,
+            life: 3000
+          });
+        }
       } finally {
         setLoadingProgress(100); // Loading complete
       }
@@ -284,6 +298,9 @@ export default function SigmaGraph({
         onLoaderFinished={() => setLoadingProgress(0)}
       />
 
+<Toast ref={toast} />
+
+
  {/* Filters Container Positioned at Bottom Right */}
  <Box
   sx={{
@@ -302,6 +319,43 @@ export default function SigmaGraph({
   }}
 >
   <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+      {/* Node Filters */}
+      <Accordion>
+        <AccordionSummary
+          expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+          aria-controls="node-filters-content"
+          id="node-filters-header"
+          sx={{ backgroundColor: '#282936', color: 'white', padding: 0 }}
+        >
+          <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, paddingLeft: '5px' }}>
+            Node Filters
+          </Typography>
+        </AccordionSummary>
+        <AccordionDetails sx={{ backgroundColor: '#282936', color: 'white', padding: 1 }}>
+          <FormGroup>
+            {Object.keys(filters).map((nodeType) => (
+              <FormControlLabel
+                key={nodeType}
+                control={
+                  <Checkbox
+                    checked={filters[nodeType]}
+                    onChange={(e) => {
+                      setFilters({
+                        ...filters,
+                        [nodeType]: e.target.checked,
+                      });
+                    }}
+                    name={nodeType}
+                    sx={{ color: 'white' }}
+                  />
+                }
+                label={nodeType}
+              />
+            ))}
+          </FormGroup>
+        </AccordionDetails>
+      </Accordion>
+
     {/* Edge Filters */}
     <Accordion>
       <AccordionSummary
@@ -339,42 +393,6 @@ export default function SigmaGraph({
       </AccordionDetails>
     </Accordion>
 
-    {/* Node Filters */}
-    <Accordion>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-        aria-controls="node-filters-content"
-        id="node-filters-header"
-        sx={{ backgroundColor: '#282936', color: 'white', padding: 0 }}
-      >
-        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, paddingLeft: '5px' }}>
-          Node Filters
-        </Typography>
-      </AccordionSummary>
-      <AccordionDetails sx={{ backgroundColor: '#282936', color: 'white', padding: 1 }}>
-        <FormGroup>
-          {Object.keys(filters).map((nodeType) => (
-            <FormControlLabel
-              key={nodeType}
-              control={
-                <Checkbox
-                  checked={filters[nodeType]}
-                  onChange={(e) => {
-                    setFilters({
-                      ...filters,
-                      [nodeType]: e.target.checked,
-                    });
-                  }}
-                  name={nodeType}
-                  sx={{ color: 'white' }}
-                />
-              }
-              label={nodeType}
-            />
-          ))}
-        </FormGroup>
-      </AccordionDetails>
-    </Accordion>
 
     {/* Legend */}
     <Accordion>
