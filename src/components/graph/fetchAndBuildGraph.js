@@ -8,23 +8,36 @@ import modularity from "graphology-communities-louvain";
 import { density } from "graphology-metrics/graph";
 
 const colorPalette = {
-  nodeDefault: "#FFD700",
-  nodeHighlighted: "#FFFFA1",
-  edgeDefault: "#718093",
-  edgeHighlighted: "#7F8C8D",
+  nodeDefault: "#D3D3D3",       // Light Gray
+  nodeHighlighted: "#A9A9A9",   // Dark Gray
+  edgeDefault: "#A0A0A0",       // Medium Gray
+  edgeHighlighted: "#505050",   // Very Dark Gray
+  // Updated communities with more contrast and neutral tones
   communities: [
-    "#FFD700",
-    "#8E44AD",
-    "#3498DB",
-    "#1ABC9C",
-    "#E74C3C",
-    "#F39C12",
-    "#2ECC71",
-    "#9B59B6",
-    "#E67E22",
-    "#16A085",
+    "#FF0000", // Red
+    // "#00FF00", // Green
+    "#0000FF", // Blue
+    "#FFFF00", // Yellow
+    "#FF00FF", // Purple
+    "#00FFFF", // Cyan
+    "#FFA500", // Orange
+    "#C0C0C0", // Silver (replacing dark Purple "#800080")
+    "#A9A9A9", // Dark Gray (replacing dark Green "#008000")
+    "#D3D3D3", // Light Gray (replacing dark Maroon "#800000")
+    "#F5F5F5", // Whitesmoke (replacing dark Teal "#008080")
+    "#E0E0E0", // Gainsboro (replacing dark Navy "#000080")
+    "#F8F8F8", // Near White (replacing dark Olive "#808000")
+    "#FFFFFF", // White (replacing dark Maroon "#800000")
+    "#B0B0B0", // Silver (replacing Black "#000000")
   ],
+  // Use colors of varying shades for the edge types
+  sender: "#6A5ACD",      // Slate Blue
+  receiver: "#9370DB",    // Medium Purple
+  mentioned: "#BA55D3",   // Medium Orchid
+  author: "#FF69B4",      // Hot Pink
+  waypoint: "#D8BFD8",    // Thistle
 };
+
 
 const fetchAndBuildGraph = async (
   nodesUrl,
@@ -48,16 +61,16 @@ const fetchAndBuildGraph = async (
 
   const getEdgeColor = (type) => {
     const edgeColors = {
-      document: "#3498DB",
-      organization: "#1ABC9C",
-      religion: "#8E44AD",
-      relationship: "#E74C3C",
-      sender: "#F39C12",
-      receiver: "#2ECC71",
-      mentioned: "#9B59B6",
-      author: "#E67E22",
-      waypoint: "#16A085",
-      Unknown: "#7F8C8D",
+      document: "#A0A0A0",      // Medium Gray
+      organization: "#808080",  // Gray
+      religion: "#696969",      // Dim Gray
+      relationship: "#505050",  // Dark Gray
+      sender: colorPalette.sender,
+      receiver: colorPalette.receiver,
+      mentioned: colorPalette.mentioned,
+      author: colorPalette.author,
+      waypoint: colorPalette.waypoint,
+      Unknown: "#B0B0B0",        // Silver
     };
     return edgeColors[type] || generateRandomSoftColor();
   };
@@ -109,7 +122,6 @@ const fetchAndBuildGraph = async (
         const edgeId = `edge-${edge.from}-${edge.to}`;
 
         if (edgeIds.has(edgeId)) return;
-
         const newEdge = {
           id: edgeId,
           source: edge.from,
@@ -127,23 +139,18 @@ const fetchAndBuildGraph = async (
         switch (edge.roleID) {
           case 1:
             newEdge.label = "Sender";
-            newEdge.color = colorPalette.edgeDefault;
             break;
           case 2:
             newEdge.label = "Receiver";
-            newEdge.color = colorPalette.edgeDefault;
             break;
           case 3:
             newEdge.label = "Mentioned";
-            newEdge.color = colorPalette.edgeDefault;
             break;
           case 4:
             newEdge.label = "Author";
-            newEdge.color = colorPalette.edgeDefault;
             break;
           case 5:
             newEdge.label = "Waypoint";
-            newEdge.color = colorPalette.edgeDefault;
             break;
           default:
             break;

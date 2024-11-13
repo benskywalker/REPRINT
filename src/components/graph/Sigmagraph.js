@@ -262,15 +262,17 @@ export default function SigmaGraph({
  {/* Filters Container Positioned at Bottom Right */}
  <Box
         sx={{
-          position: 'fixed',
-          bottom: 16,
-          right: 16,
+          position: 'absolute',
+          top: 0,
+          right: 0,
           padding: 2,
           borderRadius: 2,
           boxShadow: 3,
           maxWidth: 300,
           zIndex: 100,
-          maxHeight: '80vh',
+          maxHeight: '100vh',
+          overflowY: 'auto',
+          backgroundColor: '#282936',
         }}
       >
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -349,7 +351,7 @@ export default function SigmaGraph({
               </FormGroup>
             </AccordionDetails>
           </Accordion>
-          <Accordion>
+          <Accordion defaultExpanded>
   <AccordionSummary
     expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
     aria-controls="legend-content"
@@ -362,7 +364,7 @@ export default function SigmaGraph({
     <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
       
       {/* Nodes Section */}
-      <Accordion>
+      <Accordion defaultExpanded>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
           aria-controls="nodes-content"
@@ -378,7 +380,7 @@ export default function SigmaGraph({
                 display: 'inline-block',
                 width: '20px',
                 height: '20px',
-                backgroundColor: '#FFD700',
+                backgroundColor: '#D3D3D3', // nodeDefault
                 marginRight: '10px',
               }}
             ></span>
@@ -390,7 +392,7 @@ export default function SigmaGraph({
                 display: 'inline-block',
                 width: '20px',
                 height: '20px',
-                backgroundColor: '#FFFFA1',
+                backgroundColor: '#A9A9A9', // nodeHighlighted
                 marginRight: '10px',
               }}
             ></span>
@@ -400,7 +402,7 @@ export default function SigmaGraph({
       </Accordion>
       
       {/* Edges Section */}
-      <Accordion>
+      <Accordion defaultExpanded>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
           aria-controls="edges-content"
@@ -416,7 +418,7 @@ export default function SigmaGraph({
                 display: 'inline-block',
                 width: '20px',
                 height: '2px',
-                backgroundColor: '#718093',
+                backgroundColor: '#A0A0A0', // edgeDefault
                 marginRight: '10px',
               }}
             ></span>
@@ -428,7 +430,7 @@ export default function SigmaGraph({
                 display: 'inline-block',
                 width: '20px',
                 height: '2px',
-                backgroundColor: '#7F8C8D',
+                backgroundColor: '#505050', // edgeHighlighted
                 marginRight: '10px',
               }}
             ></span>
@@ -436,7 +438,7 @@ export default function SigmaGraph({
           </div>
           
           {/* Edge Types */}
-          <Accordion>
+          <Accordion defaultExpanded>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
               aria-controls="edge-types-content"
@@ -447,16 +449,16 @@ export default function SigmaGraph({
             </AccordionSummary>
             <AccordionDetails style={{ backgroundColor: '#4a4a5f', color: 'white' }}>
               {[
-                { type: 'document', color: '#3498DB' },
-                { type: 'organization', color: '#1ABC9C' },
-                { type: 'religion', color: '#8E44AD' },
-                { type: 'relationship', color: '#E74C3C' },
-                { type: 'sender', color: '#F39C12' },
-                { type: 'receiver', color: '#2ECC71' },
-                { type: 'mentioned', color: '#9B59B6' },
-                { type: 'author', color: '#E67E22' },
-                { type: 'waypoint', color: '#16A085' },
-                { type: 'Unknown', color: '#7F8C8D' },
+                { type: 'document', color: '#A0A0A0' },      // document
+                { type: 'organization', color: '#808080' },  // organization
+                { type: 'religion', color: '#696969' },      // religion
+                { type: 'relationship', color: '#505050' },  // relationship
+                { type: 'sender', color: '#6A5ACD' },        // sender
+                { type: 'receiver', color: '#9370DB' },      // receiver
+                { type: 'mentioned', color: '#BA55D3' },     // mentioned
+                { type: 'author', color: '#FF69B4' },        // author
+                { type: 'waypoint', color: '#D8BFD8' },      // waypoint
+                { type: 'Unknown', color: '#B0B0B0' },       // Unknown
               ].map((edgeType, index) => (
                 <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                   <span
@@ -476,7 +478,7 @@ export default function SigmaGraph({
       </Accordion>
       
       {/* Communities Section */}
-      <Accordion>
+      <Accordion defaultExpanded>
         <AccordionSummary
           expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
           aria-controls="communities-content"
@@ -488,16 +490,20 @@ export default function SigmaGraph({
         <AccordionDetails style={{ backgroundColor: '#3a3a4f', color: 'white' }}>
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
             {[
-              '#FFD700',
-              '#8E44AD',
-              '#3498DB',
-              '#1ABC9C',
-              '#E74C3C',
-              '#F39C12',
-              '#2ECC71',
-              '#9B59B6',
-              '#E67E22',
-              '#16A085',
+              "#FF0000", // Red
+              "#0000FF", // Blue
+              "#FFFF00", // Yellow
+              "#FF00FF", // Purple
+              "#00FFFF", // Cyan
+              "#FFA500", // Orange
+              "#C0C0C0", // Silver
+              "#A9A9A9", // Dark Gray
+              "#D3D3D3", // Light Gray
+              "#F5F5F5", // Whitesmoke
+              "#E0E0E0", // Gainsboro
+              "#F8F8F8", // Near White
+              "#FFFFFF", // White
+              "#B0B0B0", // Silver
             ].map((color, index) => (
               <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
                 <span
