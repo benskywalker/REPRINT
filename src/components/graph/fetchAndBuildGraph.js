@@ -221,13 +221,17 @@ const buildGraph = (
 
   // Step 1: Filter nodes based on selected filters, terms, and date range
   const filteredNodesMatchingTerms = nodes.filter((node) => {
-    const groupMatch = filters[node.group];
-    const termMatch = terms.length === 0 || terms.includes(node.label);
-
-    
-
+    // Check if any group filters are active
+    const isGroupFilterActive = Object.values(filters).some((value) => value);
+    const groupMatch = isGroupFilterActive ? filters[node.group] : true;
+  
+    // Check if any term filters are active
+    const isTermFilterActive = terms.length > 0;
+    const termMatch = isTermFilterActive ? terms.includes(node.label) : true;
+  
     let dateMatch = true;
-    if ((startDate || endDate) && node.documentID) {
+  
+    if (!node.religionID && !node.organizationID) {
       const nodeDate = extractYear(node.date);
       if (nodeDate) {
         if (startDate && endDate) {
@@ -241,7 +245,7 @@ const buildGraph = (
         dateMatch = false;
       }
     }
-
+  
     return groupMatch && termMatch && dateMatch;
   });
 
