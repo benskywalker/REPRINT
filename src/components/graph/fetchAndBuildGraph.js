@@ -316,17 +316,19 @@ const buildGraph = (
   );
 
   // Step 10: Add nodes to the graph
-  finalFilteredNodes.forEach((node) => {
-    graph.addNode(node.id, {
-      ...node,
-      data: {
-        person: { ...node },
-        organization: { ...node },
-        religion: { ...node },
-        document: { ...node },
-      },
-    });
+ // fetchAndBuildGraph.js
+
+finalFilteredNodes.forEach((node) => {
+  graph.addNode(node.id, {
+    ...node,
+    data: {
+      ...(node.personID && { person: { ...node } }),
+      ...(node.organizationID && { organization: { ...node } }),
+      ...(node.religionID && { religion: { ...node } }),
+      ...(node.documentID && { document: { ...node } }),
+    },
   });
+});
 
   // Step 11: Add edges to the graph
   filteredEdges.forEach((edge) => {
