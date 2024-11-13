@@ -253,7 +253,7 @@ const buildGraph = (
   });
 
   // Step 3: Identify all nodes of type 'document'
-  const documentNodes = nodes.filter((node) => node.group === "document");
+  const documentNodes = filteredNodesMatchingTerms.filter((node) => node.group === "document");
   const documentNodeIds = new Set(documentNodes.map((node) => node.id));
 
   // Step 4: Find immediate connections (neighbors) of 'document' nodes
