@@ -626,9 +626,9 @@ export default function SigmaGraph({
             />
             <RelativeSize initialSize={15} />
           </Sigma>
-        <div className="card flex justify-content-center" style={{ bottom: 100, postion: 'fixed' }}>
+        <div className="card flex " style={{ bottom: 100, postion: 'fixed' }}>
           {/* Zoom Controls */}
-    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', padding: '10px' }}>
     <Button 
             variant="contained" 
             color="primary" 
