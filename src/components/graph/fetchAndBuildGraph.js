@@ -15,20 +15,19 @@ const colorPalette = {
   // Updated communities with more contrast and neutral tones
   communities: [
     "#FF0000", // Red
-    // "#00FF00", // Green
     "#0000FF", // Blue
     "#FFFF00", // Yellow
     "#FF00FF", // Purple
     "#00FFFF", // Cyan
     "#FFA500", // Orange
-    "#C0C0C0", // Silver (replacing dark Purple "#800080")
-    "#A9A9A9", // Dark Gray (replacing dark Green "#008000")
-    "#D3D3D3", // Light Gray (replacing dark Maroon "#800000")
-    "#F5F5F5", // Whitesmoke (replacing dark Teal "#008080")
-    "#E0E0E0", // Gainsboro (replacing dark Navy "#000080")
-    "#F8F8F8", // Near White (replacing dark Olive "#808000")
-    "#FFFFFF", // White (replacing dark Maroon "#800000")
-    "#B0B0B0", // Silver (replacing Black "#000000")
+    "#C0C0C0", // Silver
+    "#A9A9A9", // Dark Gray
+    "#D3D3D3", // Light Gray
+    "#F5F5F5", // Whitesmoke
+    "#E0E0E0", // Gainsboro
+    "#F8F8F8", // Near White
+    "#FFFFFF", // White
+    "#B0B0B0", // Silver
   ],
   // Use colors of varying shades for the edge types
   sender: "#6A5ACD",      // Slate Blue
@@ -37,7 +36,6 @@ const colorPalette = {
   author: "#FF69B4",      // Hot Pink
   waypoint: "#D8BFD8",    // Thistle
 };
-
 
 const fetchAndBuildGraph = async (
   nodesUrl,
@@ -104,7 +102,7 @@ const fetchAndBuildGraph = async (
         borderColor: "#95A5A6",
         borderWidth: 2,
         highlighted: false,
-        group: node.group, // Make sure 'group' is defined,
+        group: node.group, // Ensure 'group' is defined,
         date: node.date,
         ...node,
       };
@@ -191,7 +189,7 @@ const buildGraph = (
 ) => {
   const graph = new Graph({ multi: true });
 
-  // Helper function to extract year
+  // Helper function to extract year from various date formats
   const extractYear = (date) => {
     if (typeof date === "number") {
       return date;
@@ -219,42 +217,31 @@ const buildGraph = (
   const terms = Array.isArray(selectedTerms) ? selectedTerms : [];
   const [startDate, endDate] = dateRange;
 
-  // Step 1: Filter nodes based on selected filters, terms, and date range
+  // Step 1: Filter nodes based on selected filters, terms
   const filteredNodesMatchingTerms = nodes.filter((node) => {
     // Check if any group filters are active
     const isGroupFilterActive = Object.values(filters).some((value) => value);
     const groupMatch = isGroupFilterActive ? filters[node.group] : true;
-  
+
     // Check if any term filters are active
     const isTermFilterActive = terms.length > 0;
-    const termMatch = isTermFilterActive ? terms.includes(node.label) : true;
-  
-    let dateMatch = true;
-  
-    if (!node.religionID && !node.organizationID) {
-      const nodeDate = extractYear(node.date);
-      if (nodeDate) {
-        if (startDate && endDate) {
-          dateMatch = nodeDate >= startDate && nodeDate <= endDate;
-        } else if (startDate) {
-          dateMatch = nodeDate >= startDate;
-        } else if (endDate) {
-          dateMatch = nodeDate <= endDate;
-        }
-      } else {
-        dateMatch = false;
-      }
-    }
-  
-    return groupMatch && termMatch && dateMatch;
+    // Updated termMatch to handle partial and case-insensitive matches
+    const termMatch = isTermFilterActive
+      ? terms.some(term =>
+          node.label.toLowerCase().includes(term.toLowerCase())
+        )
+      : true;
+
+    // Include the node only if it matches all active filters
+    return groupMatch && termMatch;
   });
 
-  // Extract IDs of nodes that match the selectedTerms
+  // Step 2: Extract IDs of nodes that match the filters
   const matchedNodeIds = new Set(
     filteredNodesMatchingTerms.map((node) => node.id)
   );
 
-  // Step 2: Find immediate connections (neighbors) of the matched nodes
+  // Step 3: Find immediate connections (neighbors) of the matched nodes
   const immediateConnectedNodeIds = new Set();
 
   edges.forEach((edge) => {
@@ -266,24 +253,25 @@ const buildGraph = (
     }
   });
 
-  // Step 3: Identify all nodes of type 'document'
-  const documentNodes = filteredNodesMatchingTerms.filter((node) => node.group === "document");
+  // Step 4: Identify all 'document' nodes that match and their connections
+  const documentNodes = filteredNodesMatchingTerms.filter(
+    (node) => node.group === "document"
+  );
   const documentNodeIds = new Set(documentNodes.map((node) => node.id));
 
-  // Step 4: Find immediate connections (neighbors) of 'document' nodes
-  // **Only include connections to filter nodes**
   const documentConnectedNodeIds = new Set();
 
   edges.forEach((edge) => {
     if (documentNodeIds.has(edge.source)) {
       const targetNode = nodeMap.get(edge.target);
-      if (targetNode && filters[targetNode.group]) {
+      // Only add target node if it has passed group and term filters
+      if (targetNode && filters[targetNode.group] && matchedNodeIds.has(targetNode.id)) {
         documentConnectedNodeIds.add(edge.target);
       }
     }
     if (documentNodeIds.has(edge.target)) {
       const sourceNode = nodeMap.get(edge.source);
-      if (sourceNode && filters[sourceNode.group]) {
+      if (sourceNode && filters[sourceNode.group] && matchedNodeIds.has(sourceNode.id)) {
         documentConnectedNodeIds.add(edge.source);
       }
     }
@@ -330,26 +318,71 @@ const buildGraph = (
   );
 
   // Step 10: Add nodes to the graph
- // fetchAndBuildGraph.js
-
-finalFilteredNodes.forEach((node) => {
-  graph.addNode(node.id, {
-    ...node,
-    data: {
-      ...(node.personID && { person: { ...node } }),
-      ...(node.organizationID && { organization: { ...node } }),
-      ...(node.religionID && { religion: { ...node } }),
-      ...(node.documentID && { document: { ...node } }),
-    },
+  finalFilteredNodes.forEach((node) => {
+    graph.addNode(node.id, {
+      ...node,
+      data: {
+        ...(node.personID && { person: { ...node } }),
+        ...(node.organizationID && { organization: { ...node } }),
+        ...(node.religionID && { religion: { ...node } }),
+        ...(node.documentID && { document: { ...node } }),
+      },
+      color:
+        node.group !== "document"
+          ? colorPalette.nodeDefault
+          : colorPalette.communities[
+              Math.floor(Math.random() * colorPalette.communities.length)
+            ],
+    });
   });
-});
+
+  const getEdgeColor = (type) => {
+    const edgeColors = {
+      document: "#A0A0A0",      // Medium Gray
+      organization: "#808080",  // Gray
+      religion: "#696969",      // Dim Gray
+      relationship: "#505050",  // Dark Gray
+      sender: colorPalette.sender,
+      receiver: colorPalette.receiver,
+      mentioned: colorPalette.mentioned,
+      author: colorPalette.author,
+      waypoint: colorPalette.waypoint,
+      Unknown: "#B0B0B0",        // Silver
+    };
+    return edgeColors[type] 
+  };
 
   // Step 11: Add edges to the graph
   filteredEdges.forEach((edge) => {
     graph.addEdge(edge.source, edge.target, {
       ...edge,
+      color: getEdgeColor(edge.type),
     });
   });
+
+  // Step 12: Filter out document nodes outside the date range using node.date
+  if (startDate !== undefined && endDate !== undefined) {
+    const documentNodesToRemove = [];
+    graph.forEachNode((nodeId, nodeAttributes) => {
+      if (nodeAttributes.group === "document") {
+        const nodeDate = nodeAttributes.date;
+        const year = extractYear(nodeDate);
+        if (year !== undefined) {
+          if (year < startDate || year > endDate) {
+            documentNodesToRemove.push(nodeId);
+          }
+        } else {
+          // Optionally, remove nodes without a valid date
+          documentNodesToRemove.push(nodeId);
+        }
+      }
+    });
+
+    // Remove the nodes after traversal to avoid modifying the graph during iteration
+    documentNodesToRemove.forEach((nodeId) => {
+      graph.dropNode(nodeId);
+    });
+  }
 
   return graph;
 };
