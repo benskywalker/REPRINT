@@ -622,7 +622,7 @@ export default function SigmaGraph({
               slowDown={5}
               startingIterations={1}
               worker={true} // Set worker to true
-              timeout={8000}
+              timeout={5000}
             />
             <RelativeSize initialSize={15} />
           </Sigma>
