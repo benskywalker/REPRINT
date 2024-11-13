@@ -8565,6 +8565,7 @@
 }
 
 .back-button {
+  color: black;
   background-color: lightblue;
 }
 
@@ -8576,9 +8577,8 @@
   color: black;
 }
 
-
-.sidecar{
-    border: 3px solid #343540; 
+.sidecar {
+  border: 3px solid #343540;
 }
 
 .sidecar .p-tabview .p-tabview-panels {
@@ -8592,17 +8592,16 @@
 }
 
 .gallery-card {
-    background-color: #343540;
-
+  background-color: #343540;
 }
 
-.query-section{
+.query-section {
   background-color: #343540; /* Use the variable */
-  color:white;
+  color: white;
 }
 
 .query-input {
-  color:white;
+  color: white;
   background-color: #343540; /* Use the variable */
   border: 1px solid #343540;
 }
@@ -8613,12 +8612,10 @@
 
 .action-link {
   color: #add8e6; /* Replace with your button color */
-
 }
 
 .action-link:hover {
   color: #add8e6; /* Darker shade on hover */
-
 }
 
 .show-more {

@@ -472,6 +472,18 @@ const QueryTool = () => {
   const renderHeader = () => {
     return (
       <div className="table-header">
+        {/* Back Button */}
+        {tableHistory.length > 0 && (
+          <button
+            className="back-button mr-4"
+            onClick={goBack}
+            aria-label="Go Back"
+            title="Go Back"
+          >
+            <i className="left-arrow pi pi-arrow-left"></i>
+            Previous Table
+          </button>
+        )}
         <span className="p-input-icon-left">
           <IconField iconPosition="left">
             <InputIcon className="pi pi-search"> </InputIcon>
@@ -483,6 +495,7 @@ const QueryTool = () => {
             />
           </IconField>
         </span>
+
         <MultiSelect
           value={visibleColumns}
           options={filteredFields}
@@ -660,19 +673,6 @@ const QueryTool = () => {
             </p>
           </TabPanel>
           <TabPanel header="Table" leftIcon="pi pi-table mr-2">
-            <div className="table-tab-header">
-              {/* Back Button */}
-              {tableHistory.length > 0 && (
-                <button
-                  className="back-button"
-                  onClick={goBack}
-                  aria-label="Go Back"
-                  title="Go Back"
-                >
-                  <i className="left-arrow pi pi-arrow-left"></i>
-                </button>
-              )}
-            </div>
             {loading ? (
               <div className="spinner-wrapper">
                 <ProgressSpinner />
