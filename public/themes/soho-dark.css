@@ -7068,5 +7068,19 @@
 }
 
 .action-link {
-  color: lightblue;
+  color: #add8e6; /* Replace with your button color */
+
+}
+
+.action-link:hover {
+  color: #add8e6; /* Darker shade on hover */
+
+}
+
+.show-more {
+  color: #add8e6; /* Replace with your button color */
+}
+
+.show-more:hover {
+  color: #add8e6; /* Darker shade on hover */
 }

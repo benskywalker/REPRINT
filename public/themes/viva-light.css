@@ -7209,3 +7209,22 @@
 .query-tool .p-tabview .p-tabview-panels {
   background-color:red !important;
 } */
+
+.action-link {
+  color: #5472d4; /* Replace with your button color */
+
+}
+
+.show-more {
+  color: #5472d4; /* Replace with your button color */
+}
+
+.action-link:hover {
+  color: #2e4a9e; /* Darker color for hover state */
+
+}
+
+.show-more:hover {
+  color: #2e4a9e; /* Darker color for hover state */
+}
+
