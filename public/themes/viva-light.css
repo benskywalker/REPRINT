@@ -8727,36 +8727,82 @@
   }
 }
 
-.query-section {
-  background-color: var(--query-color); /* Use the variable */
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  padding: 15px;
-  margin-bottom: 15px;
-  color: black;
-}
+.sidecar{
+  border: 3px solid #6c6c6c; 
 
-.query-input {
-  background-color: var(--query-color); /* Use the variable */
-  color: black;
-  border: 1px solid #dbd7c4;
-  border-radius: 5px;
-  padding: 10px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
 }
 
 .sidecar .p-tabview .p-tabview-panels {
-  border: 3px solid black !important;
+  border: 3px solid #6c6c6c !important;
 }
 
+.sidecar .p-tabview-nav-link {
+  border-top: 3px solid #5472d4;
+  border-left: 3px solid #5472d4;
+  border-right: 3px solid #5472d4;
+}
 .graphContainer {
   background-color: #000000 !important;
 }
+
+.gallery-card {
+  background-color: #e6e7e8;
+}
+
+.query-section{
+  background-color: #d3d3d3; /* Use the variable */
+  color:#6c6c6c;
+}
+
+.query-input {
+  color:gray;
+  background-color: #d3d3d3; 
+  border: 1px solid #d3d3d3;
+}
+
+.title-container h1 {
+  color: #6c6c6c;
+}
+
+.action-link {
+  color: lightblue;
+}
+
+.query-tool .p-tabview-nav-link{
+  background-color: #e6e7e8;
+}
+
+
+.query-tool .p-tabview-panels{
+  background-color: #e6e7e8 !important;
+
+}
+
+
+/* 
+.query-tool .p-tabview .p-tabview-panels {
+  background-color:red !important;
+} */
+
+.action-link {
+  color: #5472d4; /* Replace with your button color */
+
+}
+
+.show-more {
+  color: #5472d4; /* Replace with your button color */
+}
+
+.action-link:hover {
+  color: #2e4a9e; /* Darker color for hover state */
+
+}
+
+.show-more:hover {
+  color: #2e4a9e; /* Darker color for hover state */
+}
+
+
 
 .back-button {
   background-color: blue;

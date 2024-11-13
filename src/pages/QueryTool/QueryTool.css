@@ -97,21 +97,37 @@
   max-height: 600px;
 }
 
-.query-section {
-  background-color: #343540;
+.query-section{
+  /* background-color: var(--query-color); Use the variable */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 15px;
+  margin-bottom: 15px;
+  /* color:black; */
 }
 
-.query-input {
+
+/* .query-input {
   background-color: #343540;
   border: #343540;
+} */
+
+.query-input {
+  border-radius: 5px;
+  padding: 10px;
+  width: 100%;
+  height: 100%;
+  display: flex; 
+  align-items: center;
+  gap: 10px; 
 }
 
-.title-container {
+/* .title-container {
   background-color: none;
-}
+} */
 
 .title-container h1 {
-  color: white;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   text-align: center;
   font-size: 2rem;
@@ -120,9 +136,9 @@
 }
 
 .action-link {
-  color: lightblue;
   text-decoration: none;
   cursor: pointer;
+  
 }
 
 .action-link:hover {
@@ -130,7 +146,6 @@
 }
 
 .show-more {
-  color: #add8e6; /* Replace with your button color */
   cursor: pointer;
   margin-left: 5px;
   text-decoration: none;
@@ -139,7 +154,6 @@
 
 .show-more:hover {
   text-decoration: underline;
-  color: #add8e6; /* Darker shade on hover */
 }
 
 .back-button {

@@ -28,7 +28,7 @@
 
 .sidecar{
     /* background-color: #343540; */
-    border: 3px solid #343540; 
+    /* border: 3px solid #343540;  */
   padding: 20px;
   border-radius: 25px;
   /* color: #000000;  */
@@ -45,9 +45,9 @@
 .sidecar .p-tabview-nav-link {
   /* color: #000000;  */
   /* background-color: #1755A5 !important; */
-  border-top: 3px solid #b19df7;
+  /* border-top: 3px solid #b19df7;
   border-left: 3px solid #b19df7;
-  border-right: 3px solid #b19df7;
+  border-right: 3px solid #b19df7; */
   /* background-color: #343540; */
   font-family: 'Gentium Book Plus';
 

@@ -270,27 +270,27 @@ const QueryTool = () => {
     }
   };
 
-  const actionBodyTemplate = (rowData) => {
-    const relatedEntities = relatedEntitiesMap[selectedView] || [];
-    return relatedEntities.map((entity, index) => (
-      <Column
-        key={index}
-        header={entity.charAt(0).toUpperCase() + entity.slice(1)}
-        body={(rowData) => (
-          <span
-            style={{
-              color: "#ADD8E6",
-              textDecoration: "underline",
-              cursor: "pointer",
-            }}
-            onClick={() => handleButtonClick(rowData, entity, currentTable)}
-          >
-            {entity.charAt(0).toUpperCase() + entity.slice(1)}
-          </span>
-        )}
-      />
-    ));
-  };
+  // const actionBodyTemplate = (rowData) => {
+  //   const relatedEntities = relatedEntitiesMap[selectedView] || [];
+  //   return relatedEntities.map((entity, index) => (
+  //     <Column
+  //       key={index}
+  //       header={entity.charAt(0).toUpperCase() + entity.slice(1)}
+  //       body={(rowData) => (
+  //         <span
+  //           style={{
+  //             color: "#ADD8E6",
+  //             textDecoration: "underline",
+  //             cursor: "pointer",
+  //           }}
+  //           onClick={() => handleButtonClick(rowData, entity, currentTable)}
+  //         >
+  //           {entity.charAt(0).toUpperCase() + entity.slice(1)}
+  //         </span>
+  //       )}
+  //     />
+  //   ));
+  // };
 
   const updateFilteredFields = () => {
     let filtered = [];
