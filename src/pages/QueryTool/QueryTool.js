@@ -508,13 +508,31 @@ const QueryTool = () => {
             </div>
           </TabPanel>
           <TabPanel header="Network" leftIcon="pi pi-user mr-2">
-            {loading ? (
-              <div className="spinner-wrapper">
-                <ProgressSpinner />
-              </div>
-            ) : (
-              graphData && <QueryGraph graphData={graphData} />
-            )}
+               <QueryGraph
+                nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + "nodes-query"}
+                edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + "edges-query"}
+                body={{tables: [selectedView],
+                  fields: sections.map((section) =>
+                    section.selectedField ? section.selectedField.field : null
+                  ),
+                  operators: sections.map((section) =>
+                    section.selectedParameter
+                      ? {
+                          equals: "=",
+                          not_equals: "!=",
+                          like: "LIKE",
+                          not_like: "NOT LIKE",
+                          greater_than: ">",
+                          less_than: "<",
+                          greater_than_or_equal: ">=",
+                          less_than_or_equal: "<=",
+                        }[section.selectedParameter]
+                      : null
+                  ),
+                  values: sections.map((section) => section.selectedValue),
+                  dependentFields: sections.map((section) => section.selectedAction),
+                }}
+               />
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
             <p className="m-0">

@@ -26,7 +26,7 @@ const colorPalette = {
   ]
 }
 
-const fetchAndBuildGraph = async (nodesUrl, edgesUrl, filters, edgeTypeFilters, body = {}, selectedTerms, dateRange) => {
+const fetchAndBuildGraph = async (nodesUrl, edgesUrl, filters, edgeTypeFilters, body, selectedTerms, dateRange) => {
   const nodes = []
   const edges = []
   let metrics = null
@@ -55,13 +55,16 @@ const fetchAndBuildGraph = async (nodesUrl, edgesUrl, filters, edgeTypeFilters, 
   }
 
   try {
+    console.log('Fetching nodes and edges...')
     const [nodesResponse, edgesResponse] = await Promise.all([
-      axios.post(nodesUrl),
-      axios.post(edgesUrl)
+      axios.post(nodesUrl, body),
+      axios.post(edgesUrl, body)
     ])
 
     const nodesData = nodesResponse.data
     const edgesData = edgesResponse.data
+
+    console.log('nodesData', nodesData, 'edgesData', edgesData)
 
     // Process nodes
     const nodesArray = nodesData

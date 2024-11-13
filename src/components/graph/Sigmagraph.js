@@ -33,6 +33,7 @@ export default function SigmaGraph({
   showEdges,
   nodesUrl, 
   edgesUrl,
+  body
 }) {
   const [filters, setFilters] = useState({
     person: true,
@@ -87,7 +88,7 @@ export default function SigmaGraph({
           edgesUrl,
           filters,
           edgeTypeFilters,
-          {},               // 'body' parameter
+          body,               // 'body' parameter
           selectedTerms,    // 'selectedTerms' parameter
           commitedDateValue // 'dateRange' parameter
         );
