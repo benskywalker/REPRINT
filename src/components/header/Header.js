@@ -1,5 +1,3 @@
-// Header component for ui
-
 import React from "react";
 import { Button } from "primereact/button";
 import styles from "./Header.module.css";
@@ -11,12 +9,11 @@ import { NavLink } from "react-router-dom";
 import PrimeReact from "primereact/api"; // import PrimeReact to use changeTheme function
 import { Image } from "primereact/image";
 import logoImage from '../images/logo.png';
-
+import logoImage2 from '../images/logo2.png';
 
 const Header = () => {
   const [sidebarVisible, setSidebarVisible] = useState(false);
   const [selectedTheme, setSelectedTheme] = useState("soho-dark"); // default theme
-
 
   const toggleSidebar = () => {
     setSidebarVisible(!sidebarVisible);
@@ -36,9 +33,8 @@ const Header = () => {
         className={styles.title}
       >
         <div className={styles.logo}>
-          <Image src={logoImage} alt="logo" />
+          <Image src={selectedTheme === "soho-dark" ? logoImage : logoImage2} alt="logo" />
         </div>
-        {/* <Image src={logo} alt="logo"  className={styles.logo}/> */}
       </NavLink>
       
       {/* pi bar menu for sidebar pop up */}
@@ -74,11 +70,11 @@ const Header = () => {
           </li>
         </ul>
         <hr></hr>
-        {/* <Button
+        <Button
         style={{ width: "25%" }}
           icon={selectedTheme === "viva-light" ? "pi pi-moon" : "pi pi-sun"}
           onClick={toggleTheme}
-        /> */}
+        />
       </Sidebar>
     </div>
   );

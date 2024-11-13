@@ -7032,3 +7032,41 @@
 .title-container{
   background-color: #302F2F;
 }
+
+.sidecar{
+    border: 3px solid #343540; 
+}
+
+.sidecar .p-tabview .p-tabview-panels {
+  border: 3px solid #6c6c6c !important;
+}
+
+.sidecar .p-tabview-nav-link {
+  border-top: 3px solid #b19df7;
+  border-left: 3px solid #b19df7;
+  border-right: 3px solid #b19df7;
+}
+
+.gallery-card {
+    background-color: #343540;
+
+}
+
+.query-section{
+  background-color: #343540; /* Use the variable */
+  color:white;
+}
+
+.query-input {
+  color:white;
+  background-color: #343540; /* Use the variable */
+  border: 1px solid #343540;
+}
+
+.title-container h1 {
+  color: white;
+}
+
+.action-link {
+  color: lightblue;
+}
