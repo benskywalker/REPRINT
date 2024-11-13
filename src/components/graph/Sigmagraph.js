@@ -23,6 +23,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Button,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
@@ -68,6 +69,30 @@ export default function SigmaGraph({
   const [maxDate, setMaxDate] = useState(1800);
   const [dateValue, setDateValue] = useState([1680, 1800]); // [startDate, endDate]
   const [commitedDateValue, setCommitedDateValue] = useState([1680, 1700]);
+
+
+  const handleZoomIn = () => {
+    if (sigmaRef.current) {
+      const sigmaInstance = sigmaRef.current.sigma;
+      const camera = sigmaInstance.cameras[0];
+      if (camera) {
+        const newRatio = camera.ratio * 1.2; // Increase zoom by 20%
+        camera.ratio = newRatio;
+      }
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (sigmaRef.current) {
+      const sigmaInstance = sigmaRef.current.sigma;
+      const camera = sigmaInstance.cameras[0];
+      if (camera) {
+        const newRatio = camera.ratio / 1.2; // Decrease zoom by ~16.7%
+        camera.ratio = newRatio;
+      }
+    }
+  };
+
 
   useEffect(() => {
     showEdgesRef.current = showEdges;
@@ -548,10 +573,11 @@ export default function SigmaGraph({
           placeholder="Search..."
         />
         {graphData.nodes.length > 0 && (
+          <>
           <Sigma
             key={layoutKey} // Force re-render on layoutKey change
             graph={graphData}
-            style={{ width: "100%", height: "calc(92vh - 60px)" }}
+            style={{ width: "100%", height: "80vh" }}
             onClickNode={handleNodeClick}
             onClickEdge={handleEdgeClick}
             onOverNode={handleNodeHover}
@@ -582,9 +608,28 @@ export default function SigmaGraph({
             />
             <RelativeSize initialSize={15} />
           </Sigma>
-        )}
-
-        <div className="card flex justify-content-center" style={{ bottom: 20, postion: 'fixed' }}>
+        <div className="card flex justify-content-center" style={{ bottom: 100, postion: 'fixed' }}>
+          {/* Zoom Controls */}
+    <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
+    <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleZoomIn}
+            aria-label="Zoom In"
+            size="small"
+          >
+            Zoom In
+          </Button>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            onClick={handleZoomOut}
+            aria-label="Zoom Out"
+            size="small"
+          >
+            Zoom Out
+          </Button>
+    </div>
           <Slider 
             value={Array.isArray(dateValue) ? dateValue : [minDate, maxDate]}
             onChange={handleTimeRangeChange}
@@ -596,6 +641,9 @@ export default function SigmaGraph({
             style={{width: "20%"}}
           />
         </div>
+          </>
+        )}
+
       </div>
 
       {/* Optional: Display selected element and metrics */}
