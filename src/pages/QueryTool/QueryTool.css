@@ -144,4 +144,15 @@
   text-decoration: underline;
 }
 
+.show-more {
+  color: #add8e6; /* Replace with your button color */
+  cursor: pointer;
+  margin-left: 5px;
+  text-decoration: none;
+  transition: text-decoration 0.3s, color 0.3s;
+}
 
+.show-more:hover {
+  text-decoration: underline;
+  color: #add8e6; /* Darker shade on hover */
+}
