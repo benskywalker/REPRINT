@@ -227,7 +227,7 @@ const buildGraph = (
     
 
     let dateMatch = true;
-    if (startDate || endDate) {
+    if ((startDate || endDate) && node.documentID) {
       const nodeDate = extractYear(node.date);
       if (nodeDate) {
         if (startDate && endDate) {
