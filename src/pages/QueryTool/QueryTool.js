@@ -19,6 +19,7 @@ import { Tooltip } from "primereact/tooltip";
 import { Toast } from "primereact/toast";
 
 const QueryTool = () => {
+  // Existing state variables
   const [value, setValue] = useState([20, 80]);
   const op = useRef(null);
   const [checked, setChecked] = useState(true);
@@ -44,6 +45,9 @@ const QueryTool = () => {
   const [graphData, setGraphData] = useState(null);
   const [expandedRows, setExpandedRows] = useState({});
   const toast = useRef(null);
+
+  // New state for history management
+  const [tableHistory, setTableHistory] = useState([]);
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -106,6 +110,44 @@ const QueryTool = () => {
       ...prev,
       [`${rowId}-${field}`]: !prev[`${rowId}-${field}`],
     }));
+  };
+
+  // Function to push current state to history before updating
+  const pushToHistory = () => {
+    setTableHistory((prev) => {
+      const newHistory = [
+        ...prev,
+        {
+          queryData,
+          selectedView,
+          currentTable,
+          selectedOrder,
+          visibleColumns,
+          filters,
+          globalFilter,
+        },
+      ];
+      // Optional: Limit history to last 10 entries to prevent excessive memory usage
+      if (newHistory.length > 10) {
+        newHistory.shift();
+      }
+      return newHistory;
+    });
+  };
+
+  // Function to handle going back to previous state
+  const goBack = () => {
+    if (tableHistory.length === 0) return;
+
+    const lastState = tableHistory[tableHistory.length - 1];
+    setQueryData(lastState.queryData);
+    setSelectedView(lastState.selectedView);
+    setCurrentTable(lastState.currentTable);
+    setSelectedOrder(lastState.selectedOrder);
+    setVisibleColumns(lastState.visibleColumns);
+    setFilters(lastState.filters);
+    setGlobalFilter(lastState.globalFilter);
+    setTableHistory((prev) => prev.slice(0, -1));
   };
 
   const handleButtonClick = async (rowData, entityType, currentTable) => {
@@ -206,13 +248,23 @@ const QueryTool = () => {
           detail: `No ${entityType} found for this ${currentTable}`,
           life: 3000,
         });
+        // Do not save to history if no data is returned
       } else {
+        // Push current state to history **only if new data is available**
+        pushToHistory();
+
         setQueryData(response.data.rows);
         setSelectedView(entityType);
         setCurrentTable(entityType);
       }
     } catch (error) {
       console.log(error);
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: "An error occurred while fetching data.",
+        life: 3000,
+      });
     } finally {
       setLoading(false);
     }
@@ -272,6 +324,12 @@ const QueryTool = () => {
         setFields(response.data);
       } catch (error) {
         console.log(error);
+        toast.current.show({
+          severity: "error",
+          summary: "Error",
+          detail: "Failed to fetch fields.",
+          life: 3000,
+        });
       }
     };
 
@@ -348,10 +406,29 @@ const QueryTool = () => {
           );
 
           console.log("Response", response.data, response.data.rows);
-          setQueryData(response.data.rows);
-          setGraphData(graphResults);
+
+          if (response.data.rows.length > 0) {
+            // Push current state to history only if new data is available
+            pushToHistory();
+
+            setQueryData(response.data.rows);
+            setGraphData(graphResults);
+          } else {
+            toast.current.show({
+              severity: "info",
+              summary: "No Results",
+              detail: `No ${selectedView} found for this query.`,
+              life: 3000,
+            });
+          }
         } catch (error) {
           console.log(error);
+          toast.current.show({
+            severity: "error",
+            summary: "Error",
+            detail: "An error occurred while fetching data.",
+            life: 3000,
+          });
         } finally {
           setLoading(false);
         }
@@ -501,18 +578,18 @@ const QueryTool = () => {
                       newSections[index].selectedAction = e.value;
                       setSections(newSections);
                       if (
-                        index == newSections.length - 1 &&
+                        index === newSections.length - 1 &&
                         (e.value === "and" || e.value === "or")
                       ) {
                         addNewSection();
                       } else if (e.value === "remove") {
-                        if (index == newSections.length - 1) {
+                        if (index === newSections.length - 1) {
                           sections[index - 1].selectedAction = null;
                         }
                         removeSection(section.id);
                       }
                     }}
-                    options={index != 0 ? actionItems : firstActionItems}
+                    options={index !== 0 ? actionItems : firstActionItems}
                     optionLabel="label"
                     placeholder="Select Action"
                     className="w-full md:w-14rem"
@@ -548,31 +625,34 @@ const QueryTool = () => {
             </div>
           </TabPanel>
           <TabPanel header="Network" leftIcon="pi pi-user mr-2">
-               <QueryGraph
-                nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + "nodes-query"}
-                edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + "edges-query"}
-                body={{tables: [selectedView],
-                  fields: sections.map((section) =>
-                    section.selectedField ? section.selectedField.field : null
-                  ),
-                  operators: sections.map((section) =>
-                    section.selectedParameter
-                      ? {
-                          equals: "=",
-                          not_equals: "!=",
-                          like: "LIKE",
-                          not_like: "NOT LIKE",
-                          greater_than: ">",
-                          less_than: "<",
-                          greater_than_or_equal: ">=",
-                          less_than_or_equal: "<=",
-                        }[section.selectedParameter]
-                      : null
-                  ),
-                  values: sections.map((section) => section.selectedValue),
-                  dependentFields: sections.map((section) => section.selectedAction),
-                }}
-               />
+            <QueryGraph
+              nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + "nodes-query"}
+              edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + "edges-query"}
+              body={{
+                tables: [selectedView],
+                fields: sections.map((section) =>
+                  section.selectedField ? section.selectedField.field : null
+                ),
+                operators: sections.map((section) =>
+                  section.selectedParameter
+                    ? {
+                        equals: "=",
+                        not_equals: "!=",
+                        like: "LIKE",
+                        not_like: "NOT LIKE",
+                        greater_than: ">",
+                        less_than: "<",
+                        greater_than_or_equal: ">=",
+                        less_than_or_equal: "<=",
+                      }[section.selectedParameter]
+                    : null
+                ),
+                values: sections.map((section) => section.selectedValue),
+                dependentFields: sections.map(
+                  (section) => section.selectedAction
+                ),
+              }}
+            />
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
             <p className="m-0">
@@ -580,6 +660,19 @@ const QueryTool = () => {
             </p>
           </TabPanel>
           <TabPanel header="Table" leftIcon="pi pi-table mr-2">
+            <div className="table-tab-header">
+              {/* Back Button */}
+              {tableHistory.length > 0 && (
+                <button
+                  className="back-button"
+                  onClick={goBack}
+                  aria-label="Go Back"
+                  title="Go Back"
+                >
+                  <i className="left-arrow pi pi-arrow-left"></i>
+                </button>
+              )}
+            </div>
             {loading ? (
               <div className="spinner-wrapper">
                 <ProgressSpinner />
@@ -685,7 +778,7 @@ const QueryTool = () => {
             people, organizations, places, religions, and documents. You can
             also view the search results in a table, network graph, or map.
           </p>
-          {/* paragraph on how to use it  */}
+          {/* Additional instructions on how to use it */}
           <p>
             To use the Query Tool, select the type of information you want to
             search for from the dropdown menu. Then, add search parameters by

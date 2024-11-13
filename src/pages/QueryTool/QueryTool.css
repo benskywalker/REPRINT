@@ -141,3 +141,12 @@
   text-decoration: underline;
   color: #add8e6; /* Darker shade on hover */
 }
+
+.back-button {
+  margin-bottom: 10px;
+  border-radius: 50%;
+  padding: 10px 12px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
