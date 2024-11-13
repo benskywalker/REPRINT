@@ -15,6 +15,8 @@ import QueryGraph from "../../components/querytool/QueryGraph";
 import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import fetchGraphData from "../../components/graph/GraphData";
+import { Tooltip } from "primereact/tooltip";
+import { Toast } from "primereact/toast";
 
 const QueryTool = () => {
   const [value, setValue] = useState([20, 80]);
@@ -40,6 +42,8 @@ const QueryTool = () => {
   const [filters, setFilters] = useState(null);
   const [currentTable, setCurrentTable] = useState("person");
   const [graphData, setGraphData] = useState(null);
+  const [expandedRows, setExpandedRows] = useState({});
+  const toast = useRef(null);
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -76,6 +80,32 @@ const QueryTool = () => {
     organization: ["person", "religion", "document"],
     religion: ["person", "organization"],
     document: ["person", "organization"],
+  };
+
+  const truncateText = (text, rowId, field) => {
+    if (!text) return "";
+    if (text.length > 200) {
+      const isExpanded = expandedRows[`${rowId}-${field}`];
+      return (
+        <>
+          {isExpanded ? text : `${text.substring(0, 100)}...`}
+          <span
+            className="show-more"
+            onClick={() => toggleExpand(rowId, field)}
+          >
+            {isExpanded ? "Show Less" : "Show More"}
+          </span>
+        </>
+      );
+    }
+    return text;
+  };
+
+  const toggleExpand = (rowId, field) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [`${rowId}-${field}`]: !prev[`${rowId}-${field}`],
+    }));
   };
 
   const handleButtonClick = async (rowData, entityType, currentTable) => {
@@ -169,9 +199,18 @@ const QueryTool = () => {
       const response = await axios.post(`${baseExpressUrl}knex-query`, body);
       console.log("Response", response.data);
 
-      setQueryData(response.data.rows);
-      setSelectedView(entityType);
-      setCurrentTable(entityType);
+      if (response.data.rows.length === 0) {
+        toast.current.show({
+          severity: "info",
+          summary: "No Results",
+          detail: `No ${entityType} found for this ${currentTable}`,
+          life: 3000,
+        });
+      } else {
+        setQueryData(response.data.rows);
+        setSelectedView(entityType);
+        setCurrentTable(entityType);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -381,6 +420,7 @@ const QueryTool = () => {
 
   return (
     <div className="query-tool-container">
+      <Toast ref={toast} />
       <div className="title-container">
         <h1>Query Tool</h1>
       </div>
@@ -574,6 +614,15 @@ const QueryTool = () => {
                       sortable
                       filter
                       filterPlaceholder={`Search by ${fieldObj.field}`}
+                      body={(rowData) => (
+                        <span>
+                          {truncateText(
+                            rowData[fieldObj.field],
+                            rowData.id,
+                            fieldObj.field
+                          )}
+                        </span>
+                      )}
                     />
                   ))}
 
@@ -602,11 +651,21 @@ const QueryTool = () => {
                       sortable
                       filter
                       filterPlaceholder={`Search by ${fieldObj.field}`}
+                      body={(rowData) => (
+                        <span>
+                          {truncateText(
+                            rowData[fieldObj.field],
+                            rowData.id,
+                            fieldObj.field
+                          )}
+                        </span>
+                      )}
                     />
                   ))}
                 </DataTable>
               )
             )}
+            <Tooltip target="span[data-pr-tooltip]" />
           </TabPanel>
         </TabView>
       </div>
