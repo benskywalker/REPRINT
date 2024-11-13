@@ -74,11 +74,13 @@ export default function SigmaGraph({
 
 
   const handleZoomIn = () => {
-      const sigmaInstance = sigmaRef.current.sigma;
+      let sigmaInstance = sigmaRef.current.sigma;
+      
       const camera = sigmaInstance.cameras[0];
       if (camera) {
-        const newRatio = camera.ratio * 1.2; // Increase zoom by 20%
+        const newRatio = camera.ratio / 1.9; // Increase zoom by 20%
         camera.ratio = newRatio;
+        sigmaInstance.refresh();
       }
     
   };
@@ -87,10 +89,15 @@ export default function SigmaGraph({
       const sigmaInstance = sigmaRef.current.sigma;
       const camera = sigmaInstance.cameras[0];
       if (camera) {
-        const newRatio = camera.ratio / 1.2; // Decrease zoom by ~16.7%
+        const newRatio = camera.ratio * 1.9; // Decrease zoom by ~16.7%
         camera.ratio = newRatio;
+        sigmaInstance.refresh();
       }
   };
+
+  
+
+
 
 
   useEffect(() => {
