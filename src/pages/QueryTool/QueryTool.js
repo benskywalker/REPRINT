@@ -16,6 +16,7 @@ import { InputIcon } from "primereact/inputicon";
 import { IconField } from "primereact/iconfield";
 import fetchGraphData from "../../components/graph/GraphData";
 import { Tooltip } from "primereact/tooltip";
+import { Toast } from "primereact/toast";
 
 const QueryTool = () => {
   const [value, setValue] = useState([20, 80]);
@@ -42,6 +43,7 @@ const QueryTool = () => {
   const [currentTable, setCurrentTable] = useState("person");
   const [graphData, setGraphData] = useState(null);
   const [expandedRows, setExpandedRows] = useState({});
+  const toast = useRef(null);
 
   const [views, setViews] = useState([
     { label: "Person", value: "person" },
@@ -86,7 +88,7 @@ const QueryTool = () => {
       const isExpanded = expandedRows[`${rowId}-${field}`];
       return (
         <>
-          {isExpanded ? text : `${text.substring(0, 200)}...`}
+          {isExpanded ? text : `${text.substring(0, 100)}...`}
           <span
             className="show-more"
             onClick={() => toggleExpand(rowId, field)}
@@ -197,9 +199,18 @@ const QueryTool = () => {
       const response = await axios.post(`${baseExpressUrl}knex-query`, body);
       console.log("Response", response.data);
 
-      setQueryData(response.data.rows);
-      setSelectedView(entityType);
-      setCurrentTable(entityType);
+      if (response.data.rows.length === 0) {
+        toast.current.show({
+          severity: "info",
+          summary: "No Results",
+          detail: `No ${entityType} found for this ${currentTable}`,
+          life: 3000,
+        });
+      } else {
+        setQueryData(response.data.rows);
+        setSelectedView(entityType);
+        setCurrentTable(entityType);
+      }
     } catch (error) {
       console.log(error);
     } finally {
@@ -409,6 +420,7 @@ const QueryTool = () => {
 
   return (
     <div className="query-tool-container">
+      <Toast ref={toast} />
       <div className="title-container">
         <h1>Query Tool</h1>
       </div>
