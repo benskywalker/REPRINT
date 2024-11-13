@@ -261,271 +261,282 @@ export default function SigmaGraph({
 
  {/* Filters Container Positioned at Bottom Right */}
  <Box
-        sx={{
-          position: 'absolute',
-          top: 0,
-          right: 0,
-          padding: 2,
-          borderRadius: 2,
-          boxShadow: 3,
-          maxWidth: 300,
-          zIndex: 100,
-          maxHeight: '100vh',
-          overflowY: 'auto',
-          backgroundColor: '#282936',
-        }}
+  sx={{
+    position: 'absolute',
+    bottom: { xs: 50, sm: 75, md: 100 },
+    right: { xs: 10, sm: 20, md: 0 },
+    padding: { xs: 1, sm: 2 },
+    borderRadius: 1,
+    boxShadow: 3,
+    maxWidth: { xs: 200, sm: 250, md: 300 },
+    width: '90%',
+    zIndex: 100,
+    maxHeight: '80vh',
+    backgroundColor: '#282936',
+    overflowY: 'auto',
+  }}
+>
+  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    {/* Edge Filters */}
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+        aria-controls="edge-filters-content"
+        id="edge-filters-header"
+        sx={{ backgroundColor: '#282936', color: 'white', padding: 0 }}
       >
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-          {/* Edge Filters */}
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon style={{color: 'white'}} />}
-              aria-controls="edge-filters-content"
-              id="edge-filters-header"
-              style={{backgroundColor: '#282936', color: 'white'}}
-            >
-              <Typography variant="h6">Connection Filters</Typography>
-            </AccordionSummary>
-            <AccordionDetails
-            style={{backgroundColor: '#282936', color: 'white'}}
-            >
-              <FormGroup
-              style={{backgroundColor: '#282936', color: 'white'}}
-              >
-                {Object.keys(edgeTypeFilters).map((edgeType) => (
-                  <FormControlLabel
+        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, paddingLeft: '5px' }}>
+          Connection Filters
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={{ backgroundColor: '#282936', color: 'white', padding: 1 }}>
+        <FormGroup>
+          {Object.keys(edgeTypeFilters).map((edgeType) => (
+            <FormControlLabel
+              key={edgeType}
+              control={
+                <Checkbox
+                  checked={edgeTypeFilters[edgeType]}
+                  onChange={(e) => {
+                    setEdgeTypeFilters({
+                      ...edgeTypeFilters,
+                      [edgeType]: e.target.checked,
+                    });
+                  }}
+                  name={edgeType}
+                  sx={{ color: 'white' }}
+                />
+              }
+              label={edgeType}
+            />
+          ))}
+        </FormGroup>
+      </AccordionDetails>
+    </Accordion>
 
-                    key={edgeType}
-                    control={
-                      <Checkbox
-                        checked={edgeTypeFilters[edgeType]}
-                        onChange={(e) => {
-                          setEdgeTypeFilters({
-                            ...edgeTypeFilters,
-                            [edgeType]: e.target.checked,
-                          });
-                        }}
-                        name={edgeType}
-                      />
-                    }
-                    label={edgeType}
-                  />
-                ))}
-              </FormGroup>
-            </AccordionDetails>
-          </Accordion>
+    {/* Node Filters */}
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+        aria-controls="node-filters-content"
+        id="node-filters-header"
+        sx={{ backgroundColor: '#282936', color: 'white', padding: 0 }}
+      >
+        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, paddingLeft: '5px' }}>
+          Node Filters
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={{ backgroundColor: '#282936', color: 'white', padding: 1 }}>
+        <FormGroup>
+          {Object.keys(filters).map((nodeType) => (
+            <FormControlLabel
+              key={nodeType}
+              control={
+                <Checkbox
+                  checked={filters[nodeType]}
+                  onChange={(e) => {
+                    setFilters({
+                      ...filters,
+                      [nodeType]: e.target.checked,
+                    });
+                  }}
+                  name={nodeType}
+                  sx={{ color: 'white' }}
+                />
+              }
+              label={nodeType}
+            />
+          ))}
+        </FormGroup>
+      </AccordionDetails>
+    </Accordion>
 
-          {/* Node Filters */}
-          <Accordion>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon style={{color: 'white'}} />}
-              aria-controls="node-filters-content"
-              id="node-filters-header"
-              style={{backgroundColor: '#282936', color: 'white'}}
-            >
-              <Typography variant="h6">Node Filters</Typography>
-            </AccordionSummary>
-            <AccordionDetails
-            style={{backgroundColor: '#282936', color: 'white'}}
-            >
-              <FormGroup>
-                {Object.keys(filters).map((nodeType) => (
-                  <FormControlLabel
-                  style={{backgroundColor: '#282936', color: 'white'}}
-                    key={nodeType}
-                    control={
-                      <Checkbox
-                        checked={filters[nodeType]}
-                        onChange={(e) => {
-                          setFilters({
-                            ...filters,
-                            [nodeType]: e.target.checked,
-                          });
-                        }}
-                        name={nodeType}
-                      />
-                    }
-                    label={nodeType}
-                  />
-                ))}
-              </FormGroup>
-            </AccordionDetails>
-          </Accordion>
-          <Accordion defaultExpanded>
-  <AccordionSummary
-    expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-    aria-controls="legend-content"
-    id="legend-header"
-    style={{ backgroundColor: '#282936', color: 'white' }}
-  >
-    <Typography variant="h6">Legend</Typography>
-  </AccordionSummary>
-  <AccordionDetails style={{ backgroundColor: '#282936', color: 'white' }}>
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-      
-      {/* Nodes Section */}
-      <Accordion defaultExpanded>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-          aria-controls="nodes-content"
-          id="nodes-header"
-          style={{ backgroundColor: '#3a3a4f', color: 'white' }}
-        >
-          <Typography variant="subtitle1">Nodes</Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ backgroundColor: '#3a3a4f', color: 'white' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '20px',
-                backgroundColor: '#D3D3D3', // nodeDefault
-                marginRight: '10px',
-              }}
-            ></span>
-            <span>Default Node</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '20px',
-                backgroundColor: '#A9A9A9', // nodeHighlighted
-                marginRight: '10px',
-              }}
-            ></span>
-            <span>Highlighted Node</span>
-          </div>
-        </AccordionDetails>
-      </Accordion>
-      
-      {/* Edges Section */}
-      <Accordion defaultExpanded>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-          aria-controls="edges-content"
-          id="edges-header"
-          style={{ backgroundColor: '#3a3a4f', color: 'white' }}
-        >
-          <Typography variant="subtitle1">Edges</Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ backgroundColor: '#3a3a4f', color: 'white' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '2px',
-                backgroundColor: '#A0A0A0', // edgeDefault
-                marginRight: '10px',
-              }}
-            ></span>
-            <span>Default Edge</span>
-          </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span
-              style={{
-                display: 'inline-block',
-                width: '20px',
-                height: '2px',
-                backgroundColor: '#505050', // edgeHighlighted
-                marginRight: '10px',
-              }}
-            ></span>
-            <span>Highlighted Edge</span>
-          </div>
+    {/* Legend */}
+    <Accordion>
+      <AccordionSummary
+        expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+        aria-controls="legend-content"
+        id="legend-header"
+        sx={{ backgroundColor: '#282936', color: 'white', padding: 0 }}
+      >
+        <Typography variant="h6" sx={{ fontSize: { xs: '1rem', sm: '1.2rem' }, paddingLeft: '5px' }}>
+          Legend
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails sx={{ backgroundColor: '#282936', color: 'white', padding: 1 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           
-          {/* Edge Types */}
+          {/* Nodes Section */}
           <Accordion defaultExpanded>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-              aria-controls="edge-types-content"
-              id="edge-types-header"
-              style={{ backgroundColor: '#4a4a5f', color: 'white' }}
+              aria-controls="nodes-content"
+              id="nodes-header"
+              sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 0 }}
             >
-              <Typography variant="subtitle2">Edge Types</Typography>
+              <Typography variant="subtitle1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' }, paddingLeft: '5px' }}>
+                Nodes
+              </Typography>
             </AccordionSummary>
-            <AccordionDetails style={{ backgroundColor: '#4a4a5f', color: 'white' }}>
-              {[
-                { type: 'document', color: '#A0A0A0' },      // document
-                { type: 'organization', color: '#808080' },  // organization
-                { type: 'religion', color: '#696969' },      // religion
-                { type: 'relationship', color: '#505050' },  // relationship
-                { type: 'sender', color: '#6A5ACD' },        // sender
-                { type: 'receiver', color: '#9370DB' },      // receiver
-                { type: 'mentioned', color: '#BA55D3' },     // mentioned
-                { type: 'author', color: '#FF69B4' },        // author
-                { type: 'waypoint', color: '#D8BFD8' },      // waypoint
-                { type: 'Unknown', color: '#B0B0B0' },       // Unknown
-              ].map((edgeType, index) => (
-                <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  <span
-                    style={{
-                      display: 'inline-block',
-                      width: '20px',
-                      height: '2px',
-                      backgroundColor: edgeType.color,
-                    }}
-                  ></span>
-                  <span>{edgeType.type}</span>
-                </div>
-              ))}
-            </AccordionDetails>
-          </Accordion>
-        </AccordionDetails>
-      </Accordion>
-      
-      {/* Communities Section */}
-      <Accordion defaultExpanded>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
-          aria-controls="communities-content"
-          id="communities-header"
-          style={{ backgroundColor: '#3a3a4f', color: 'white' }}
-        >
-          <Typography variant="subtitle1">Communities</Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ backgroundColor: '#3a3a4f', color: 'white' }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px' }}>
-            {[
-              "#FF0000", // Red
-              "#0000FF", // Blue
-              "#FFFF00", // Yellow
-              "#FF00FF", // Purple
-              "#00FFFF", // Cyan
-              "#FFA500", // Orange
-              "#C0C0C0", // Silver
-              "#A9A9A9", // Dark Gray
-              "#D3D3D3", // Light Gray
-              "#F5F5F5", // Whitesmoke
-              "#E0E0E0", // Gainsboro
-              "#F8F8F8", // Near White
-              "#FFFFFF", // White
-              "#B0B0B0", // Silver
-            ].map((color, index) => (
-              <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <AccordionDetails sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span
                   style={{
                     display: 'inline-block',
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: color,
+                    width: '15px',
+                    height: '15px',
+                    backgroundColor: '#D3D3D3',
+                    marginRight: '10px',
                   }}
                 ></span>
-                <span>{`Community ${index + 1}`}</span>
+                <span>Default Node</span>
               </div>
-            ))}
-          </div>
-        </AccordionDetails>
-      </Accordion>
-      
-    </div>
-  </AccordionDetails>
-</Accordion>
-        </Box>
-      </Box>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '15px',
+                    height: '15px',
+                    backgroundColor: '#A9A9A9',
+                    marginRight: '10px',
+                  }}
+                ></span>
+                <span>Highlighted Node</span>
+              </div>
+            </AccordionDetails>
+          </Accordion>
+          
+          {/* Edges Section */}
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+              aria-controls="edges-content"
+              id="edges-header"
+              sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 0 }}
+            >
+              <Typography variant="subtitle1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' }, paddingLeft: '5px' }}>
+                Edges
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 1 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '15px',
+                    height: '2px',
+                    backgroundColor: '#A0A0A0',
+                    marginRight: '10px',
+                  }}
+                ></span>
+                <span>Default Edge</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <span
+                  style={{
+                    display: 'inline-block',
+                    width: '15px',
+                    height: '2px',
+                    backgroundColor: '#505050',
+                    marginRight: '10px',
+                  }}
+                ></span>
+                <span>Highlighted Edge</span>
+              </div>
+              
+              {/* Edge Types */}
+              <Accordion defaultExpanded>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+                  aria-controls="edge-types-content"
+                  id="edge-types-header"
+                  sx={{ backgroundColor: '#4a4a5f', color: 'white', padding: 0 }}
+                >
+                  <Typography variant="subtitle2" sx={{ fontSize: { xs: '0.8rem', sm: '0.9rem' }, paddingLeft: '5px' }}>
+                    Edge Types
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ backgroundColor: '#4a4a5f', color: 'white', padding: 1 }}>
+                  {[
+                    { type: 'document', color: '#A0A0A0' },
+                    { type: 'organization', color: '#808080' },
+                    { type: 'religion', color: '#696969' },
+                    { type: 'relationship', color: '#505050' },
+                    { type: 'sender', color: '#6A5ACD' },
+                    { type: 'receiver', color: '#9370DB' },
+                    { type: 'mentioned', color: '#BA55D3' },
+                    { type: 'author', color: '#FF69B4' },
+                    { type: 'waypoint', color: '#D8BFD8' },
+                    { type: 'Unknown', color: '#B0B0B0' },
+                  ].map((edgeType, index) => (
+                    <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                      <span
+                        style={{
+                          display: 'inline-block',
+                          width: '15px',
+                          height: '2px',
+                          backgroundColor: edgeType.color,
+                        }}
+                      ></span>
+                      <span>{edgeType.type}</span>
+                    </div>
+                  ))}
+                </AccordionDetails>
+              </Accordion>
+            </AccordionDetails>
+          </Accordion>
+          
+          {/* Communities Section */}
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon style={{ color: 'white' }} />}
+              aria-controls="communities-content"
+              id="communities-header"
+              sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 0 }}
+            >
+              <Typography variant="subtitle1" sx={{ fontSize: { xs: '0.9rem', sm: '1rem' }, paddingLeft: '5px' }}>
+                Communities
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails sx={{ backgroundColor: '#3a3a4f', color: 'white', padding: 1 }}>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '5px' }}>
+                {[
+                  "#FF0000", // Red
+                  "#0000FF", // Blue
+                  "#FFFF00", // Yellow
+                  "#FF00FF", // Purple
+                  "#00FFFF", // Cyan
+                  "#FFA500", // Orange
+                  "#C0C0C0", // Silver
+                  "#A9A9A9", // Dark Gray
+                  "#D3D3D3", // Light Gray
+                  "#F5F5F5", // Whitesmoke
+                  "#E0E0E0", // Gainsboro
+                  "#F8F8F8", // Near White
+                  "#FFFFFF", // White
+                  "#B0B0B0", // Silver
+                ].map((color, index) => (
+                  <div key={index} style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                    <span
+                      style={{
+                        display: 'inline-block',
+                        width: '15px',
+                        height: '15px',
+                        backgroundColor: color,
+                      }}
+                    ></span>
+                    <span>{`Community ${index + 1}`}</span>
+                  </div>
+                ))}
+              </div>
+            </AccordionDetails>
+          </Accordion>
+          
+        </div>
+      </AccordionDetails>
+    </Accordion>
+  </Box>
+</Box>
 
       <div className="sigma-container">
         <AutoComplete
