@@ -669,7 +669,14 @@ const QueryTool = () => {
           </TabPanel>
           <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
             <p className="m-0">
-              The map view will be available in a future release
+              {/* iframe for mapping website */}
+              <iframe
+                title="Map"
+                style={{ width: "100%", height: "80vh" }}
+                src="https://chdr.cs.ucf.edu/print_map"
+                allowFullScreen
+                loading="lazy"
+              ></iframe>
             </p>
           </TabPanel>
           <TabPanel header="Table" leftIcon="pi pi-table mr-2">
