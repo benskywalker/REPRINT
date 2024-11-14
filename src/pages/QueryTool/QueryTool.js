@@ -529,8 +529,8 @@ const QueryTool = () => {
             <div className="query-section">
               <h3>Search for:</h3>
               <Dropdown
-                tooltip="Message to display"
-                value={selectedView}
+                tooltip="Select a table to search for" 
+               value={selectedView}
                 onChange={(e) => updateFields(e)}
                 options={views}
                 optionLabel="label"
@@ -544,7 +544,7 @@ const QueryTool = () => {
                 <h3>Where:</h3>
                 <div className="query-input">
                   <Dropdown
-                    tooltip="Message to display"
+                    tooltip="Select a field to search within" 
                     value={section.selectedField}
                     onChange={(e) => {
                       const newSections = [...sections];
@@ -559,8 +559,8 @@ const QueryTool = () => {
                     disabled={filteredFields?.length === 0}
                   />
                   <Dropdown
-                    tooltip="Message to display"
-                    value={section.selectedParameter}
+                    tooltip="Select an operator"     
+                   value={section.selectedParameter}
                     onChange={(e) => {
                       const newSections = [...sections];
                       newSections[index].selectedParameter = e.value;
@@ -573,7 +573,7 @@ const QueryTool = () => {
                   />
                   <FloatLabel>
                     <InputText
-                      tooltip="Tips on what values to put"
+                      tooltip="Enter a value"
                       value={section.selectedValue}
                       onChange={(e) => {
                         const newSections = [...sections];
@@ -584,7 +584,7 @@ const QueryTool = () => {
                     <label htmlFor="username">Value</label>
                   </FloatLabel>
                   <Dropdown
-                    tooltip="Select Action"
+                    tooltip="(Optional)"
                     value={section.selectedAction}
                     onChange={(e) => {
                       const newSections = [...sections];
