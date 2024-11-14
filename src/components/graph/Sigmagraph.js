@@ -37,6 +37,7 @@ export default function SigmaGraph({
   edgesUrl,
   body,
   edgeFilters,
+  onMetricsUpdate
 }) {
   const [filters, setFilters] = useState({
     person: true,
@@ -135,6 +136,9 @@ export default function SigmaGraph({
 
         setGraphData({ nodes, edges });
         setMetrics(computedMetrics);
+        if (onMetricsUpdate) {
+          onMetricsUpdate(computedMetrics); // Pass metrics to parent
+        }
 
         // Set suggestions after data is fetched
         if (!hasSuggestions) {
@@ -179,7 +183,7 @@ export default function SigmaGraph({
     };
 
     fetchData();
-  }, [filters, edgeTypeFilters, selectedTerms, commitedDateValue]);
+  }, [filters, edgeTypeFilters, selectedTerms, commitedDateValue, onMetricsUpdate]);
 
   const handleNodeClick = useCallback(
     (event) => {
