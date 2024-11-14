@@ -401,6 +401,18 @@ const Home = () => {
                   showEdges={showEdges}
                   nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'nodes'}
                   edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'edges'}
+                  edgeFilters={{
+                    Sender: true,
+                    Receiver: true,
+                    Mentioned: true,
+                    Author: true,
+                    Waypoint: true,
+                    document: true,
+                    organization: false,
+                    religion: false,
+                    relationship: false,
+                    Unknown: false,
+                  }}
                 />
 
                 <div className={styles.sliderContainer}>

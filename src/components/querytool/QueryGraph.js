@@ -61,6 +61,18 @@ const QueryGraph = ({nodesUrl, edgesUrl, body}) => {
               nodesUrl={nodesUrl}
               edgesUrl={edgesUrl}
               body={body}
+              edgeFilters={{
+                Sender: true,
+                Receiver: true,
+                Mentioned: true,
+                Author: true,
+                Waypoint: true,
+                document: true,
+                organization: true,
+                religion: true,
+                relationship: true,
+                Unknown: true,
+              }}
             />
 
       </div>

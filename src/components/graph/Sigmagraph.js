@@ -35,7 +35,8 @@ export default function SigmaGraph({
   showEdges,
   nodesUrl, 
   edgesUrl,
-  body
+  body,
+  edgeFilters,
 }) {
   const [filters, setFilters] = useState({
     person: true,
@@ -43,18 +44,7 @@ export default function SigmaGraph({
     religion: true,
     document: true,
   });
-  const [edgeTypeFilters, setEdgeTypeFilters] = useState({
-    Sender: true,
-    Receiver: true,
-    Mentioned: true,
-    Author: true,
-    Waypoint: true,
-    document: true,
-    organization: false,
-    religion: false,
-    relationship: false,
-    Unknown: false,
-  });
+  const [edgeTypeFilters, setEdgeTypeFilters] = useState(edgeFilters);
   const [selectedElement, setSelectedElement] = useState(null);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [metrics, setMetrics] = useState(null);
