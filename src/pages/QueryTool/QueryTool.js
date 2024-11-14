@@ -611,7 +611,7 @@ const QueryTool = () => {
               </div>
             ))}
 
-            <div className="query-section">
+            {/* <div className="query-section">
               <h3>Order by:</h3>
               <div className="query-input">
                 <Dropdown
@@ -635,7 +635,7 @@ const QueryTool = () => {
                   onChange={(e) => setChecked(e.value)}
                 />
               </div>
-            </div>
+            </div> */}
           </TabPanel>
           <TabPanel header="Network" leftIcon="pi pi-user mr-2">
             <QueryGraph
