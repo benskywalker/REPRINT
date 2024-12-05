@@ -25,13 +25,13 @@ const App = () => {
     <Router >
       <Header onSearchChange={handleSearchChange} />
       <Routes>
-        <Route path="/" element={<Main searchQuery={searchQuery} />} />
+        <Route path="/REPRINT" element={<Main searchQuery={searchQuery} />} />
         <Route
-          path="/gallery"
+          path="/REPRINT/gallery"
           element={<Gallery searchQuery={searchQuery} />}
         />
-        <Route path="/query-tool" element={<QueryTool />} />
-        <Route path="*" element={<Home  />} />
+        <Route path="/REPRINT/query-tool" element={<QueryTool />} />
+        <Route path="/REPRINT/*" element={<Home  />} />
       </Routes>
     </Router>
   );
