@@ -6,7 +6,7 @@
     "@emotion/react": "^11.13.0",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^6.1.6",
-    "@mui/material": "^5.16.6",
+    "@mui/material": "^6.1.6",
     "@react-sigma/core": "^4.0.3",
     "@react-sigma/layout-core": "^4.0.3",
     "@react-sigma/layout-forceatlas2": "^4.0.3",
