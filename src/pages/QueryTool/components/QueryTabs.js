@@ -53,8 +53,8 @@ const QueryTabs = ({
         values: sections.map(section => section.selectedValue),
         dependentFields: sections.map(section => section.selectedAction),
       };
-
-      mapIframeRef.current.contentWindow.postMessage(queryData, 'http://localhost:3001');
+	console.log("Sending to ",process.env.REACT_APP_PRINT_MAPPING_URL);
+      mapIframeRef.current.contentWindow.postMessage(queryData, process.env.REACT_APP_PRINT_MAPPING_URL);
     }
   };
 
@@ -126,7 +126,7 @@ const QueryTabs = ({
           ref={mapIframeRef}
           title="Map"
           style={{ width: "100%", height: "80vh" }}
-          src="http://localhost:3001"
+          src={process.env.REACT_APP_PRINT_MAPPING_URL}
           allowFullScreen
           loading="lazy"
           onLoad={sendQueryDataToIframe}
