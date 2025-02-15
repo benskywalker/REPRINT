@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { TabView, TabPanel } from "primereact/tabview";
 import { Dropdown } from "primereact/dropdown";
 import QuerySection from './QuerySection';
@@ -27,14 +27,45 @@ const QueryTabs = ({
   header,
   visibleColumns
 }) => {
+  const mapIframeRef = useRef(null);
+
+  const sendQueryDataToIframe = () => {
+    if (mapIframeRef.current) {
+      console.log("Iframe has loaded, sending query data...");
+
+      const queryData = {
+        tables: [selectedView],
+        fields: sections.map(section =>
+          section.selectedField ? section.selectedField.field : null
+        ),
+        operators: sections.map(section =>
+          section.selectedParameter ? {
+            equals: "=",
+            not_equals: "!=",
+            like: "LIKE",
+            not_like: "NOT LIKE",
+            greater_than: ">",
+            less_than: "<",
+            greater_than_or_equal: ">=",
+            less_than_or_equal: "<=",
+          }[section.selectedParameter] : null
+        ),
+        values: sections.map(section => section.selectedValue),
+        dependentFields: sections.map(section => section.selectedAction),
+      };
+	console.log("Sending to ",process.env.REACT_APP_PRINT_MAPPING_URL);
+      mapIframeRef.current.contentWindow.postMessage(queryData, process.env.REACT_APP_PRINT_MAPPING_URL);
+    }
+  };
+
   return (
     <TabView
       className="query-tool"
       activeIndex={activeIndex}
       onTabChange={onTabChange}
     >
-      <TabPanel 
-        header="Query" 
+      <TabPanel
+        header="Query"
         leftIcon="pi pi-search mr-2"
         className="query-tab-panel"
       >
@@ -69,7 +100,7 @@ const QueryTabs = ({
           edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + "edges-query"}
           body={{
             tables: [selectedView],
-            fields: sections.map(section => 
+            fields: sections.map(section =>
               section.selectedField ? section.selectedField.field : null
             ),
             operators: sections.map(section =>
@@ -92,11 +123,13 @@ const QueryTabs = ({
 
       <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
         <iframe
+          ref={mapIframeRef}
           title="Map"
           style={{ width: "100%", height: "80vh" }}
-          src="https://chdr.cs.ucf.edu/print_map"
+          src={process.env.REACT_APP_PRINT_MAPPING_URL}
           allowFullScreen
           loading="lazy"
+          onLoad={sendQueryDataToIframe}
         />
       </TabPanel>
 

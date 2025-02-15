@@ -369,6 +369,7 @@ const Home = () => {
                   showEdges={showEdges}
                   nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'nodes'}
                   edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + 'edges'}
+                  
                   onMetricsUpdate={handleMetricsUpdate}
                   edgeFilters={{
                     Sender: true,
