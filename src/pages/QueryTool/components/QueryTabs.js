@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { TabView, TabPanel } from "primereact/tabview";
 import { Dropdown } from "primereact/dropdown";
 import QuerySection from './QuerySection';
@@ -6,6 +6,13 @@ import ResultsTable from './ResultsTable';
 import QueryGraph from '../../../components/querytool/QueryGraph';
 import { views } from '../Constants';
 import '../styles/QueryTabs.css';
+import { Splitter, SplitterPanel } from 'primereact/splitter';
+import { Accordion, AccordionTab } from 'primereact/accordion';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
+import Sidecar from '../../../components/sidecar/Sidecar';
+import { Dialog } from 'primereact/dialog';
+import { v4 as uuidv4 } from 'uuid';
 
 const QueryTabs = ({
   activeIndex,
@@ -28,6 +35,8 @@ const QueryTabs = ({
   visibleColumns
 }) => {
   const mapIframeRef = useRef(null);
+  const [selectedPersons, setSelectedPersons] = useState([]);
+  const [dialogs, setDialogs] = useState([]);
 
   const sendQueryDataToIframe = () => {
     if (mapIframeRef.current) {
@@ -54,9 +63,56 @@ const QueryTabs = ({
         dependentFields: sections.map(section => section.selectedAction),
       };
 
-      mapIframeRef.current.contentWindow.postMessage(queryData, 'http://localhost:3001');
+      mapIframeRef.current.contentWindow.postMessage(queryData, 'http://localhost:4001');
     }
   };
+
+  const handleOpenDialog = (nodeData) => {
+    const id = uuidv4();
+    setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData }]);
+  };
+
+  const handleCloseDialog = (id) => {
+    setDialogs((prevDialogs) => prevDialogs.filter((dialog) => dialog.id !== id));
+  };
+
+  const handlePersonClick = (person) => {
+    console.log(person);
+    setSelectedPersons((prevSelectedPersons) => [
+      {
+        ...person,
+        isOpen: false,
+        activeTabIndex: 0,
+        idNode: uuidv4(),
+      },
+      ...prevSelectedPersons,
+    ]);
+  };
+
+
+  // Structure of event.data:
+  // {
+  //   personID: 446
+  //   personName: ""Phineas Pemberton"
+  //   religionName: "Quaker"
+  //   documentID: 520,
+  //}
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== 'http://localhost:4001') return;
+      console.log("MESSAGE RECEIVED: ", event.data); 
+      // Replace with your iframe's origin
+      handleOpenDialog(event.data);
+      handlePersonClick(event.data);
+    };
+
+    window.addEventListener('message', handleMessage);
+
+    return () => {
+      window.removeEventListener('message', handleMessage);
+    };
+  }, []);
 
   return (
     <TabView
@@ -122,15 +178,52 @@ const QueryTabs = ({
       </TabPanel>
 
       <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
-        <iframe
-          ref={mapIframeRef}
-          title="Map"
-          style={{ width: "100%", height: "80vh" }}
-          src="http://localhost:3001"
-          allowFullScreen
-          loading="lazy"
-          onLoad={sendQueryDataToIframe}
-        />
+        <Splitter style={{ overflowY: "auto" }}>
+          <SplitterPanel
+            size={30}
+            minSize={0}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              height: "90vh",
+              overflowY: "auto",
+              width: "1vw",
+            }}
+          >
+            <DataTable
+              className="Home-DataTable"
+              value={selectedPersons}
+              emptyMessage="Select a name to view its details"
+            >
+              <Column
+                body={(rowData, index) => (
+                  <Accordion key={index} activeIndex={0}>
+                    <AccordionTab header={rowData.personName}>
+                      <Sidecar
+                        nodeData={rowData}
+                        handleNodeClick={() => {}}
+                        activeTabIndex={0}
+                        setActiveTabIndex={() => {}}
+                      />
+                    </AccordionTab>
+                  </Accordion>
+                )}
+                header={"Sidecars"}
+              />
+            </DataTable>
+          </SplitterPanel>
+          <SplitterPanel>
+            <iframe
+              ref={mapIframeRef}
+              title="Map"
+              style={{ width: "100%", height: "80vh" }}
+              src="http://localhost:4001"
+              allowFullScreen
+              loading="lazy"
+              onLoad={sendQueryDataToIframe}
+            />
+          </SplitterPanel>
+        </Splitter>
       </TabPanel>
 
       <TabPanel header="Table" leftIcon="pi pi-table mr-2">
@@ -148,6 +241,24 @@ const QueryTabs = ({
           header={header}
         />
       </TabPanel>
+
+      {/* {dialogs.map((dialog) => (
+        <Dialog
+          key={dialog.id}
+          header={dialog.nodeData.personName || 'Details'}
+          visible={true}
+          onHide={() => handleCloseDialog(dialog.id)}
+          style={{ width: '35vw', height: '70vh', minWidth: '15vw', minHeight: '15vw' }}
+          breakpoints={{ '960px': '75vw', '641px': '100vw' }}
+        >
+          <Sidecar
+            nodeData={dialog.nodeData}
+            handleNodeClick={() => {}}
+            activeTabIndex={0}
+            setActiveTabIndex={() => {}}
+          />
+        </Dialog>
+      ))} */}
     </TabView>
   );
 };
