@@ -25,7 +25,9 @@ const QueryTabs = ({
   handleButtonClick,
   truncateText,
   header,
-  visibleColumns
+  visibleColumns,
+  addNewSection,
+  removeSection
 }) => {
   const mapIframeRef = useRef(null);
 
@@ -90,6 +92,8 @@ const QueryTabs = ({
             filteredFields={filteredFields}
             sections={sections}
             setSections={setSections}
+			addNewSection={addNewSection}
+			removeSection={removeSection}
           />
         ))}
       </TabPanel>
