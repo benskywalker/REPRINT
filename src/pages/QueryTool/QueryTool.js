@@ -220,6 +220,16 @@ const QueryTool = () => {
      </div>
    );
  };
+ const addNewSection = () => {
+    setSections([...sections, { id: Date.now(), selectedValue: "" }]);
+  };
+
+  const removeSection = (id) => {
+    if (sections.length === 1 || sections[0].id === id) {
+      return;
+    }
+    setSections(sections.filter((section) => section.id !== id));
+  };
 
  const onTabChange = async (e) => {
    const newIndex = e.index;
@@ -332,6 +342,8 @@ const QueryTool = () => {
      <QueryTabs
        activeIndex={activeIndex}
        onTabChange={onTabChange}
+	   addNewSection={addNewSection}
+	   removeSection={removeSection}
        selectedView={selectedView}
        currentTable={currentTable}
        updateFields={updateFields}

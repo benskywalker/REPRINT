@@ -33,7 +33,9 @@ const QueryTabs = ({
   handleButtonClick,
   truncateText,
   header,
-  visibleColumns
+  visibleColumns,
+  addNewSection,
+  removeSection
 }) => {
   const mapIframeRef = useRef(null);
   const [selectedPersons, setSelectedPersons] = useState([]);
@@ -155,6 +157,8 @@ const QueryTabs = ({
       };
 
       mapIframeRef.current.contentWindow.postMessage(queryDataObj, 'http://localhost:4001');
+	console.log("Sending to ",process.env.REACT_APP_PRINT_MAPPING_URL);
+      mapIframeRef.current.contentWindow.postMessage(queryData, process.env.REACT_APP_PRINT_MAPPING_URL);
     }
   };
 
@@ -283,7 +287,6 @@ const QueryTabs = ({
             }}
           />
         </TabPanel>
-
         <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
           <Splitter style={{ overflowY: "auto" }}>
             <SplitterPanel
@@ -365,6 +368,77 @@ const QueryTabs = ({
         </Dialog>
       ))}
     </>
+
+        </div>
+        {sections.map((section, index) => (
+          <QuerySection
+            key={section.id}
+            section={section}
+            index={index}
+            filteredFields={filteredFields}
+            sections={sections}
+            setSections={setSections}
+			addNewSection={addNewSection}
+			removeSection={removeSection}
+          />
+        ))}
+      </TabPanel>
+
+      <TabPanel header="Network" leftIcon="pi pi-user mr-2">
+        <QueryGraph
+          nodesUrl={process.env.REACT_APP_BASEEXPRESSURL + "nodes-query"}
+          edgesUrl={process.env.REACT_APP_BASEEXPRESSURL + "edges-query"}
+          body={{
+            tables: [selectedView],
+            fields: sections.map(section =>
+              section.selectedField ? section.selectedField.field : null
+            ),
+            operators: sections.map(section =>
+              section.selectedParameter ? {
+                equals: "=",
+                not_equals: "!=",
+                like: "LIKE",
+                not_like: "NOT LIKE",
+                greater_than: ">",
+                less_than: "<",
+                greater_than_or_equal: ">=",
+                less_than_or_equal: "<=",
+              }[section.selectedParameter] : null
+            ),
+            values: sections.map(section => section.selectedValue),
+            dependentFields: sections.map(section => section.selectedAction),
+          }}
+        />
+      </TabPanel>
+
+      <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
+        <iframe
+          ref={mapIframeRef}
+          title="Map"
+          style={{ width: "100%", height: "80vh" }}
+          src={process.env.REACT_APP_PRINT_MAPPING_URL}
+          allowFullScreen
+          loading="lazy"
+          onLoad={sendQueryDataToIframe}
+        />
+      </TabPanel>
+
+      <TabPanel header="Table" leftIcon="pi pi-table mr-2">
+        <ResultsTable
+          loading={loading}
+          queryData={queryData}
+          visibleColumns={visibleColumns}
+          globalFilter={globalFilter}
+          filters={filters}
+          onFilter={onFilter}
+          selectedView={selectedView}
+          currentTable={currentTable}
+          handleButtonClick={handleButtonClick}
+          truncateText={truncateText}
+          header={header}
+        />
+      </TabPanel>
+    </TabView>
   );
 };
 
