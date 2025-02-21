@@ -12,6 +12,7 @@ import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import Sidecar from '../../../components/sidecar/Sidecar';
 import { Dialog } from 'primereact/dialog';
+import { Button } from 'primereact/button';
 import { v4 as uuidv4 } from 'uuid';
 
 const QueryTabs = ({
@@ -38,9 +39,100 @@ const QueryTabs = ({
   const [selectedPersons, setSelectedPersons] = useState([]);
   const [dialogs, setDialogs] = useState([]);
 
+  // Toggle an accordion's open state
+  const toggleAccordion = (id) => {
+    setSelectedPersons(prev =>
+      prev.map(person =>
+        person.idNode === id ? { ...person, isOpen: !person.isOpen } : person
+      )
+    );
+  };
+
+  // Render header similar to Home.js
+  const renderHeader = (rowData, index) => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <span>{rowData.data.person.fullName}</span>
+      <div>
+        <Button
+          icon="pi pi-external-link"
+          className="p-button-text"
+          onClick={(event) => {
+            event.stopPropagation();
+            handlePopoutPerson(rowData.idNode);
+          }}
+        />
+        <Button
+          icon="pi pi-times"
+          className="p-button-text"
+          onClick={(event) => {
+            event.stopPropagation();
+            handleClosePerson(rowData.idNode);
+          }}
+        />
+      </div>
+    </div>
+  );
+
+  // Render accordion similar to Home.js
+  const renderAccordion = (rowData, index) => {
+    const id = rowData.idNode;
+    const person = selectedPersons.find(p => p.idNode === id);
+    const activeTabIndex = person?.activeTabIndex || 0;
+
+    const setActiveTabIndex = (newIndex) => {
+      setSelectedPersons(prev =>
+        prev.map(p =>
+          p.idNode === id ? { ...p, activeTabIndex: newIndex } : p
+        )
+      );
+    };
+
+    return (
+      <Accordion
+        key={id}
+        activeIndex={person?.isOpen ? 0 : null}
+        onTabChange={() => toggleAccordion(id)}
+        style={{ width: "100%", flexGrow: 1 }}
+      >
+        <AccordionTab header={renderHeader(rowData, index)}>
+          <div style={{ overflow: "auto", height: "100%", maxHeight: "45vh" }}>
+            <Sidecar
+              nodeData={rowData}
+              activeTabIndex={activeTabIndex}
+              setActiveTabIndex={setActiveTabIndex}
+              handleNodeClick={() => {}}
+            />
+          </div>
+        </AccordionTab>
+      </Accordion>
+    );
+  };
+
+  // Function to remove a person from selectedPersons list
+  const handleClosePerson = (idNode) => {
+    setSelectedPersons(prev =>
+      prev.filter(person => person.idNode !== idNode)
+    );
+  };
+
+  // Modify popout button to open dialog on demand
+  const handlePopoutPerson = (idNode) => {
+    const personData = selectedPersons.find(p => p.idNode === idNode);
+    if (personData) {
+      // Open dialog only when popout button is pressed
+      const id = uuidv4();
+      setDialogs(prevDialogs => [...prevDialogs, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
+    }
+  };
+
   const sendQueryDataToIframe = () => {
     if (mapIframeRef.current) {
-      console.log("Iframe has loaded, sending query data...");
       const queryDataObj = {
         tables: [selectedView],
         fields: sections.map(section =>
@@ -66,17 +158,17 @@ const QueryTabs = ({
     }
   };
 
-  // Opens a dialog (sidecar) using the provided nodeData (which should be fully enriched)
+  // Opens a dialog with full details (unused in automatic flow now)
   const handleOpenDialog = (nodeData) => {
     const id = uuidv4();
-    setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData, activeTabIndex: 0 }]);
+    setDialogs(prevDialogs => [...prevDialogs, { id, nodeData, activeTabIndex: 0 }]);
   };
 
   const handleCloseDialog = (id) => {
-    setDialogs((prevDialogs) => prevDialogs.filter((dialog) => dialog.id !== id));
+    setDialogs(prevDialogs => prevDialogs.filter(dialog => dialog.id !== id));
   };
 
-  // Fetch extra person details using the personID, enrich the data and open a sidecar
+  // Fetch extra person details and update state
   const handlePersonClick = async (person) => {
     try {
       const baseUrl = process.env.REACT_APP_BASEEXPRESSURL;
@@ -85,8 +177,21 @@ const QueryTabs = ({
         throw new Error("Failed fetching person details.");
       }
       const fullPersonData = await response.json();
-      const enrichedPerson = { ...person, data: { person: fullPersonData[0] } };
-      console.log("Added enriched person data", enrichedPerson);
+      const enrichedPerson = {
+        ...person,
+        data: {
+          person: {
+            ...fullPersonData[0],
+            letters: fullPersonData[0].letters,  // include Letters
+            mentions: fullPersonData[0].mentions // include Mentions
+          }
+        }
+      };
+      // Ensure the entire enriched data is available for Sidecar components
+      if (fullPersonData[0].documents) {
+        enrichedPerson.documents = fullPersonData[0].documents;
+      }
+      console.log("Enriched person data", enrichedPerson);
       setSelectedPersons(prevSelected => [
         {
           ...enrichedPerson,
@@ -96,29 +201,24 @@ const QueryTabs = ({
         },
         ...prevSelected,
       ]);
-      // Open the sidecar dialog after enrichment
-      handleOpenDialog(enrichedPerson);
     } catch (error) {
       console.error(error);
     }
   };
 
-  // Listen for messages from the map iframe and possibly open a sidecar
+  // Listen for messages from the map iframe
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.origin !== 'http://localhost:4001') return;
       console.log("MESSAGE RECEIVED: ", event.data);
-      // If event.data has a personID then fetch additional details
       if (event.data.personID) {
         handlePersonClick(event.data);
       } else {
-        // If the data already has full details, simply open the dialog
-        handleOpenDialog(event.data);
+        // If non-person data, you can do other stuff here if needed.
       }
     };
 
     window.addEventListener('message', handleMessage);
-
     return () => {
       window.removeEventListener('message', handleMessage);
     };
@@ -131,11 +231,7 @@ const QueryTabs = ({
         activeIndex={activeIndex}
         onTabChange={onTabChange}
       >
-        <TabPanel
-          header="Query"
-          leftIcon="pi pi-search mr-2"
-          className="query-tab-panel"
-        >
+        <TabPanel header="Query" leftIcon="pi pi-search mr-2" className="query-tab-panel">
           <div className="query-section">
             <h3>Search for:</h3>
             <Dropdown
@@ -198,7 +294,7 @@ const QueryTabs = ({
                 flexDirection: "column",
                 height: "90vh",
                 overflowY: "auto",
-                width: "1vw",
+                width: "1vw", // match Home.js left panel ratio
               }}
             >
               <DataTable
@@ -207,25 +303,7 @@ const QueryTabs = ({
                 emptyMessage="Select a name to view its details"
               >
                 <Column
-                  body={(rowData, index) => (
-                    <Accordion key={index} activeIndex={0}>
-                      <AccordionTab header={rowData.data.person.fullName}>
-                        <Sidecar
-                          nodeData={rowData}
-                          handleNodeClick={() => {}}
-                          activeTabIndex={rowData.activeTabIndex || 0}
-                          setActiveTabIndex={(index) => {
-                            // Optionally update the selected sidecar's active tab index
-                            setSelectedPersons(prev =>
-                              prev.map(person =>
-                                person.idNode === rowData.idNode ? { ...person, activeTabIndex: index } : person
-                              )
-                            );
-                          }}
-                        />
-                      </AccordionTab>
-                    </Accordion>
-                  )}
+                  body={(rowData, index) => renderAccordion(rowData, index)}
                   header={"Sidecars"}
                 />
               </DataTable>
@@ -261,13 +339,15 @@ const QueryTabs = ({
         </TabPanel>
       </TabView>
 
-      {/* Render sidecar dialogs as Dialog components */}
       {dialogs.map((dialog) => (
         <Dialog
           key={dialog.id}
-          header={dialog.nodeData.data?.person?.fullName || 'Details'}
+          header={dialog.nodeData.data?.person?.fullName || dialog.nodeData.label || 'Details'}
           visible={true}
           onHide={() => handleCloseDialog(dialog.id)}
+          draggable={true}
+          modal={false}
+          maximizable
           style={{ width: '35vw', height: '70vh', minWidth: '15vw', minHeight: '15vw' }}
           breakpoints={{ '960px': '75vw', '641px': '100vw' }}
         >
@@ -276,12 +356,10 @@ const QueryTabs = ({
             handleNodeClick={() => {}}
             activeTabIndex={dialog.activeTabIndex || 0}
             setActiveTabIndex={(index) => {
-              // Update the dialog object's active tab index
-              setDialogs(prevDialogs =>
-                prevDialogs.map(d =>
-                  d.id === dialog.id ? { ...d, activeTabIndex: index } : d
-                )
+              const updatedDialogs = dialogs.map((dlg) =>
+                dlg.id === dialog.id ? { ...dlg, activeTabIndex: index } : dlg
               );
+              setDialogs(updatedDialogs);
             }}
           />
         </Dialog>
