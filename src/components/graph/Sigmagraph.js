@@ -1,4 +1,33 @@
 // SigmaGraph.js
+// This file is used to render the graph using the Sigma.js library
+// The SigmaGraph component fetches data from the server and builds the graph using the fetchAndBuildGraph function
+// The fetchAndBuildGraph function is used to fetch data from the server and build the graph using the Graphology library
+// The graph is then used to render the graph using the Sigma.js library
+// The SigmaGraph component also provides controls for zooming in and out of the graph
+// The SigmaGraph component also provides filters for nodes and edges
+// The SigmaGraph component also provides a search bar for searching nodes
+// The SigmaGraph component also provides a time range slider for filtering nodes based on date range
+// The SigmaGraph component also provides a legend for the graph
+// The SigmaGraph component also provides a toast for displaying error messages
+// The SigmaGraph component also provides a loading bar for displaying loading progress
+// The SigmaGraph component also provides a metrics section for displaying graph metrics
+// The SigmaGraph component also provides a suggestions section for displaying search suggestions
+// The SigmaGraph component also provides a community section for displaying community colors
+// The SigmaGraph component also provides a layout key for forcing re-render on layout change
+// The SigmaGraph component also provides a selected element state for displaying selected node or edge
+// The SigmaGraph component also provides a graph data state for storing the graph data
+// The SigmaGraph component also provides a metrics state for storing the computed metrics
+// The SigmaGraph component also provides a filters state for storing the node filters
+// The SigmaGraph component also provides an edge type filters state for storing the edge type filters
+// The SigmaGraph component also provides a selected terms state for storing the selected search terms
+// The SigmaGraph component also provides a has suggestions state for checking if suggestions are available
+// The SigmaGraph component also provides a min date state for storing the minimum date value
+// The SigmaGraph component also provides a max date state for storing the maximum date value
+// The SigmaGraph component also provides a date value state for storing the date range value
+// The SigmaGraph component also provides a commited date value state for storing the commited date range value
+// The SigmaGraph component also provides a sigma ref for accessing the Sigma.js instance
+// LEGACY FEATURE: The SigmaGraph component also provides a show edges ref for storing the show edges value
+
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import {

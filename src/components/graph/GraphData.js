@@ -1,3 +1,19 @@
+//Legacy file, not used in the current version of the application
+//This file is used to fetch data from the server and build a graph using Graphology library
+//The graph is then used to compute various metrics such as centrality, modularity, and density
+//The graph is also used to color nodes based on community detection using the Louvain method
+//The graph is then returned along with the computed metrics and the original graph data
+//The graph data is then used to render the graph in the SigmaGraph component
+//The metrics are used to render the metrics in the Metrics component
+//The original graph data is used to reset the graph to its original state when needed
+//The fetchGraphData function is used to fetch data from the server and build the graph
+//The buildGraphologyGraph function is used to build a Graphology graph from the fetched data
+//The computeMetrics function is used to compute various metrics from the Graphology graph
+//The generateRandomDarkColor function is used to generate a random dark color for the nodes
+//The getEdgeColor function is used to get the color of the edge based on its type
+//The fetchGraphData function is exported as the default function
+//The fetchGraphData function takes the URL, minDate, maxDate, and body as arguments
+
 import axios from 'axios';
 import Graph from 'graphology';
 import { centrality } from 'graphology-metrics';

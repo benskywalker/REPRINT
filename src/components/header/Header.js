@@ -36,7 +36,7 @@ const Header = () => {
   return (
     <div className={styles.header}>
       <NavLink
-        to="/"
+        to="/REPRINT/"
         activeclassname={styles.activeLink}
         className={styles.title}
       >
@@ -60,17 +60,17 @@ const Header = () => {
         <hr></hr>
         <ul className={styles.routesList}>
           <li>
-            <NavLink to="/" activeclassname={styles.activeLink}>
+            <NavLink to="/REPRINT/" activeclassname={styles.activeLink}>
               Home
             </NavLink>
           </li>
           <li>
-            <NavLink to="/query-tool" activeclassname={styles.activeLink}>
+            <NavLink to="/REPRINT/query-tool" activeclassname={styles.activeLink}>
               Query Tool
             </NavLink>
           </li>
           <li>
-            <NavLink to="/gallery" activeclassname={styles.activeLink}>
+            <NavLink to="/REPRINT/gallery" activeclassname={styles.activeLink}>
               Gallery
             </NavLink>
           </li>

@@ -1,11 +1,31 @@
 // fetchAndBuildGraph.js
+// Fetches nodes and edges from the server, builds a graph, and computes metrics
+// This file is part of the Sigma Network Visualization Tool
+// This file is used to fetch data from the server and build a graph using Graphology library
+// The graph is then used to compute various metrics such as centrality, modularity, and density
+// The graph is also used to color nodes based on community detection using the Louvain method
+// The graph is then returned along with the computed metrics and the original graph data
+// The graph data is then used to render the graph in the SigmaGraph component
+// The original graph data is used to reset the graph to its original state when needed
+// The fetchAndBuildGraph function is used to fetch data from the server and build the graph
+// The buildGraph function is used to build a Graphology graph from the fetched data
+// The computeMetrics function is used to compute various metrics from the Graphology graph
+// The generateRandomSoftColor function is used to generate a random soft color for the nodes
+// The getEdgeColor function is used to get the color of the edge based on its type
+// The fetchAndBuildGraph function is exported as the default function
+// The fetchAndBuildGraph function takes the nodesUrl, edgesUrl, filters, edgeTypeFilters, body, selectedTerms, and dateRange as arguments
+// The fetchAndBuildGraph function fetches nodes and edges from the server, builds a graph, and computes metrics
+// The fetchAndBuildGraph function returns the graph and metrics
+// The fetchAndBuildGraph function catches and logs any errors that occur during the process
+// The fetchAndBuildGraph function is used in the SigmaGraph component to fetch and build the graph
 
 import axios from "axios";
 import Graph from "graphology";
-import forceAtlas2 from "graphology-layout-forceatlas2";
 import { centrality } from "graphology-metrics";
 import modularity from "graphology-communities-louvain";
 import { density } from "graphology-metrics/graph";
+
+
 
 const colorPalette = {
   nodeDefault: "#D3D3D3",       // Light Gray
@@ -397,6 +417,8 @@ const computeMetrics = (graph) => {
   metrics.degreeCentrality = centrality.degree(graph);
   metrics.betweennessCentrality = centrality.betweenness(graph);
   metrics.closenessCentrality = centrality.closeness(graph);
+  metrics.modularity = modularity(graph)
+
 
   const communities = modularity(graph);
 
