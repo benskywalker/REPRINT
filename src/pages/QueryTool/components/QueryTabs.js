@@ -38,53 +38,60 @@ const QueryTabs = ({
   removeSection
 }) => {
   const mapIframeRef = useRef(null);
-  const [selectedPersons, setSelectedPersons] = useState([]);
+  const [selectedNodes, setSelectedNodes] = useState([])  
+  
   const [dialogs, setDialogs] = useState([]);
 
-  // Toggle the open state for an accordion item (person)
-  const toggleAccordion = (id) => {
-    setSelectedPersons(prev =>
-      prev.map(person =>
-        person.idNode === id ? { ...person, isOpen: !person.isOpen } : person
+  const toggleAccordion = (nodeId) => {
+    const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
+    setSelectedNodes((prevSelectedNodes) =>
+      prevSelectedNodes.map((node) =>
+        node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
       )
     );
   };
 
   // Render header for each accordion—shows the full name and action buttons
-  const renderHeader = (rowData, index) => (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-      <span>{rowData.data.person.fullName}</span>
-      <div>
-        <Button
-          icon="pi pi-external-link"
-          className="p-button-text"
-          onClick={(event) => {
-            event.stopPropagation();
-            handlePopoutPerson(rowData.idNode);
-          }}
-        />
-        <Button
-          icon="pi pi-times"
-          className="p-button-text"
-          onClick={(event) => {
-            event.stopPropagation();
-            handleClosePerson(rowData.idNode);
-          }}
-        />
-      </div>
+  const renderHeader = (node, index) => (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <span>{node?.data?.person?.fullName || node.label}</span>
+      <Button
+        icon="pi pi-external-link"
+        className="p-button-rounded p-button-text"
+        onClick={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          handleOpenClick(node);
+        }}
+      />
+      <Button
+        icon="pi pi-times"
+        className="p-button-rounded p-button-text"
+        onClick={(event) => {
+          event.stopPropagation();
+          event.preventDefault();
+          handleCloseNode(index);
+        }}
+      />
     </div>
   );
 
-  // Render an accordion item containing a Sidecar for the rowData
+  // Updated renderAccordion function
   const renderAccordion = (rowData, index) => {
     const id = rowData.idNode;
-    const person = selectedPersons.find(p => p.idNode === id) || {};
-    const activeTabIndex = person.activeTabIndex || 0;
+    const activeTabIndex =
+      selectedNodes.find((node) => node.idNode === id)?.activeTabIndex || 0;
 
     const setActiveTabIndex = (newIndex) => {
-      setSelectedPersons(prev =>
-        prev.map(p =>
-          p.idNode === id ? { ...p, activeTabIndex: newIndex } : p
+      setSelectedNodes((prevSelectedNodes) =>
+        prevSelectedNodes.map((node) =>
+          node.idNode === id ? { ...node, activeTabIndex: newIndex } : node
         )
       );
     };
@@ -92,17 +99,20 @@ const QueryTabs = ({
     return (
       <Accordion
         key={id}
-        activeIndex={person.isOpen ? 0 : null}
+        activeIndex={
+          selectedNodes.find((node) => node.idNode === id)?.isOpen ? 0 : null
+        }
         onTabChange={() => toggleAccordion(id)}
         style={{ width: "100%", flexGrow: 1 }}
       >
         <AccordionTab header={renderHeader(rowData, index)}>
           <div style={{ overflow: "auto", height: "100%", maxHeight: "45vh" }}>
             <Sidecar
+              key={id}
               nodeData={rowData}
               activeTabIndex={activeTabIndex}
               setActiveTabIndex={setActiveTabIndex}
-              handleNodeClick={() => {}}
+              handleNodeClick={handleNodeClick}
             />
           </div>
         </AccordionTab>
@@ -111,17 +121,64 @@ const QueryTabs = ({
   };
 
   // Remove a person from the selectedPersons list
-  const handleClosePerson = (idNode) => {
-    setSelectedPersons(prev => prev.filter(person => person.idNode !== idNode));
+  // const handleClosePerson = (idNode) => {
+  //   setSelectedPersons(prev => prev.filter(person => person.idNode !== idNode));
+  // };
+
+  // // Open a popout dialog for the person sidecar; triggered by the external-link button
+  // const handlePopoutPerson = (idNode) => {
+  //   const personData = selectedPersons.find(p => p.idNode === idNode);
+  //   if (personData) {
+  //     const id = uuidv4();
+  //     setDialogs(prev => [...prev, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
+  //   }
+  // };
+
+  // // Remove a person from the selectedPersons list
+  // const handleCloseDocument = (idNode) => {
+  //   setSelectedDocument(prev => prev.filter(document => document.idNode !== idNode));
+  // };
+
+  // // Open a popout dialog for the document sidecar; triggered by the external-link button
+  // const handlePopoutDocument = (idNode) => {
+  //   const documentData = selectedDocument.find(p => p.idNode === idNode);
+  //   if (documentData) {
+  //     const id = uuidv4();
+  //     setDialogs(prev => [...prev, { id, nodeData: documentData, activeTabIndex: documentData.activeTabIndex || 0 }]);
+  //   }
+  // };
+
+  // const handleCloseNode = (rowIndex) => {
+  //   setSelectedNodes((prevSelectedNodes) => {
+  //     const updatedNodes = prevSelectedNodes.filter(
+  //       (_, index) => index !== rowIndex.rowIndex
+  //     );
+  //     return [...updatedNodes];
+  //   });
+  // };
+
+  const handleOpenClick = (rowData) => {
+    const id = uuidv4();
+    setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData: rowData }]);
   };
 
-  // Open a popout dialog for the person sidecar; triggered by the external-link button
-  const handlePopoutPerson = (idNode) => {
-    const personData = selectedPersons.find(p => p.idNode === idNode);
-    if (personData) {
-      const id = uuidv4();
-      setDialogs(prev => [...prev, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
-    }
+  const handleCloseNode = (idNode) => {
+    setSelectedNodes((prevSelectedNodes) =>
+      prevSelectedNodes.filter(node => node.idNode !== idNode)
+    );
+  };
+
+  const handleNodeClick = (node) => {
+    console.log(node);
+    setSelectedNodes((prevSelectedNodes) => [
+      {
+        ...node,
+        isOpen: false,
+        activeTabIndex: 0,
+        idNode: uuidv4(),
+      },
+      ...prevSelectedNodes,
+    ]);
   };
 
   // Send query data to the iframe (e.g. map) when loaded
@@ -186,9 +243,28 @@ const QueryTabs = ({
         enrichedPerson.documents = fullPersonData[0].documents;
       }
       console.log("Enriched person data", enrichedPerson);
-      setSelectedPersons(prev => [
+      setSelectedNodes(prev => [
         { ...enrichedPerson, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
         ...prev,
+      ]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // Fetch extra person details based on person.personID and enrich the data with letters and mentions
+  const handleDocumentClick = async (document) => {
+    try {
+      console.log("Fetched document data", document.documentID);
+      
+      setSelectedNodes(prevSelectedNodes => [
+        { 
+          ...document.documentID, 
+          isOpen: false, 
+          activeTabIndex: 0, 
+          idNode: uuidv4() 
+        },
+        ...prevSelectedNodes,
       ]);
     } catch (error) {
       console.error(error);
@@ -202,6 +278,9 @@ const QueryTabs = ({
       console.log("MESSAGE RECEIVED: ", event.data);
       if (event.data.personID) {
         handlePersonClick(event.data);
+      }
+      else if (event.data.documentID) {
+        handleDocumentClick(event.data);
       }
     };
 
@@ -280,7 +359,7 @@ const QueryTabs = ({
             >
               <DataTable
                 className="Home-DataTable"
-                value={selectedPersons}
+                value={selectedNodes}
                 emptyMessage="Select a name to view its details"
               >
                 <Column
