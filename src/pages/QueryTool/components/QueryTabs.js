@@ -225,35 +225,15 @@ const QueryTabs = ({
 
   // Fetch extra person details based on person.personID and enrich the data with letters and mentions
   const handlePersonClick = async (person) => {
-    try {
-      const baseUrl = process.env.REACT_APP_BASEEXPRESSURL;
-      const response = await fetch(`${baseUrl}person/${person.personID}`);
-      if (!response.ok) {
-        throw new Error("Failed fetching person details.");
-      }
-      const fullPersonData = await response.json();
-      const enrichedPerson = {
-        ...person,
-        data: {
-          person: {
-            ...fullPersonData[0],
-            letters: fullPersonData[0].letters,  // Include letters data
-            mentions: fullPersonData[0].mentions // Include mentions data
-          }
-        }
-      };
-      // If documents exist, attach them separately
-      if (fullPersonData[0].documents) {
-        enrichedPerson.documents = fullPersonData[0].documents;
-      }
-      console.log("Enriched person data", enrichedPerson);
+ 
+      const nodeData = graph.nodes.find(node => node.personID === person.personID);
+      console.log("Fetched NODE data", nodeData);
+      
       setSelectedNodes(prev => [
-        { ...enrichedPerson, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
+        { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
         ...prev,
       ]);
-    } catch (error) {
-      console.error(error);
-    }
+    
   };
 
   // Fetch extra person details based on person.personID and enrich the data with letters and mentions
