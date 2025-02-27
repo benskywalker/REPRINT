@@ -14,3 +14,4 @@ export const GraphProvider = ({ children }) => {
 };
 
 export const useGraph = () => useContext(GraphContext);
+export const setGraph = () => useContext(GraphContext);

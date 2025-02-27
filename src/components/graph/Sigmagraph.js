@@ -37,7 +37,9 @@ import {
   RandomizeNodePositions,
 } from "react-sigma";
 import LoadingBar from "react-top-loading-bar";
-import fetchAndBuildGraph from "./fetchAndBuildGraph";
+import FetchAndBuildGraph from "./fetchAndBuildGraph";
+import { useGraph } from "../../context/GraphContext";
+
 import "./sigma.css";
 import { AutoComplete } from "primereact/autocomplete";
 import { Slider } from '@mui/material';
@@ -79,6 +81,7 @@ export default function SigmaGraph({
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [metrics, setMetrics] = useState(null);
   const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
+  const { setGraph } = useGraph();
   const sigmaRef = useRef(null);
   const showEdgesRef = useRef(showEdges);
   const [layoutKey, setLayoutKey] = useState(0);
@@ -134,7 +137,7 @@ export default function SigmaGraph({
         // const edgesUrl = "http://localhost:4000/edges";
 
         // Fetch and build the graph with filters and date range
-        const { graph, metrics: computedMetrics } = await fetchAndBuildGraph(
+        const { graph, metrics: computedMetrics } = await FetchAndBuildGraph(
           nodesUrl,
           edgesUrl,
           filters,
@@ -143,6 +146,7 @@ export default function SigmaGraph({
           selectedTerms,    // 'selectedTerms' parameter
           commitedDateValue // 'dateRange' parameter
         );
+		//setGraph(graph);
 
         // Convert Graphology graph to plain object with nodes and edges arrays
         const nodes = graph.nodes().map((nodeId) => ({
@@ -164,6 +168,7 @@ export default function SigmaGraph({
         });
 
         setGraphData({ nodes, edges });
+		setGraph({ nodes, edges});
         setMetrics(computedMetrics);
         if (onMetricsUpdate) {
           onMetricsUpdate(computedMetrics); // Pass metrics to parent

@@ -24,6 +24,7 @@ import Graph from "graphology";
 import { centrality } from "graphology-metrics";
 import modularity from "graphology-communities-louvain";
 import { density } from "graphology-metrics/graph";
+import { setGraph } from "../../context/GraphContext";
 
 
 
@@ -57,7 +58,7 @@ const colorPalette = {
   waypoint: "#D8BFD8",    // Thistle
 };
 
-const fetchAndBuildGraph = async (
+const FetchAndBuildGraph = async (
   nodesUrl,
   edgesUrl,
   filters,
@@ -403,7 +404,9 @@ const buildGraph = (
       graph.dropNode(nodeId);
     });
   }
-
+  //const { newgraph, setGraph, originalGraph, setOriginalGraph } = useGraph();
+  
+  //setGraph(graph);
   return graph;
 };
 
@@ -440,4 +443,4 @@ const computeMetrics = (graph) => {
   return metrics;
 };
 
-export default fetchAndBuildGraph;
+export default FetchAndBuildGraph;
