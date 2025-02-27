@@ -24,8 +24,6 @@ import Graph from "graphology";
 import { centrality } from "graphology-metrics";
 import modularity from "graphology-communities-louvain";
 import { density } from "graphology-metrics/graph";
-import { setGraph } from "../../context/GraphContext";
-
 
 
 const colorPalette = {
@@ -404,9 +402,6 @@ const buildGraph = (
       graph.dropNode(nodeId);
     });
   }
-  //const { newgraph, setGraph, originalGraph, setOriginalGraph } = useGraph();
-  
-  //setGraph(graph);
   return graph;
 };
 
