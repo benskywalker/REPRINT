@@ -14,6 +14,7 @@ import Sidecar from '../../../components/sidecar/Sidecar';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { v4 as uuidv4 } from 'uuid';
+import { useGraph } from "../../../context/GraphContext";
 
 const QueryTabs = ({
   activeIndex,
@@ -37,6 +38,7 @@ const QueryTabs = ({
   addNewSection,
   removeSection
 }) => {
+  const { graph, setGraph, originalGraph, setOriginalGraph } = useGraph();
   const mapIframeRef = useRef(null);
   const [selectedNodes, setSelectedNodes] = useState([])  
   
@@ -50,6 +52,8 @@ const QueryTabs = ({
       )
     );
   };
+
+  console.log(graph);
 
   // Render header for each accordion—shows the full name and action buttons
   const renderHeader = (node, index) => (
