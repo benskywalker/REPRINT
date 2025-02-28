@@ -135,28 +135,9 @@ const QueryTabs = ({
     );
   };
 
-
-  const handleNodeClick = (data)=> {
-
-    var nodeData = null
-
-    console.log("Data!!", data);
-
-    if (data.documentID != null) {
-      nodeData = graph.nodes.find(node => node.documentID === data.documentID);
-      console.log("I'm a document!!!!", nodeData)
-    }
-
-    if (data.personID != null) {
-      nodeData = graph.nodes.find(node => node.personID === data.personID);
-    }
-
+  const handleNodeClick = (data) => {
+    const nodeData = graph.nodes.find(node => node.personID === data.personID);
     console.log("Fetched NODE data", nodeData);
-
-    if (nodeData == null) {
-      console.error("NODE LOOK UP FAILED")
-      return
-    }
     
     setSelectedNodes(prev => [
       { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
@@ -211,8 +192,7 @@ const QueryTabs = ({
         setMapIsReady(true);
       }
       
-
-      if (event.data.personID || event.data.documentID) 
+      if (event.data.personID) {
         handleNodeClick(event.data);
       }
     };
