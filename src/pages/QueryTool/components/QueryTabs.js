@@ -166,7 +166,6 @@ const QueryTabs = ({
       };
 
       // Post query data to the map iframe
-      mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
       console.log("Sending to ", process.env.REACT_APP_PRINT_MAPPING_URL);
       mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
     }
