@@ -203,6 +203,12 @@ const QueryTabs = ({
     };
   }, []);
 
+useEffect(() => {
+  if (activeIndex !== 2) {
+    setMapIsReady(false);
+  }
+}, [activeIndex]);
+
   const renderMap = () => {
     return (
       <div style={{ position: 'relative', width: '100%', height: '80vh' }}>
