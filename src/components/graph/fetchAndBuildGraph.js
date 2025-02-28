@@ -26,7 +26,6 @@ import modularity from "graphology-communities-louvain";
 import { density } from "graphology-metrics/graph";
 
 
-
 const colorPalette = {
   nodeDefault: "#D3D3D3",       // Light Gray
   nodeHighlighted: "#A9A9A9",   // Dark Gray
@@ -57,7 +56,7 @@ const colorPalette = {
   waypoint: "#D8BFD8",    // Thistle
 };
 
-const fetchAndBuildGraph = async (
+const FetchAndBuildGraph = async (
   nodesUrl,
   edgesUrl,
   filters,
@@ -403,7 +402,6 @@ const buildGraph = (
       graph.dropNode(nodeId);
     });
   }
-
   return graph;
 };
 
@@ -440,4 +438,4 @@ const computeMetrics = (graph) => {
   return metrics;
 };
 
-export default fetchAndBuildGraph;
+export default FetchAndBuildGraph;
