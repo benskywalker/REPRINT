@@ -13,6 +13,7 @@ import { Column } from 'primereact/column';
 import Sidecar from '../../../components/sidecar/Sidecar';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { v4 as uuidv4 } from 'uuid';
 import { useGraph } from "../../../context/GraphContext";
 
@@ -40,12 +41,11 @@ const QueryTabs = ({
 }) => {
   const { graph, setGraph, originalGraph, setOriginalGraph } = useGraph();
   const mapIframeRef = useRef(null);
-  const [selectedNodes, setSelectedNodes] = useState([])  
-  
+  const [selectedNodes, setSelectedNodes] = useState([]);
   const [dialogs, setDialogs] = useState([]);
+  const [mapIsReady, setMapIsReady] = useState(false);
 
   const toggleAccordion = (nodeId) => {
-    const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
     setSelectedNodes((prevSelectedNodes) =>
       prevSelectedNodes.map((node) =>
         node.idNode === nodeId ? { ...node, isOpen: !node.isOpen } : node
@@ -124,43 +124,6 @@ const QueryTabs = ({
     );
   };
 
-  // Remove a person from the selectedPersons list
-  // const handleClosePerson = (idNode) => {
-  //   setSelectedPersons(prev => prev.filter(person => person.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the person sidecar; triggered by the external-link button
-  // const handlePopoutPerson = (idNode) => {
-  //   const personData = selectedPersons.find(p => p.idNode === idNode);
-  //   if (personData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // // Remove a person from the selectedPersons list
-  // const handleCloseDocument = (idNode) => {
-  //   setSelectedDocument(prev => prev.filter(document => document.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the document sidecar; triggered by the external-link button
-  // const handlePopoutDocument = (idNode) => {
-  //   const documentData = selectedDocument.find(p => p.idNode === idNode);
-  //   if (documentData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: documentData, activeTabIndex: documentData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // const handleCloseNode = (rowIndex) => {
-  //   setSelectedNodes((prevSelectedNodes) => {
-  //     const updatedNodes = prevSelectedNodes.filter(
-  //       (_, index) => index !== rowIndex.rowIndex
-  //     );
-  //     return [...updatedNodes];
-  //   });
-  // };
-
   const handleOpenClick = (rowData) => {
     const id = uuidv4();
     setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData: rowData }]);
@@ -172,7 +135,7 @@ const QueryTabs = ({
     );
   };
 
-  const handleNodeClick = (data)=> {
+  const handleNodeClick = (data) => {
     const nodeData = graph.nodes.find(node => node.personID === data.personID);
     console.log("Fetched NODE data", nodeData);
     
@@ -220,13 +183,19 @@ const QueryTabs = ({
     setDialogs(prev => prev.filter(dialog => dialog.id !== id));
   };
 
-  // Listen for messages from the map iframe and trigger person detail fetch as needed
+  // Listen for messages from the map iframe and trigger person detail fetch as needed and listens for if map is ready
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.origin !== process.env.REACT_APP_PRINT_MAPPING_URL) return;
       console.log("MESSAGE RECEIVED: ", event.data);
-      if (event.data.personID) 
+      
+      if (event.data.mappingReady) {
+        setMapIsReady(true);
+      }
+      
+      if (event.data.personID) {
         handleNodeClick(event.data);
+      }
     };
 
     window.addEventListener('message', handleMessage);
@@ -234,6 +203,45 @@ const QueryTabs = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  const renderMap = () => {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '80vh' }}>
+        <iframe
+          ref={mapIframeRef}
+          title="Map"
+          style={{ 
+            width: "100%", 
+            height: "80vh",
+            opacity: mapIsReady ? 1 : 0,
+            transition: 'opacity 0.3s ease-in-out'
+          }}
+          src={process.env.REACT_APP_PRINT_MAPPING_URL}
+          allowFullScreen
+          loading="lazy"
+          onLoad={sendQueryDataToIframe}
+        />
+        
+        {!mapIsReady && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f8f9fa'
+          }}>
+            <ProgressSpinner style={{ width: '50px', height: '50px' }} />
+            <p style={{ marginTop: '1rem' }}>Loading map data...</p>
+          </div>
+        )}
+      </div>
+    );
+  };
 
   return (
     <>
@@ -314,15 +322,7 @@ const QueryTabs = ({
               </DataTable>
             </SplitterPanel>
             <SplitterPanel>
-              <iframe
-                ref={mapIframeRef}
-                title="Map"
-                style={{ width: "100%", height: "80vh" }}
-                src={process.env.REACT_APP_PRINT_MAPPING_URL}
-                allowFullScreen
-                loading="lazy"
-                onLoad={sendQueryDataToIframe}
-              />
+              {renderMap()}
             </SplitterPanel>
           </Splitter>
         </TabPanel>
