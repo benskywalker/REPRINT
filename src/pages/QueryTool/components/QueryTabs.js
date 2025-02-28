@@ -14,6 +14,7 @@ import Sidecar from '../../../components/sidecar/Sidecar';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { v4 as uuidv4 } from 'uuid';
+import { ProgressSpinner } from 'primereact/progressspinner';
 import { useGraph } from "../../../context/GraphContext";
 
 const QueryTabs = ({
@@ -43,6 +44,7 @@ const QueryTabs = ({
   const [selectedNodes, setSelectedNodes] = useState([])  
   
   const [dialogs, setDialogs] = useState([]);
+  const [mapIsReady, setMapIsReady] = useState(false);
 
   const toggleAccordion = (nodeId) => {
     const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
@@ -217,7 +219,7 @@ const QueryTabs = ({
       };
 
       // Post query data to the map iframe
-      mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
+      //mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
       console.log("Sending to ", process.env.REACT_APP_PRINT_MAPPING_URL);
       mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
     }
@@ -253,6 +255,52 @@ const QueryTabs = ({
       window.removeEventListener('message', handleMessage);
     };
   }, []);
+
+  useEffect(() => {
+  if (activeIndex !== 2) {
+    setMapIsReady(false);
+  }
+}, [activeIndex]);
+
+  const renderMap = () => {
+    return (
+      <div style={{ position: 'relative', width: '100%', height: '80vh' }}>
+        <iframe
+          ref={mapIframeRef}
+          title="Map"
+          style={{ 
+            width: "100%", 
+            height: "80vh",
+            opacity: mapIsReady ? 1 : 0,
+            transition: 'opacity 0.3s ease-in-out'
+          }}
+          src={process.env.REACT_APP_PRINT_MAPPING_URL}
+          allowFullScreen
+          loading="lazy"
+          onLoad={sendQueryDataToIframe}
+        />
+        
+        {!mapIsReady && (
+          <div style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: '#f8f9fa'
+          }}>
+            <ProgressSpinner style={{ width: '50px', height: '50px' }} />
+            <p style={{ marginTop: '1rem' }}>Loading map data...</p>
+          </div>
+        )}
+      </div>
+    );
+  };
+
 
   return (
     <>
@@ -333,15 +381,7 @@ const QueryTabs = ({
               </DataTable>
             </SplitterPanel>
             <SplitterPanel>
-              <iframe
-                ref={mapIframeRef}
-                title="Map"
-                style={{ width: "100%", height: "80vh" }}
-                src={process.env.REACT_APP_PRINT_MAPPING_URL}
-                allowFullScreen
-                loading="lazy"
-                onLoad={sendQueryDataToIframe}
-              />
+              {renderMap()}
             </SplitterPanel>
           </Splitter>
         </TabPanel>
