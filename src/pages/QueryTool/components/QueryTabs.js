@@ -80,7 +80,7 @@ const QueryTabs = ({
         onClick={(event) => {
           event.stopPropagation();
           event.preventDefault();
-          handleCloseNode(index);
+          handleCloseNode(node.idNode);
         }}
       />
     </div>
@@ -172,16 +172,13 @@ const QueryTabs = ({
     );
   };
 
-  const handleNodeClick = (node) => {
-    console.log(node);
-    setSelectedNodes((prevSelectedNodes) => [
-      {
-        ...node,
-        isOpen: false,
-        activeTabIndex: 0,
-        idNode: uuidv4(),
-      },
-      ...prevSelectedNodes,
+  const handleNodeClick = (data)=> {
+    const nodeData = graph.nodes.find(node => node.personID === data.personID);
+    console.log("Fetched NODE data", nodeData);
+    
+    setSelectedNodes(prev => [
+      { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
+      ...prev,
     ]);
   };
 
@@ -223,69 +220,13 @@ const QueryTabs = ({
     setDialogs(prev => prev.filter(dialog => dialog.id !== id));
   };
 
-  // Fetch extra person details based on person.personID and enrich the data with letters and mentions
-  const handlePersonClick = async (person) => {
-    try {
-      const baseUrl = process.env.REACT_APP_BASEEXPRESSURL;
-      const response = await fetch(`${baseUrl}person/${person.personID}`);
-      if (!response.ok) {
-        throw new Error("Failed fetching person details.");
-      }
-      const fullPersonData = await response.json();
-      const enrichedPerson = {
-        ...person,
-        data: {
-          person: {
-            ...fullPersonData[0],
-            letters: fullPersonData[0].letters,  // Include letters data
-            mentions: fullPersonData[0].mentions // Include mentions data
-          }
-        }
-      };
-      // If documents exist, attach them separately
-      if (fullPersonData[0].documents) {
-        enrichedPerson.documents = fullPersonData[0].documents;
-      }
-      console.log("Enriched person data", enrichedPerson);
-      setSelectedNodes(prev => [
-        { ...enrichedPerson, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
-        ...prev,
-      ]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  // Fetch extra person details based on person.personID and enrich the data with letters and mentions
-  const handleDocumentClick = async (document) => {
-    try {
-      console.log("Fetched document data", document.documentID);
-      
-      setSelectedNodes(prevSelectedNodes => [
-        { 
-          ...document.documentID, 
-          isOpen: false, 
-          activeTabIndex: 0, 
-          idNode: uuidv4() 
-        },
-        ...prevSelectedNodes,
-      ]);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   // Listen for messages from the map iframe and trigger person detail fetch as needed
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.origin !== process.env.REACT_APP_PRINT_MAPPING_URL) return;
       console.log("MESSAGE RECEIVED: ", event.data);
-      if (event.data.personID) {
-        handlePersonClick(event.data);
-      }
-      else if (event.data.documentID) {
-        handleDocumentClick(event.data);
-      }
+      if (event.data.personID) 
+        handleNodeClick(event.data);
     };
 
     window.addEventListener('message', handleMessage);
