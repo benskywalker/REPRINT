@@ -239,7 +239,8 @@ const QueryTabs = ({
   // Listen for messages from the map iframe and trigger person detail fetch as needed
   useEffect(() => {
     const handleMessage = (event) => {
-      if (event.origin !== process.env.REACT_APP_PRINT_MAPPING_URL) return;
+	  const rootMapUrl = window.location.protocol + "//" + window.location.hostname;
+      if (event.origin !== process.env.REACT_APP_PRINT_MAPPING_URL && event.origin != rootMapUrl) return;
       console.log("MESSAGE RECEIVED: ", event.data);
       
       if (event.data.mappingReady) {
