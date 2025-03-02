@@ -5,6 +5,21 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { relatedEntitiesMap } from '../Constants';
 import '../styles/ResultsTable.css';
 
+const prettifyFieldName = (fieldName) => {
+  if (!fieldName) return "";
+  // Insert spaces between a lowercase letter and an uppercase letter,
+  // and replace underscores with a space
+  let withSpaces = fieldName
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .replace(/_/g, " ");
+  
+  // Remove any spaces between consecutive uppercase letters
+  withSpaces = withSpaces.replace(/([A-Z])\s+([A-Z])/g, "$1$2");
+  
+  // Capitalize the first letter, and trim any excess whitespace
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1).trim();
+};
+
 const ResultsTable = ({
   loading,
   queryData,
@@ -18,6 +33,7 @@ const ResultsTable = ({
   truncateText,
   header
 }) => {
+	
   if (loading) {
     return (
       <div className="spinner-wrapper">
@@ -50,24 +66,24 @@ const ResultsTable = ({
       onFilter={onFilter}
     >
       {visibleColumns.slice(0, 3).map((fieldObj, index) => (
-        <Column
-          key={index}
-          field={fieldObj.field}
-          header={fieldObj.field}
-          sortable
-          filter
-          filterPlaceholder={`Search by ${fieldObj.field}`}
-          body={(rowData) => (
-            <span>
-              {truncateText(
-                rowData[fieldObj.field],
-                rowData.id,
-                fieldObj.field
-              )}
-            </span>
-          )}
-        />
-      ))}
+		<Column
+			key={index}
+			field={fieldObj.field}
+			header={prettifyFieldName(fieldObj.field)}
+			sortable
+			filter
+			filterPlaceholder={`Search by ${prettifyFieldName(fieldObj.field)}`}
+			body={(rowData) => (
+			<span>
+				{truncateText(
+				rowData[fieldObj.field],
+				rowData.id,
+				fieldObj.field
+				)}
+			</span>
+			)}
+		/>
+	  ))}
 
       {relatedEntitiesMap[selectedView]?.map((entity, index) => (
         <Column
@@ -90,7 +106,7 @@ const ResultsTable = ({
         <Column
           key={index + 3}
           field={fieldObj.field}
-          header={fieldObj.field}
+          header={prettifyFieldName(fieldObj.field)}
           sortable
           filter
           filterPlaceholder={`Search by ${fieldObj.field}`}
