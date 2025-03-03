@@ -4,6 +4,8 @@ import { Column } from 'primereact/column';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { relatedEntitiesMap } from '../Constants';
 import '../styles/ResultsTable.css';
+import { prettifyFieldName } from '../../../util/prettify'; // import the utility
+
 
 const ResultsTable = ({
   loading,
@@ -18,6 +20,7 @@ const ResultsTable = ({
   truncateText,
   header
 }) => {
+	
   if (loading) {
     return (
       <div className="spinner-wrapper">
@@ -50,24 +53,24 @@ const ResultsTable = ({
       onFilter={onFilter}
     >
       {visibleColumns.slice(0, 3).map((fieldObj, index) => (
-        <Column
-          key={index}
-          field={fieldObj.field}
-          header={fieldObj.field}
-          sortable
-          filter
-          filterPlaceholder={`Search by ${fieldObj.field}`}
-          body={(rowData) => (
-            <span>
-              {truncateText(
-                rowData[fieldObj.field],
-                rowData.id,
-                fieldObj.field
-              )}
-            </span>
-          )}
-        />
-      ))}
+		<Column
+			key={index}
+			field={fieldObj.field}
+			header={prettifyFieldName(fieldObj.field)}
+			sortable
+			filter
+			filterPlaceholder={`Search by ${prettifyFieldName(fieldObj.field)}`}
+			body={(rowData) => (
+			<span>
+				{truncateText(
+				rowData[fieldObj.field],
+				rowData.id,
+				fieldObj.field
+				)}
+			</span>
+			)}
+		/>
+	  ))}
 
       {relatedEntitiesMap[selectedView]?.map((entity, index) => (
         <Column
@@ -90,7 +93,7 @@ const ResultsTable = ({
         <Column
           key={index + 3}
           field={fieldObj.field}
-          header={fieldObj.field}
+          header={prettifyFieldName(fieldObj.field)}
           sortable
           filter
           filterPlaceholder={`Search by ${fieldObj.field}`}

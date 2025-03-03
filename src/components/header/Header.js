@@ -80,6 +80,7 @@ const Header = () => {
           style={{ width: "25%" }}
           icon={selectedTheme === "viva-light" ? "pi pi-moon" : "pi pi-sun"}
           onClick={toggleTheme}
+		  title="Toggle Light / Dark Mode"
         />
       </Sidebar>
     </div>

@@ -4,6 +4,7 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { InputText } from 'primereact/inputtext';
 import { boolItems, actionItems, firstActionItems } from '../Constants';
 import '../styles/QuerySection.css';
+import { prettifyFieldName } from '../../../util/prettify';
 
 const QuerySection = ({ 
   section, 
@@ -14,6 +15,12 @@ const QuerySection = ({
   addNewSection, 
   removeSection 
 }) => {
+
+  // Templates for the field dropdown to display prettified field names
+  const fieldOptionTemplate = (option) => prettifyFieldName(option.field);
+
+  const fieldValueTemplate = (option) => option ? prettifyFieldName(option.field) : null;
+
   return (
     <div className="query-section">
       <h3>Where:</h3>
@@ -22,12 +29,16 @@ const QuerySection = ({
           tooltip="Select a field to search within"
           value={section.selectedField}
           onChange={(e) => {
+            // Ensure we store the raw original field option (not its prettified label)
             const newSections = [...sections];
-            newSections[index].selectedField = e.value;
+            newSections[index].selectedField = e.value; // e.value remains the original object
             setSections(newSections);
           }}
           options={filteredFields}
           optionLabel="field"
+          dataKey="field" // This ensures PrimeReact tracks the original field value
+          itemTemplate={fieldOptionTemplate}
+          valueTemplate={fieldValueTemplate}
           placeholder="Parameters"
           filter
           className="w-full md:w-14rem"
@@ -72,7 +83,7 @@ const QuerySection = ({
               addNewSection();
             } else if (e.value === "remove") {
               if (index === newSections.length - 1) {
-                sections[index - 1].selectedAction = null;
+                newSections[index - 1].selectedAction = null;
               }
               removeSection(section.id);
             }
@@ -86,5 +97,4 @@ const QuerySection = ({
     </div>
   );
 };
-
 export default QuerySection;

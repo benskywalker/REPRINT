@@ -5,6 +5,16 @@
     padding: 15px;
     margin-bottom: 15px;
   }
+
+ .query-section .p-dropdown-label {
+	border-radius: 5px;
+	padding: 10px;
+	width: 100%; /* Remove height: 100% and use a min-height */
+	min-height: 2.5rem;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+ }
   
   .query-input {
     border-radius: 5px;
