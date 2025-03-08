@@ -16,6 +16,7 @@ import { Button } from 'primereact/button';
 import { v4 as uuidv4 } from 'uuid';
 import { ProgressSpinner } from 'primereact/progressspinner';
 import { useGraph } from "../../../context/GraphContext";
+import { Toast } from "primereact/toast";
 
 const QueryTabs = ({
   activeIndex,
@@ -45,6 +46,8 @@ const QueryTabs = ({
   
   const [dialogs, setDialogs] = useState([]);
   const [mapIsReady, setMapIsReady] = useState(false);
+
+  const toast = useRef(null);
 
   const toggleAccordion = (nodeId) => {
     const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
@@ -192,10 +195,23 @@ const QueryTabs = ({
 
     console.log("Fetched NODE data", nodeData);
     
-    setSelectedNodes(prev => [
+    if (nodeData == null) {
+      console.error("NODE LOOK UP RETURNED NULL");
+      toast.current.show({
+        severity: "info",
+        summary: "Data Not Found",
+        detail: `This person or document does not exist in the local database or is not showable.`,
+        life: 4500,
+      });
+    }
+
+    else {
+      setSelectedNodes(prev => [
       { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
-      ...prev,
-    ]);
+        ...prev,
+      ]);
+    }
+
   };
 
   // Send query data to the iframe (e.g. map) when loaded
@@ -305,6 +321,7 @@ const QueryTabs = ({
 
   return (
     <>
+      <Toast ref={toast} />
       <TabView className="query-tool" activeIndex={activeIndex} onTabChange={onTabChange}>
         <TabPanel header="Query" leftIcon="pi pi-search mr-2" className="query-tab-panel">
           <div className="query-section">

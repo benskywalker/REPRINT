@@ -11,7 +11,6 @@ import "./App.css";
 import QueryTool from "./pages/QueryTool/QueryTool";
 
 const Main = ({ searchQuery }) => {
-
   return <Home className="home" searchQuery={searchQuery} />;
 };
 
@@ -24,15 +23,12 @@ const App = () => {
 
   return (
     <GraphProvider>
-      <Router >
+      <Router>
         <Header onSearchChange={handleSearchChange} />
         <Routes>
           <Route path="/" element={<Navigate to="/REPRINT" replace />} />
           <Route path="/REPRINT" element={<Main searchQuery={searchQuery} />} />
-          <Route
-            path="/REPRINT/gallery"
-            element={<Gallery searchQuery={searchQuery} />}
-          />
+          <Route path="/REPRINT/gallery" element={<Gallery searchQuery={searchQuery} />} />
           <Route path="/REPRINT/query-tool" element={<QueryTool />} />
           <Route path="/REPRINT/*" element={<Home />} />
         </Routes>
