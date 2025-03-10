@@ -129,42 +129,6 @@ const QueryTabs = ({
     );
   };
 
-  // Remove a person from the selectedPersons list
-  // const handleClosePerson = (idNode) => {
-  //   setSelectedPersons(prev => prev.filter(person => person.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the person sidecar; triggered by the external-link button
-  // const handlePopoutPerson = (idNode) => {
-  //   const personData = selectedPersons.find(p => p.idNode === idNode);
-  //   if (personData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // // Remove a person from the selectedPersons list
-  // const handleCloseDocument = (idNode) => {
-  //   setSelectedDocument(prev => prev.filter(document => document.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the document sidecar; triggered by the external-link button
-  // const handlePopoutDocument = (idNode) => {
-  //   const documentData = selectedDocument.find(p => p.idNode === idNode);
-  //   if (documentData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: documentData, activeTabIndex: documentData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // const handleCloseNode = (rowIndex) => {
-  //   setSelectedNodes((prevSelectedNodes) => {
-  //     const updatedNodes = prevSelectedNodes.filter(
-  //       (_, index) => index !== rowIndex.rowIndex
-  //     );
-  //     return [...updatedNodes];
-  //   });
-  // };
 
   const handleOpenClick = (rowData) => {
     const id = uuidv4();

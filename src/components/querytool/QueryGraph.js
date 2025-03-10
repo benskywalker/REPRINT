@@ -71,7 +71,7 @@ const QueryGraph = ({nodesUrl, edgesUrl, body}) => {
                 organization: true,
                 religion: true,
                 relationship: true,
-                Unknown: true,
+                Unknown: true
               }}
             />
 

@@ -118,11 +118,6 @@ export default function SigmaGraph({
       }
   };
 
-  
-
-
-
-
   useEffect(() => {
     showEdgesRef.current = showEdges;
   }, [showEdges]);

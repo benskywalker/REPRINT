@@ -391,7 +391,7 @@ const buildGraph = (
             documentNodesToRemove.push(nodeId);
           }
         } else {
-          // Optionally, remove nodes without a valid date
+          // If you prefer to keep documents without a valid date, comment out the next line:
           documentNodesToRemove.push(nodeId);
         }
       }
