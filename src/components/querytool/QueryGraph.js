@@ -1,17 +1,16 @@
-import SigmaGraph from "../../components/graph/Sigmagraph"; // Import the SigmaGraph component
-import { useState} from "react";
+import SigmaGraph from "../../components/graph/Sigmagraph";
+import { useState } from "react";
 import styles from "./QueryGraph.module.css";
 import Sidecar from "../../components/sidecar/Sidecar";
 import { Dialog } from "primereact/dialog";
 import { v4 as uuidv4 } from "uuid";
 
-const QueryGraph = ({nodesUrl, edgesUrl, body}) => {
+const QueryGraph = ({ nodesUrl, edgesUrl, body, edgeFilters }) => {
   const [dialogs, setDialogs] = useState([]);
   const [hoveredNodeData, setHoveredNodeData] = useState(null);
   const [graph, setGraph] = useState({ nodes: [], edges: [] });
   const [showEdges, setShowEdges] = useState(true);
- 
-  //log the nodes and edges url and body to the console
+
   console.log("nodesUrl", nodesUrl);
   console.log("edgesUrl", edgesUrl);
   console.log("body", body);
@@ -43,37 +42,28 @@ const QueryGraph = ({nodesUrl, edgesUrl, body}) => {
 
 
 
- 
 
 
 
-    
+
+
 
   return (
     <>
       <div className={styles.content}>
-        
-            <SigmaGraph
-              onNodeHover={handleNodeHover}
-              onNodeClick={handleOpenClick}
-              handleNodeunHover={handleNodeOut}
-              handleGraphUpdate={handleGraphUpdate}
-              nodesUrl={nodesUrl}
-              edgesUrl={edgesUrl}
-              body={body}
-              edgeFilters={{
-                Sender: true,
-                Receiver: true,
-                Mentioned: true,
-                Author: true,
-                Waypoint: true,
-                document: true,
-                organization: true,
-                religion: true,
-                relationship: true,
-                Unknown: true,
-              }}
-            />
+
+        <SigmaGraph
+          onNodeHover={handleNodeHover}
+          onNodeClick={handleOpenClick}
+          handleNodeunHover={handleNodeOut}
+          handleGraphUpdate={handleGraphUpdate}
+          nodesUrl={nodesUrl}
+          edgesUrl={edgesUrl}
+          body={body}
+          edgeFilters={
+            edgeFilters
+          }
+        />
 
       </div>
 

@@ -37,12 +37,13 @@ const QueryTabs = ({
   header,
   visibleColumns,
   addNewSection,
-  removeSection
+  removeSection,
+  hasValidQuery
 }) => {
   const { graph, setGraph, originalGraph, setOriginalGraph } = useGraph();
   const mapIframeRef = useRef(null);
-  const [selectedNodes, setSelectedNodes] = useState([])  
-  
+  const [selectedNodes, setSelectedNodes] = useState([])
+
   const [dialogs, setDialogs] = useState([]);
   const [mapIsReady, setMapIsReady] = useState(false);
 
@@ -55,6 +56,34 @@ const QueryTabs = ({
     );
   };
 
+  const edgeFilters = hasValidQuery
+    ? {
+      Sender: true,
+      Receiver: true,
+      Mentioned: true,
+      Author: true,
+      Waypoint: true,
+      document: true,
+      organization: true,
+      religion: true,
+      relationship: true,
+      Unknown: true,
+    }
+    : {
+      Sender: true,
+      Receiver: true,
+      Mentioned: true,
+      Author: true,
+      Waypoint: true,
+      document: true,
+      organization: false,
+      religion: false,
+      relationship: false,
+      Unknown: false,
+    };
+
+
+  console.log("Edge filters: ", edgeFilters);
   console.log(graph);
 
   // Render header for each accordion—shows the full name and action buttons
@@ -175,7 +204,7 @@ const QueryTabs = ({
   };
 
 
-  const handleNodeClick = (data)=> {
+  const handleNodeClick = (data) => {
 
     var nodeData = null
 
@@ -191,7 +220,7 @@ const QueryTabs = ({
     }
 
     console.log("Fetched NODE data", nodeData);
-    
+
     setSelectedNodes(prev => [
       { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
       ...prev,
@@ -201,6 +230,7 @@ const QueryTabs = ({
   // Send query data to the iframe (e.g. map) when loaded
   const sendQueryDataToIframe = () => {
     if (mapIframeRef.current) {
+      
       const queryDataObj = {
         tables: [selectedView],
         fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
@@ -220,6 +250,7 @@ const QueryTabs = ({
 
       // Post query data to the map iframe
       //mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
+      console.log("Query Data: ", queryDataObj);
       console.log("Sending to ", process.env.REACT_APP_PRINT_MAPPING_URL);
       mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
     }
@@ -239,15 +270,15 @@ const QueryTabs = ({
   // Listen for messages from the map iframe and trigger person detail fetch as needed
   useEffect(() => {
     const handleMessage = (event) => {
-	  const rootMapUrl = window.location.protocol + "//" + window.location.hostname;
+      const rootMapUrl = window.location.protocol + "//" + window.location.hostname;
       if (event.origin !== process.env.REACT_APP_PRINT_MAPPING_URL && event.origin != rootMapUrl) return;
       console.log("MESSAGE RECEIVED: ", event.data);
-      
+
       if (event.data.mappingReady) {
         setMapIsReady(true);
       }
-      
-      if (event.data.personID || event.data.documentID) 
+
+      if (event.data.personID || event.data.documentID)
         handleNodeClick(event.data);
     };
 
@@ -258,10 +289,10 @@ const QueryTabs = ({
   }, []);
 
   useEffect(() => {
-  if (activeIndex !== 2) {
-    setMapIsReady(false);
-  }
-}, [activeIndex]);
+    if (activeIndex !== 2) {
+      setMapIsReady(false);
+    }
+  }, [activeIndex]);
 
   const renderMap = () => {
     return (
@@ -269,8 +300,8 @@ const QueryTabs = ({
         <iframe
           ref={mapIframeRef}
           title="Map"
-          style={{ 
-            width: "100%", 
+          style={{
+            width: "100%",
             height: "80vh",
             opacity: mapIsReady ? 1 : 0,
             transition: 'opacity 0.3s ease-in-out'
@@ -280,7 +311,7 @@ const QueryTabs = ({
           loading="lazy"
           onLoad={sendQueryDataToIframe}
         />
-        
+
         {!mapIsReady && (
           <div style={{
             position: 'absolute',
@@ -336,24 +367,32 @@ const QueryTabs = ({
 
         <TabPanel header="Network" leftIcon="pi pi-user mr-2">
           <QueryGraph
-            nodesUrl={`${process.env.REACT_APP_BASEEXPRESSURL}nodes-query`}
-            edgesUrl={`${process.env.REACT_APP_BASEEXPRESSURL}edges-query`}
-            body={{
-              tables: [selectedView],
-              fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
-              operators: sections.map(section => section.selectedParameter ? {
-                equals: "=",
-                not_equals: "!=",
-                like: "LIKE",
-                not_like: "NOT LIKE",
-                greater_than: ">",
-                less_than: "<",
-                greater_than_or_equal: ">=",
-                less_than_or_equal: "<=",
-              }[section.selectedParameter] : null),
-              values: sections.map(section => section.selectedValue),
-              dependentFields: sections.map(section => section.selectedAction),
-            }}
+            nodesUrl={hasValidQuery ?
+              `${process.env.REACT_APP_BASEEXPRESSURL}nodes-query` :
+              `${process.env.REACT_APP_BASEEXPRESSURL}nodes`}
+            edgesUrl={hasValidQuery ?
+              `${process.env.REACT_APP_BASEEXPRESSURL}edges-query` :
+              `${process.env.REACT_APP_BASEEXPRESSURL}edges`}
+            edgeFilters={edgeFilters}
+
+            {...(hasValidQuery && {
+              body: {
+                tables: [selectedView],
+                fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
+                operators: sections.map(section => section.selectedParameter ? {
+                  equals: "=",
+                  not_equals: "!=",
+                  like: "LIKE",
+                  not_like: "NOT LIKE",
+                  greater_than: ">",
+                  less_than: "<",
+                  greater_than_or_equal: ">=",
+                  less_than_or_equal: "<=",
+                }[section.selectedParameter] : null),
+                values: sections.map(section => section.selectedValue),
+                dependentFields: sections.map(section => section.selectedAction),
+              }
+            })}
           />
         </TabPanel>
 
@@ -418,7 +457,7 @@ const QueryTabs = ({
         >
           <Sidecar
             nodeData={dialog.nodeData}
-            handleNodeClick={() => {}}
+            handleNodeClick={() => { }}
             activeTabIndex={dialog.activeTabIndex || 0}
             setActiveTabIndex={(index) => {
               const updatedDialogs = dialogs.map(dlg =>
