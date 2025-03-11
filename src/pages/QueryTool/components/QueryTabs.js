@@ -45,6 +45,49 @@ const QueryTabs = ({
   
   const [dialogs, setDialogs] = useState([]);
   const [mapIsReady, setMapIsReady] = useState(false);
+  const dragHandleRef = useRef(null);
+  const containerRef = useRef(null);
+  const [panelSize, setPanelSize] = useState(30); // in percentage, for example
+  const [isDragging, setIsDragging] = useState(false);
+
+  // For
+  useEffect(() => {
+    const handlePointerMove = (e) => {
+      // Calculate the new panel size based on mouse x position relative to container width.
+      if (containerRef.current) {
+        const containerRect = containerRef.current.getBoundingClientRect();
+        let newSize = ((e.clientX - containerRect.left) / containerRect.width) * 100;
+
+        newSize = Math.min(100, Math.max(0, newSize));
+        setPanelSize(newSize);
+      }
+    };
+
+    const handlePointerUp = () => {
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+      setIsDragging(false);
+    };
+
+    if (isDragging) {
+      document.addEventListener('pointermove', handlePointerMove);
+      document.addEventListener('pointerup', handlePointerUp);
+    }
+
+    return () => {
+      document.removeEventListener('pointermove', handlePointerMove);
+      document.removeEventListener('pointerup', handlePointerUp);
+    };
+  }, [isDragging]);
+
+  const handlePointerDown = (e) => {
+    setIsDragging(true);
+    // Optionally capture pointer events on the drag handle
+    if (e.target.setPointerCapture) {
+      e.target.setPointerCapture(e.pointerId);
+    }
+    e.preventDefault(); 
+  };
 
   const toggleAccordion = (nodeId) => {
     const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
@@ -358,33 +401,37 @@ const QueryTabs = ({
         </TabPanel>
 
         <TabPanel header="Map" leftIcon="pi pi-map-marker mr-2">
-          <Splitter style={{ overflowY: "auto" }}>
-            <SplitterPanel
-              size={30}
-              minSize={0}
+          <div ref={containerRef} style={{ display: "flex", height: "90vh", overflow: "hidden" }}>
+            <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                height: "90vh",
+                width: `${panelSize}%`,
                 overflowY: "auto",
-                width: "1vw",
+                display: "flex",
+                flexDirection: "column"
               }}
             >
+              {/* Left Panel Content */}
               <DataTable
                 className="Home-DataTable"
                 value={selectedNodes}
                 emptyMessage="Select a name to view its details"
               >
-                <Column
-                  body={(rowData, index) => renderAccordion(rowData, index)}
-                  header={"Sidecars"}
-                />
+                <Column body={(rowData, index) => renderAccordion(rowData, index)} header={"Sidecars"} />
               </DataTable>
-            </SplitterPanel>
-            <SplitterPanel>
+            </div>
+            <div
+              ref={dragHandleRef}
+              onPointerDown={handlePointerDown}
+              style={{
+                width: "5px",
+                cursor: "col-resize",
+                backgroundColor: "#ccc"
+              }}
+            />
+            <div style={{ flexGrow: 1 }}>
               {renderMap()}
-            </SplitterPanel>
-          </Splitter>
+            </div>
+          </div>
         </TabPanel>
 
         <TabPanel header="Table" leftIcon="pi pi-table mr-2">
