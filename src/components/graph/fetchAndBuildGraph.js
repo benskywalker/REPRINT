@@ -94,6 +94,7 @@ const FetchAndBuildGraph = async (
 
   try {
     console.log("Fetching nodes and edges...");
+    console.log("nodesUrl: ", nodesUrl);
     const [nodesResponse, edgesResponse] = await Promise.all([
       axios.post(nodesUrl, body),
       axios.post(edgesUrl, body),
