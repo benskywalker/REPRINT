@@ -460,6 +460,17 @@ const QueryTabs = ({
           draggable={true}
           modal={false}
           maximizable
+          // Add mouse events to disable/enable pointer events on the iframe.
+          onMouseDown={() => {
+            if (mapIframeRef.current) {
+              mapIframeRef.current.style.pointerEvents = 'none';
+            }
+          }}
+          onMouseUp={() => {
+            if (mapIframeRef.current) {
+              mapIframeRef.current.style.pointerEvents = 'auto';
+            }
+          }}
           style={{ width: '35vw', height: '70vh', minWidth: '15vw', minHeight: '15vw' }}
           breakpoints={{ '960px': '75vw', '641px': '100vw' }}
         >
