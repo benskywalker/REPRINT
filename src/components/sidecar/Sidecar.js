@@ -14,6 +14,7 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
   const [tabClosed, setTabClosed] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
 
+
   const handleRowClick = (rowData) => {
     const newTabKey = `Letter-${rowData.document.importID}`;
     setTabs((prevTabs) => {
@@ -72,7 +73,6 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
     setTabClosed(false);
   }, [tabClosed]);
 
-  console.log(nodeData);
 
   return (
     <div className="sidecar">
@@ -123,6 +123,9 @@ const Sidecar = ({ nodeData, handleNodeClick, activeTabIndex, setActiveTabIndex 
           <p>Religion ID: {nodeData.data.religion.religionID}</p>
         </div>
       ) : nodeData?.data?.document ? (
+        nodeData.data.document.hidden ? (
+          <p>This document is hidden due to copyright restrictions</p>
+        ) :
         nodeData.data.document.internalPDFname ? (
           <Letter file={nodeData.data.document} />
         ) : (
