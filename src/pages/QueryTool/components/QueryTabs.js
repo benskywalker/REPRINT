@@ -47,6 +47,29 @@ const QueryTabs = ({
   const [dialogs, setDialogs] = useState([]);
   const [mapIsReady, setMapIsReady] = useState(false);
 
+  const prepareQueryData = () => {
+    const definedDependentFields = sections
+      .map(section => section.selectedAction)
+      .filter(action => action !== undefined);
+
+    return {
+      tables: [selectedView],
+      fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
+      operators: sections.map(section => section.selectedParameter ? {
+        equals: "=",
+        not_equals: "!=",
+        like: "LIKE",
+        not_like: "NOT LIKE",
+        greater_than: ">",
+        less_than: "<",
+        greater_than_or_equal: ">=",
+        less_than_or_equal: "<=",
+      }[section.selectedParameter] : null),
+      values: sections.map(section => section.selectedValue),
+      dependentFields: definedDependentFields
+    };
+  };
+
   const toggleAccordion = (nodeId) => {
     const nodeToToggle = selectedNodes.find((node) => node.idNode === nodeId);
     setSelectedNodes((prevSelectedNodes) =>
@@ -155,43 +178,6 @@ const QueryTabs = ({
     );
   };
 
-  // Remove a person from the selectedPersons list
-  // const handleClosePerson = (idNode) => {
-  //   setSelectedPersons(prev => prev.filter(person => person.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the person sidecar; triggered by the external-link button
-  // const handlePopoutPerson = (idNode) => {
-  //   const personData = selectedPersons.find(p => p.idNode === idNode);
-  //   if (personData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: personData, activeTabIndex: personData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // // Remove a person from the selectedPersons list
-  // const handleCloseDocument = (idNode) => {
-  //   setSelectedDocument(prev => prev.filter(document => document.idNode !== idNode));
-  // };
-
-  // // Open a popout dialog for the document sidecar; triggered by the external-link button
-  // const handlePopoutDocument = (idNode) => {
-  //   const documentData = selectedDocument.find(p => p.idNode === idNode);
-  //   if (documentData) {
-  //     const id = uuidv4();
-  //     setDialogs(prev => [...prev, { id, nodeData: documentData, activeTabIndex: documentData.activeTabIndex || 0 }]);
-  //   }
-  // };
-
-  // const handleCloseNode = (rowIndex) => {
-  //   setSelectedNodes((prevSelectedNodes) => {
-  //     const updatedNodes = prevSelectedNodes.filter(
-  //       (_, index) => index !== rowIndex.rowIndex
-  //     );
-  //     return [...updatedNodes];
-  //   });
-  // };
-
   const handleOpenClick = (rowData) => {
     const id = uuidv4();
     setDialogs((prevDialogs) => [...prevDialogs, { id, nodeData: rowData }]);
@@ -230,26 +216,9 @@ const QueryTabs = ({
   // Send query data to the iframe (e.g. map) when loaded
   const sendQueryDataToIframe = () => {
     if (mapIframeRef.current) {
-      
-      const queryDataObj = {
-        tables: [selectedView],
-        fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
-        operators: sections.map(section => section.selectedParameter ? {
-          equals: "=",
-          not_equals: "!=",
-          like: "LIKE",
-          not_like: "NOT LIKE",
-          greater_than: ">",
-          less_than: "<",
-          greater_than_or_equal: ">=",
-          less_than_or_equal: "<=",
-        }[section.selectedParameter] : null),
-        values: sections.map(section => section.selectedValue),
-        dependentFields: sections.map(section => section.selectedAction),
-      };
+      const queryDataObj = prepareQueryData();
 
       // Post query data to the map iframe
-      //mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
       console.log("Query Data: ", queryDataObj);
       console.log("Sending to ", process.env.REACT_APP_PRINT_MAPPING_URL);
       mapIframeRef.current.contentWindow.postMessage(queryDataObj, process.env.REACT_APP_PRINT_MAPPING_URL);
@@ -376,22 +345,7 @@ const QueryTabs = ({
             edgeFilters={edgeFilters}
 
             {...(hasValidQuery && {
-              body: {
-                tables: [selectedView],
-                fields: sections.map(section => section.selectedField ? section.selectedField.field : null),
-                operators: sections.map(section => section.selectedParameter ? {
-                  equals: "=",
-                  not_equals: "!=",
-                  like: "LIKE",
-                  not_like: "NOT LIKE",
-                  greater_than: ">",
-                  less_than: "<",
-                  greater_than_or_equal: ">=",
-                  less_than_or_equal: "<=",
-                }[section.selectedParameter] : null),
-                values: sections.map(section => section.selectedValue),
-                dependentFields: sections.map(section => section.selectedAction),
-              }
+              body: prepareQueryData()
             })}
           />
         </TabPanel>
