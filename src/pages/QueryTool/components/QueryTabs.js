@@ -255,19 +255,17 @@ const QueryTabs = ({
       nodeData = graph.nodes.find(node => node.documentID === data.documentID);
       console.log("I'm a document!!!!", nodeData);
     }
-  
     if (data.personID != null) {
       nodeData = graph.nodes.find(node => node.personID === data.personID);
     }
   
     console.log("Fetched NODE data", nodeData);
-
     if (!nodeData) 
-      return
+      return;
   
     setSelectedNodes((prevSelectedNodes) => {
-      // Check if a clicked node already exists (to prevent duplicate Sidecars)
-      const duplicateExists = prevSelectedNodes.some((node) => {
+      // Check if the clicked node already exists (to prevent duplicate sidecars)
+      const duplicateIndex = prevSelectedNodes.findIndex((node) => {
         if (nodeData.documentID != null) {
           return node.documentID === nodeData.documentID;
         }
@@ -276,13 +274,16 @@ const QueryTabs = ({
         }
         return false;
       });
-  
-      if (duplicateExists) {
-        console.log("Sidecar for this node already exists. Not adding duplicate.");
-        // Return the previous state unchanged.
-        return prevSelectedNodes;
-      }
-  
+    
+      if (duplicateIndex !== -1) {
+        console.log("Sidecar for this node already exists. Bringing it to the top.");
+        // Remove the duplicate and then add it at the start.
+        const duplicateNode = prevSelectedNodes[duplicateIndex];
+        // Filter out the duplicate from its previous position.
+        const filteredNodes = prevSelectedNodes.filter((_, index) => index !== duplicateIndex);
+        return [duplicateNode, ...filteredNodes];
+      };
+    
       // If no duplicate exists then add the new node.
       return [
         { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
