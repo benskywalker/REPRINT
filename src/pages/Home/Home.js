@@ -68,16 +68,25 @@ const Home = () => {
   };
 
   const handleNodeClick = (node) => {
-    console.log(node);
-    setSelectedNodes((prevSelectedNodes) => [
-      {
-        ...node,
-        isOpen: false,
-        activeTabIndex: 0,
-        idNode: uuidv4(),
-      },
-      ...prevSelectedNodes,
-    ]);
+    
+    setSelectedNodes((prevSelectedNodes) => {
+
+      // Check if a clicked node already exists (to prevent duplicate Sidecars)
+      const duplicateExists = prevSelectedNodes.some((existingNode) => {
+        return node.id === existingNode.id;
+      });
+  
+      if (duplicateExists) {
+        console.log("Sidecar for this node already exists. Not adding duplicate.");
+        return prevSelectedNodes;
+      }
+  
+      // Otherwise add the new node to list of selectedNodes.
+      return [
+        { ...node, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
+        ...prevSelectedNodes,
+      ];
+    });
   };
 
   const handleCloseNode = (rowIndex) => {

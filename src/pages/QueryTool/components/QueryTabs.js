@@ -248,26 +248,47 @@ const QueryTabs = ({
 
 
   const handleNodeClick = (data) => {
-
-    var nodeData = null
-
+    let nodeData = null;
     console.log("Data!!", data);
-
+  
     if (data.documentID != null) {
       nodeData = graph.nodes.find(node => node.documentID === data.documentID);
-      console.log("I'm a document!!!!", nodeData)
+      console.log("I'm a document!!!!", nodeData);
     }
-
+  
     if (data.personID != null) {
       nodeData = graph.nodes.find(node => node.personID === data.personID);
     }
-
+  
     console.log("Fetched NODE data", nodeData);
 
-    setSelectedNodes(prev => [
-      { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
-      ...prev,
-    ]);
+    if (!nodeData) 
+      return
+  
+    setSelectedNodes((prevSelectedNodes) => {
+      // Check if a clicked node already exists (to prevent duplicate Sidecars)
+      const duplicateExists = prevSelectedNodes.some((node) => {
+        if (nodeData.documentID != null) {
+          return node.documentID === nodeData.documentID;
+        }
+        if (nodeData.personID != null) {
+          return node.personID === nodeData.personID;
+        }
+        return false;
+      });
+  
+      if (duplicateExists) {
+        console.log("Sidecar for this node already exists. Not adding duplicate.");
+        // Return the previous state unchanged.
+        return prevSelectedNodes;
+      }
+  
+      // If no duplicate exists then add the new node.
+      return [
+        { ...nodeData, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
+        ...prevSelectedNodes,
+      ];
+    });
   };
 
   // Send query data to the iframe (e.g. map) when loaded
