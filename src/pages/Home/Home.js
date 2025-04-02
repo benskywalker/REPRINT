@@ -68,20 +68,23 @@ const Home = () => {
   };
 
   const handleNodeClick = (node) => {
-    
     setSelectedNodes((prevSelectedNodes) => {
+      // Find the index of the sidecar if it already exists
+      const duplicateIndex = prevSelectedNodes.findIndex(
+        (existingNode) => node.id === existingNode.id
+      );
 
-      // Check if a clicked node already exists (to prevent duplicate Sidecars)
-      const duplicateExists = prevSelectedNodes.some((existingNode) => {
-        return node.id === existingNode.id;
-      });
-  
-      if (duplicateExists) {
-        console.log("Sidecar for this node already exists. Not adding duplicate.");
-        return prevSelectedNodes;
+      if (duplicateIndex !== -1) {
+        console.log("Sidecar for this node already exists. Bringing it to the top.");
+        // Get the duplicate sidecar
+        const duplicateNode = prevSelectedNodes[duplicateIndex];
+        // Create a new array without the duplicate
+        const filteredNodes = prevSelectedNodes.filter((_, index) => index !== duplicateIndex);
+        // Return a new array with the duplicate moved to the top
+        return [duplicateNode, ...filteredNodes];
       }
-  
-      // Otherwise add the new node to list of selectedNodes.
+
+      // If no duplicate exists then add the new node sidecar at the top.
       return [
         { ...node, isOpen: false, activeTabIndex: 0, idNode: uuidv4() },
         ...prevSelectedNodes,
